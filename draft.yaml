@@ -1,4 +1,8 @@
 models:
+  Cid10:
+      id: id
+      codigo: string
+      descricao: text
   Associado:
       id: id
       foto: string nullable
@@ -10,11 +14,12 @@ models:
       declaracao_sexual: enum:"heterossexualidade","homossexualidade","bissexualidade","transsexualidade","panssexualidade","assexualidade","intergenero" nullable
       cpf: string nullable
       rg: string nullable
-      orgao_expedidor: enum:"abnc","cgpi_durex_dpf","cgpi","cgpmaf","cnig","cnt","coren","cra","cras","crb","crc","cre","crea","creci","crefito","crf","crm","crn","cro","crp","crpre","crq","crrc","crmv","csc" nullable
+      orgao_expedidor: enum:"abnc", "agu", "anac", "caer", "cau", "cbm", "cfa", "cfb", "cfbio", "cfbm", "cfc", "cfess", "cff", "cffa", "cfm", "cfmv", "cfn", "cfo", "cfp", "cfq", "cft", "cfta", "cgpi", "cgpmaf", "cipc", "cnig", "cnt", "cntv", "cofeci", "cofecon", "cofem", "cofen", "coffito", "comaer", "confe", "confea", "confef", "confere", "conre", "conrerp", "core", "corecon", "corem", "coren", "cra", "cras", "crb", "crbio", "crbm", "crc", "crea", "creci", "cref", "crefito", "cress", "crf", "crfa", "crm", "crmv", "crn", "cro", "crp", "crpre", "crq", "crt", "crta", "ctps", "cv", "delemig", "detran", "dgpc", "dic", "dicc", "direx", "dpf", "dpmaf", "dpt", "dptc", "drex", "drt", "eb", "fab", "fenaj", "fgts", "fipe", "fls", "funai", "gejsp", "gejspc", "gejuspc", "gesp", "govgo", "i_cla", "icp", "idamp", "ifp", "igp", "iiacm", "iicc", "iiccecf", "iicm", "iigp", "iijdm", "iipc", "iipm", "iirgd", "iirhm", "iitb", "iml", "ini", "ipf", "itcp", "itep", "maer", "mb", "md", "mds", "mec", "mex", "mindef", "mj", "mm", "mma", "mpas", "mpe", "mpf", "mpt", "mre", "mt", "mte", "mtps", "numig", "oab", "omb", "pc", "pf", "pgfn", "pm", "politec", "prf", "ptc", "scc", "scjds", "sds", "secc", "seccde", "seds", "segup", "sejsp", "sejuc", "sejusp", "sepc", "sepol", "ses", "sesc", "sesdc", "sesdec", "seseg", "sesp", "sespap", "sespdc", "sespds", "sgpc", "sgpj", "sim", "sj", "sjcdh", "sjds", "sjs", "sjtc", "sjts", "snj", "spmaf", "sptc", "srdpf", "srf", "srte", "ssdc", "ssds", "ssi", "ssp", "sspcgp", "sspdc", "sspds", "ssppc", "susep", "susepe", "tj", "tjaem", "tre", "trf", "tse" nullable
       orgao_expedidor_uf: enum:"ac","al","ap","am","ba","ce","df","es","go","ma","mt","ms","mg","pa","pb","pr","pe","pi","rj","rn","rs","ro","rr","sc","sp","se","to" nullable
       estado_civil: enum:"solteiro","casado","divorciado","viuvo","separado_judicialmente"
       certidao_nascimento: string nullable
-      naturalidade_ibge: string
+      naturalidade_uf: enum:"ac","al","ap","am","ba","ce","df","es","go","ma","mt","ms","mg","pa","pb","pr","pe","pi","rj","rn","rs","ro","rr","sc","sp","se","to"
+      naturalidade_municipio_ibge: integer
       mae: string
       pai: string nullable
       religiao: enum:"mormons","protestante","espiritismo","umbanda","budismo","candomble","judaismo","tradicoes_esotericas","islamismo","crencas_indigenas","catolico","ateu","outras"
@@ -34,7 +39,7 @@ models:
       cidade: string
       perimetro: string
       telefone_celular: string nullable
-      telefone_whatsapbigintp: string nullable
+      telefone_whatsapp: string nullable
       telefone_fixo: string nullable
       email: string nullable
       relationships:
