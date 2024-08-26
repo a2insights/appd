@@ -17,6 +17,7 @@ use App\OrgaoExpedidor;
 use App\OrgaoExpedidorUf;
 use App\Raca;
 use App\Religiao;
+use App\Sexo;
 use App\TipoDeficiencia;
 use Closure;
 use Filament\Forms;
@@ -26,7 +27,9 @@ use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
@@ -34,7 +37,22 @@ class AssociadoResource extends Resource
 {
     protected static ?string $model = Associado::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['nome', 'cpf', 'rg'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->nome.' ('.$record->cpf.')';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -42,6 +60,7 @@ class AssociadoResource extends Resource
             ->schema([
                 Forms\Components\FileUpload::make('foto')
                     ->required()
+                    ->directory('avatars')
                     ->image()
                     ->columnSpanFull(),
                 Forms\Components\Group::make([
@@ -63,14 +82,10 @@ class AssociadoResource extends Resource
                     ->columns(7),
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('nome_social')
-                        ->required()
                         ->maxLength(255)
                         ->columnSpan(5),
                     Forms\Components\Radio::make('sexo')
-                        ->options([
-                            'masculino' => 'Masculino',
-                            'feminino' => 'Feminino',
-                        ])
+                        ->options(Sexo::class)
                         ->required()
                         ->columnSpan(1),
                     Forms\Components\Select::make('declaracao_sexual')
@@ -168,7 +183,7 @@ class AssociadoResource extends Resource
                         ->required()
                         ->options(Religiao::class)
                         ->columnSpan(2),
-                    Forms\Components\Select::make('ocupacao')
+                    Forms\Components\Select::make('ocupacoes')
                         ->options(Ocupacao::class)
                         ->multiple()
                         ->columnSpan(2),
@@ -201,15 +216,17 @@ class AssociadoResource extends Resource
                         ->required()
                         ->options(TipoDeficiencia::class)
                         ->columnSpan(2),
-                    Forms\Components\Select::make('aparelho_utilizado')
-                        ->required()
+                    Forms\Components\Select::make('aparelhos_utilizado')
                         ->options(AparelhoUtilizado::class)
+                        ->multiple()
                         ->columnSpan(2),
                 ])
                     ->columnSpanFull()
                     ->columns(7),
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('cep')
+                        ->numeric()
+                        ->stripCharacters(['-', '.'])
                         ->required()
                         ->mask('99999-999')
                         ->live()
@@ -227,10 +244,6 @@ class AssociadoResource extends Resource
                                         ->danger()
                                         ->send();
                                 } else {
-                                    Notification::make()
-                                        ->title($cepData['street'])
-                                        ->danger()
-                                        ->send();
                                     $set('rua', $cepData['street'] ?? null);
                                     $set('bairro', $cepData['neighborhood'] ?? null);
                                     $set('cidade', $cepData['city'] ?? null);
@@ -242,11 +255,13 @@ class AssociadoResource extends Resource
                     Forms\Components\TextInput::make('rua')
                         ->required()
                         ->disabled()
+                        ->dehydrated()
                         ->maxLength(255)
                         ->columnSpan(4),
                     Forms\Components\TextInput::make('bairro')
                         ->required()
                         ->disabled()
+                        ->dehydrated()
                         ->maxLength(255)
                         ->columnSpan(3),
                     Forms\Components\TextInput::make('numero')
@@ -260,11 +275,13 @@ class AssociadoResource extends Resource
                     Forms\Components\TextInput::make('estado')
                         ->required()
                         ->disabled()
+                        ->dehydrated()
                         ->maxLength(255)
                         ->columnSpan(2),
                     Forms\Components\TextInput::make('cidade')
                         ->required()
                         ->disabled()
+                        ->dehydrated()
                         ->maxLength(255)
                         ->columnSpan(3),
                     Forms\Components\TextInput::make('perimetro')
@@ -307,65 +324,101 @@ class AssociadoResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('foto')
-                    ->searchable(),
+                Tables\Columns\ImageColumn::make('foto')
+                    ->circular()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('nome')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('data_nascimento')
-                    ->date()
+                    ->date('d/m/Y')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nome_social')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('sexo'),
-                Tables\Columns\TextColumn::make('declaracao_sexual'),
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('sexo')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('declaracao_sexual')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('cpf')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('rg')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('orgao_expedidor'),
-                Tables\Columns\TextColumn::make('orgao_expedidor_uf'),
-                Tables\Columns\TextColumn::make('estado_civil'),
-                Tables\Columns\TextColumn::make('certidao_nascimento')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('naturalidade_ibge')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('mae')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pai')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('religiao'),
-                Tables\Columns\TextColumn::make('escolaridade'),
-                Tables\Columns\TextColumn::make('raca'),
-                Tables\Columns\TextColumn::make('crm')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('causa_deficiencia'),
-                Tables\Columns\TextColumn::make('tipo_deficiencia'),
-                Tables\Columns\TextColumn::make('aparelho_utilizado'),
-                Tables\Columns\TextColumn::make('cep')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('orgao_expedidor')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('orgao_expedidor_uf')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('estado_civil')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ocupacao'),
+                Tables\Columns\TextColumn::make('certidao_nascimento')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('naturalidade_municipio_ibge')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('mae')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('pai')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('religiao')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('escolaridade')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('ocupacoes')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('raca')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('crm')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('cid10')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->formatStateUsing(fn (Associado $associado, string $state) => $associado->cid10()->get()->where('id', $state)->map(fn (Cid10 $cid10) => $cid10->codigo)->join(', '))
+                    ->tooltip(fn (Associado $associado) => $associado->cid10()->get()->map(fn (Cid10 $cid10) => "{$cid10->codigo} - {$cid10->descricao}")->join(', '))
+                    ->badge(),
+                Tables\Columns\TextColumn::make('tipo_deficiencia')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('causa_deficiencia')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('aparelhos_utilizado')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('cep')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('rua')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('bairro')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('numero')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('estado')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('cidade')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('perimetro')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('telefone_celular')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('telefone_whatsapp')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('telefone_fixo')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -376,7 +429,10 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options(AssociadoStatus::class)
+                    ->multiple(),
+                \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -404,9 +460,9 @@ class AssociadoResource extends Resource
         ];
     }
 
-    private static function getMunicipioByUf(?NaturalidadeUf $uf)
+    private static function getMunicipioByUf($uf)
     {
-        if (! $uf) {
+        if (! $uf || is_string($uf)) {
             return [];
         }
 

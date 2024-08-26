@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\AparelhoUtilizado;
 use App\AssociadoStatus;
+use App\Casts\Set;
 use App\CausaDeficiencia;
 use App\DeclaracaoSexual;
 use App\Escolaridade;
@@ -14,6 +15,7 @@ use App\OrgaoExpedidor;
 use App\OrgaoExpedidorUf;
 use App\Raca;
 use App\Religiao;
+use App\Sexo;
 use App\TipoDeficiencia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +26,15 @@ class Associado extends Model
 {
     use HasFactory;
     use \Staudenmeir\EloquentJsonRelations\HasJsonRelationships;
+
+    /**
+     * The attributes that be default.
+     *
+     * @var array
+     */
+    public $attributes = [
+        'cid10' => '[]',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -49,14 +60,14 @@ class Associado extends Model
         'mae',
         'pai',
         'religiao',
-        'ocupacao',
+        'ocupacoes',
         'escolaridade',
         'raca',
         'cid10',
         'crm',
         'causa_deficiencia',
         'tipo_deficiencia',
-        'aparelho_utilizado',
+        'aparelhos_utilizado',
         'cep',
         'rua',
         'bairro',
@@ -71,28 +82,34 @@ class Associado extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'id' => 'integer',
-        'status' => AssociadoStatus::class,
-        'data_nascimento' => 'date',
-        'declaracao_sexual' => DeclaracaoSexual::class,
-        'orgao_expedidor' => OrgaoExpedidor::class,
-        'orgao_expedidor_uf' => OrgaoExpedidorUf::class,
-        'estado_civil' => EstadoCivil::class,
-        'naturalidade_uf' => NaturalidadeUf::class,
-        'religiao' => Religiao::class,
-        'ocupacao' => Ocupacao::class,
-        'escolaridade' => Escolaridade::class,
-        'raca' => Raca::class,
-        'causa_deficiencia' => CausaDeficiencia::class,
-        'tipo_deficiencia' => TipoDeficiencia::class,
-        'aparelho_utilizado' => AparelhoUtilizado::class,
-        'cid10' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'id' => 'integer',
+            'status' => AssociadoStatus::class,
+            'data_nascimento' => 'date',
+            'sexo' => Sexo::class,
+            'declaracao_sexual' => DeclaracaoSexual::class,
+            'orgao_expedidor' => OrgaoExpedidor::class,
+            'orgao_expedidor_uf' => OrgaoExpedidorUf::class,
+            'estado_civil' => EstadoCivil::class,
+            'naturalidade_uf' => NaturalidadeUf::class,
+            'religiao' => Religiao::class,
+            // 'ocupacoes' => Ocupacao::class,
+            'ocupacoes' => Set::class,
+            'escolaridade' => Escolaridade::class,
+            'raca' => Raca::class,
+            'causa_deficiencia' => CausaDeficiencia::class,
+            'tipo_deficiencia' => TipoDeficiencia::class,
+            // 'aparelhos_utilizado' => AparelhoUtilizado::class,
+            'aparelhos_utilizado' => Set::class,
+            'cid10' => 'array',
+        ];
+    }
 
     public function carteirinhas(): HasMany
     {
