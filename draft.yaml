@@ -50,7 +50,8 @@ models:
       nome: string nullable
       descricao: string
   Carteirinha:
-      id: id foreign:associados.id
+      id: id
+      associado_id: bigInteger foreign:associados.id
       status: enum:"ativa","cancelada","vencida"
       data_emissao: date
       data_vencimento: date

@@ -21,6 +21,7 @@ use App\Sexo;
 use App\TipoDeficiencia;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -58,10 +59,19 @@ class AssociadoResource extends Resource
     {
         return $form
             ->schema([
+                SpatieMediaLibraryFileUpload::make('arquivos')
+                    ->multiple()
+                    ->reorderable()
+                    ->preserveFilenames()
+                    ->downloadable()
+                    ->openable()
+                    ->columnSpanFull(),
                 Forms\Components\FileUpload::make('foto')
                     ->required()
                     ->directory('avatars')
+                    ->downloadable()
                     ->image()
+                    ->openable()
                     ->columnSpanFull(),
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('nome')
@@ -383,14 +393,17 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('crm')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('cid10')
+                    ->label('Deficiência')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->formatStateUsing(fn (Associado $associado, string $state) => $associado->cid10()->get()->where('id', $state)->map(fn (Cid10 $cid10) => $cid10->codigo)->join(', '))
                     ->tooltip(fn (Associado $associado) => $associado->cid10()->get()->map(fn (Cid10 $cid10) => "{$cid10->codigo} - {$cid10->descricao}")->join(', '))
                     ->badge(),
                 Tables\Columns\TextColumn::make('tipo_deficiencia')
+                    ->label('Tipo')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('causa_deficiencia')
+                    ->label('Causa')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('aparelhos_utilizado')
@@ -412,8 +425,10 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('perimetro')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('telefone_celular')
+                    ->label('Celular')
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('telefone_whatsapp')
+                    ->label('WhatsApp')
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('telefone_fixo')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -436,6 +451,7 @@ class AssociadoResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

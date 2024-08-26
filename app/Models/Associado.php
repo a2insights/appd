@@ -21,10 +21,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Associado extends Model
+class Associado extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
     use \Staudenmeir\EloquentJsonRelations\HasJsonRelationships;
 
     /**
@@ -80,6 +83,18 @@ class Associado extends Model
         'telefone_fixo',
         'email',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($associado) {
+            $associado->carteirinhas()->delete();
+            $associado->beneficios()->detach();
+            // Don't need to delete media, it will be deleted automatically by spatie/laravel-medialibrary
+            //  $associado->media()->delete();
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('carteirinhas', function (Blueprint $table) {
-            $table->id()->foreign('associados.id');
-            $table->enum('status', ["ativa","cancelada","vencida"]);
+            $table->id();
+            $table->foreignId('associado_id');
+            $table->enum('status', ['ativa', 'cancelada', 'vencida']);
             $table->date('data_emissao');
             $table->date('data_vencimento');
             $table->timestamps();
