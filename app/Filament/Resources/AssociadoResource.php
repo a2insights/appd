@@ -27,6 +27,7 @@ use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -249,7 +250,7 @@ class AssociadoResource extends Resource
                             // if is editing and cep is not changed
 
                             if ($value === $get('cep')) {
-                                return;
+                                // return;
                             }
 
                             $cep = preg_replace('/[^0-9]/is', '', $value);
@@ -354,7 +355,7 @@ class AssociadoResource extends Resource
                 Tables\Columns\ImageColumn::make('foto')
                     ->circular()
                     ->toggleable(isToggledHiddenByDefault: false)
-                    ->state(fn (Associado $associado) => 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=true&bold=true&color=fff&background=7F9CF5'),
+                    ->state(fn (Associado $associado) => $associado->foto ?? 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=true&bold=true&color=fff&background=7F9CF5'),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
@@ -472,14 +473,102 @@ class AssociadoResource extends Resource
                 SelectFilter::make('status')
                     ->options(AssociadoStatus::class)
                     ->multiple(),
+                SelectFilter::make('aniversariantes')
+                    ->attribute('data_nascimento')
+                    ->multiple()
+                    ->options([
+                        1 => 'Janeiro',
+                        2 => 'Fevereiro',
+                        3 => 'Março',
+                        4 => 'Abril',
+                        5 => 'Maio',
+                        6 => 'Junho',
+                        7 => 'Julho',
+                        8 => 'Agosto',
+                        9 => 'Setembro',
+                        10 => 'Outubro',
+                        11 => 'Novembro',
+                        12 => 'Dezembro',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (! $data['values']) {
+                            return;
+                        }
+
+                        $query->whereRaw('MONTH(data_nascimento) IN ('.implode(',', $data['values']).')');
+                    }),
+                \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('data_nascimento'),
+                SelectFilter::make('sexo')
+                    ->options(Sexo::class),
+                SelectFilter::make('declaracao_sexual')
+                    ->options(DeclaracaoSexual::class)
+                    ->multiple(),
+                // SelectFilter::make('orgao_expedidor')
+                //     ->options(OrgaoExpedidor::class)
+                //     ->multiple(),
+                // SelectFilter::make('orgao_expedidor_uf')
+                //     ->options(OrgaoExpedidorUf::class)
+                //     ->multiple(),
+                SelectFilter::make('estado_civil')
+                    ->options(EstadoCivil::class)
+                    ->multiple(),
+                SelectFilter::make('naturalidade_uf')
+                    ->options(NaturalidadeUf::class)
+                    ->multiple(),
+                // SelectFilter::make('naturalidade_municipio_ibge')
+                //     ->options(fn (): array => self::getMunicipios()->pluck('nome', 'id')->all())
+                //     ->query(fn (Get $get): array => self::getMunicipiosByUf($get('naturalidade_uf')))
+                //     ->multiple(),
+                SelectFilter::make('religiao')
+                    ->options(Religiao::class)
+                    ->multiple(),
                 SelectFilter::make('tipo_deficiencia')
                     ->options(TipoDeficiencia::class)
                     ->multiple(),
                 SelectFilter::make('causa_deficiencia')
                     ->options(CausaDeficiencia::class)
                     ->multiple(),
+                SelectFilter::make('escolaridade')
+                    ->options(Escolaridade::class)
+                    ->multiple(),
+                SelectFilter::make('raca')
+                    ->options(Raca::class)
+                    ->multiple(),
+                SelectFilter::make('aparelhos_utilizado')
+                    ->options(AparelhoUtilizado::class)
+                    ->multiple(),
+                SelectFilter::make('beneficios')
+                    ->relationship('beneficios', 'nome')
+                    ->preload()
+                    ->multiple(),
+                SelectFilter::make('cid10')
+                    ->relationship('cid10', 'codigo')
+                    ->multiple(),
+                SelectFilter::make('ocupacoes')
+                    ->options(Ocupacao::class)
+                    ->multiple(),
+                SelectFilter::make('cidade')
+                    ->options(fn (): array => self::getMunicipios()->mapWithKeys(fn ($item) => [$item['nome'] => $item['nome']])->all())
+                    ->query(function ($query, array $data) {
+                        if (! $data['values']) {
+                            return;
+                        }
+
+                        $query->whereIn('cidade', $data['values']);
+                    })
+                    ->multiple(),
+                // SelectFilter::make('bairro')
+                //     ->multiple()
+                //     ->options(fn (): array => self::getBairros()->all())
+                //     ->query(function ($query, array $data) {
+                //         if (! $data['values']) {
+                //             return;
+                //         }
+
+                //         $query->whereIn('bairro', $data['values']);
+                //     }),
                 \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at'),
-            ])
+            ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -536,6 +625,17 @@ class AssociadoResource extends Resource
             $response = Http::get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
 
             return $response->collect();
+        });
+    }
+
+    private static function getBairros(): Collection
+    {
+        return cache()->remember('bairros', now()->addDay(), function () {
+            return Associado::query()
+                ->select('bairro')
+                ->distinct('bairro')
+                ->get()
+                ->mapWithKeys(fn ($item) => [$item['bairro'] => $item['bairro']]);
         });
     }
 }

@@ -16,6 +16,8 @@ class BeneficioResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
+    protected static ?string $navigationParentItem = 'Associados';
+
     public static function form(Form $form): Form
     {
         return $form

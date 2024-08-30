@@ -44,6 +44,7 @@ class AssociadoExporter extends Exporter
             ExportColumn::make('ocupacoes'),
             ExportColumn::make('escolaridade')->state(fn ($record) => $record->escolaridade->getLabel()),
             ExportColumn::make('raca')->state(fn ($record) => $record->raca->getLabel()),
+            ExportColumn::make('beneficios.nome'),
             ExportColumn::make('cid10.codigo'),
             ExportColumn::make('crm'),
             ExportColumn::make('causa_deficiencia')->state(fn ($record) => $record->causa_deficiencia->getLabel()),
