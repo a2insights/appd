@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Associado;
+use App\Models\Beneficio;
 use App\Models\Cid10;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Collection;
@@ -17,7 +18,6 @@ class AssociadoFactory extends Factory
      * @var string
      */
     protected $model = Associado::class;
-
 
     /**
      *  Lista de municípios do IBGE
@@ -77,6 +77,13 @@ class AssociadoFactory extends Factory
             'telefone_fixo' => $this->faker->e164PhoneNumber(),
             'email' => $this->faker->safeEmail(),
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Associado $associado) {
+            $associado->beneficios()->attach(Beneficio::inRandomOrder()->take(3)->pluck('id'));
+        });
     }
 
     public function selectRandomMunicipio(Collection $municipios)

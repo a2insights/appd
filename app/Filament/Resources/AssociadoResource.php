@@ -60,18 +60,32 @@ class AssociadoResource extends Resource
     {
         return $form
             ->schema([
-                SpatieMediaLibraryFileUpload::make('arquivos')
-                    ->multiple()
-                    ->reorderable()
-                    ->preserveFilenames()
-                    ->downloadable()
-                    ->openable()
-                    ->columnSpanFull(),
+
                 Forms\Components\FileUpload::make('foto')
+                    ->imagePreviewHeight('200')
+                    ->imageEditor()
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1')
+                    ->panelLayout('integrated')
+                    // ->imageEditorAspectRatios([
+                    //     '1:1',
+                    //     null,
+                    // ])
+                    ->imageEditorMode(2)
+                    // ->loadingIndicatorPosition('left')
+                    // ->panelAspectRatio('1:1')
+                    // ->panelLayout('integrated')
+                    // TODO: Not working. Create an PR to fix this in filament
+                    ->removeUploadedFileButtonPosition('right')
+                    // ->uploadButtonPosition('left')
+                    // ->uploadProgressIndicatorPosition('left')
                     ->required()
                     ->directory('avatars')
                     ->downloadable()
+                    ->maxSize(1024)
                     ->image()
+                    ->removeUploadedFileButtonPosition('right')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png'])
                     ->openable()
                     ->columnSpanFull(),
                 Forms\Components\Group::make([
@@ -189,11 +203,20 @@ class AssociadoResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->columns(8),
-                Forms\Components\Select::make('cid10')
-                    ->relationship(titleAttribute: 'codigo')
-                    ->multiple()
-                    ->getOptionLabelFromRecordUsing(fn (Cid10 $record) => "{$record->codigo} - {$record->descricao}")
-                    ->required()
+                Forms\Components\Group::make([
+                    Forms\Components\Select::make('cid10')
+                        ->relationship(titleAttribute: 'codigo')
+                        ->multiple()
+                        ->getOptionLabelFromRecordUsing(fn (Cid10 $record) => "{$record->codigo} - {$record->descricao}")
+                        ->required()
+                        ->columnSpan(2),
+                    Forms\Components\Select::make('beneficios')
+                        ->relationship(titleAttribute: 'nome')
+                        ->multiple()
+                        ->preload()
+                        ->columnSpan(1),
+                ])
+                    ->columns(3)
                     ->columnSpanFull(),
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('crm')
@@ -225,7 +248,6 @@ class AssociadoResource extends Resource
                             $value = $component->getState('cep');
                             // if is editing and cep is not changed
 
-                            dd($value, $get('cep'));
                             if ($value === $get('cep')) {
                                 return;
                             }
@@ -314,6 +336,14 @@ class AssociadoResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->columns(10),
+                SpatieMediaLibraryFileUpload::make('arquivos')
+                    ->multiple()
+                    ->reorderable()
+                    ->preserveFilenames()
+                    ->downloadable()
+                    ->panelLayout('grid')
+                    ->openable()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -323,7 +353,8 @@ class AssociadoResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('foto')
                     ->circular()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->state(fn (Associado $associado) => 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=true&bold=true&color=fff&background=7F9CF5'),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
@@ -454,10 +485,11 @@ class AssociadoResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
+            ])
+            ->defaultSort('id', 'desc');
     }
 
     public static function getRelations(): array

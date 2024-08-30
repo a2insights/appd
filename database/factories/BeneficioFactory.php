@@ -20,7 +20,7 @@ class BeneficioFactory extends Factory
     public function definition(): array
     {
         return [
-            'nome' => $this->faker->word(),
+            'nome' => $this->faker->title(),
             'descricao' => $this->faker->word(),
         ];
     }
