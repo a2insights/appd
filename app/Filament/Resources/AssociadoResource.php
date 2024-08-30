@@ -9,6 +9,7 @@ use App\DeclaracaoSexual;
 use App\Escolaridade;
 use App\EstadoCivil;
 use App\Filament\Resources\AssociadoResource\Pages;
+use App\Filament\Resources\AssociadoResource\Widgets\AssociadosOverview;
 use App\Models\Associado;
 use App\Models\Cid10;
 use App\NaturalidadeUf;
@@ -491,7 +492,7 @@ class AssociadoResource extends Resource
                         12 => 'Dezembro',
                     ])
                     ->query(function ($query, array $data) {
-                        if (! $data['values']) {
+                        if (! isset($data['values']) || count($data['values']) === 0) {
                             return;
                         }
 
@@ -550,7 +551,7 @@ class AssociadoResource extends Resource
                 SelectFilter::make('cidade')
                     ->options(fn (): array => self::getMunicipios()->mapWithKeys(fn ($item) => [$item['nome'] => $item['nome']])->all())
                     ->query(function ($query, array $data) {
-                        if (! $data['values']) {
+                        if (! isset($data['values']) || count($data['values']) === 0) {
                             return;
                         }
 
@@ -579,6 +580,13 @@ class AssociadoResource extends Resource
                 // ]),
             ])
             ->defaultSort('id', 'desc');
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            AssociadosOverview::class,
+        ];
     }
 
     public static function getRelations(): array

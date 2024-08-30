@@ -76,6 +76,8 @@ class AssociadoFactory extends Factory
             'telefone_whatsapp' => $this->faker->e164PhoneNumber(),
             'telefone_fixo' => $this->faker->e164PhoneNumber(),
             'email' => $this->faker->safeEmail(),
+            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
 

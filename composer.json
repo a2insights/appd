@@ -11,6 +11,7 @@
         "a2insights/octo-core": "dev-main",
         "barryvdh/laravel-debugbar": "^3.13",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
+        "flowframe/laravel-trend": "^0.2.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
