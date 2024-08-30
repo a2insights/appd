@@ -19,7 +19,6 @@ use App\Raca;
 use App\Religiao;
 use App\Sexo;
 use App\TipoDeficiencia;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
@@ -31,7 +30,9 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class AssociadoResource extends Resource
@@ -110,27 +111,7 @@ class AssociadoResource extends Resource
                         ->maxLength(255)
                         ->columnSpan(2)
                         ->mask('999.999.999-99')
-                        ->rules([
-                            fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) {
-                                $cpf = preg_replace('/[^0-9]/is', '', $value);
-
-                                if (strlen($cpf) == 11) {
-                                    if (preg_match('/(\d)\1{10}/', $cpf)) {
-                                        $fail('CPF inválido.');
-                                    }
-
-                                    for ($t = 9; $t < 11; $t++) {
-                                        for ($d = 0, $c = 0; $c < $t; $c++) {
-                                            $d += $cpf[$c] * (($t + 1) - $c);
-                                        }
-                                        $d = ((10 * $d) % 11) % 10;
-                                        if ($cpf[$c] != $d) {
-                                            $fail('CPF inválido.');
-                                        }
-                                    }
-                                }
-                            },
-                        ])
+                        ->rules(['cpf'])
                         ->live()
                         ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component) {
                             $livewire->validateOnly($component->getStatePath());
@@ -171,7 +152,7 @@ class AssociadoResource extends Resource
                         ->columnSpan(2),
                     Forms\Components\Select::make('naturalidade_municipio_ibge')
                         ->required()
-                        ->options(fn (Get $get): array => self::getMunicipioByUf($get('naturalidade_uf')))
+                        ->options(fn (Get $get): array => self::getMunicipiosByUf($get('naturalidade_uf')))
                         ->searchable()
                         ->columnSpan(3),
                 ])
@@ -240,8 +221,14 @@ class AssociadoResource extends Resource
                         ->required()
                         ->mask('99999-999')
                         ->live()
-                        ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component, Set $set) {
+                        ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component, Set $set, Get $get) {
                             $value = $component->getState('cep');
+                            // if is editing and cep is not changed
+
+                            dd($value, $get('cep'));
+                            if ($value === $get('cep')) {
+                                return;
+                            }
 
                             $cep = preg_replace('/[^0-9]/is', '', $value);
 
@@ -253,12 +240,12 @@ class AssociadoResource extends Resource
                                         ->title('CEP não encontrado')
                                         ->danger()
                                         ->send();
-                                } else {
-                                    $set('rua', $cepData['street'] ?? null);
-                                    $set('bairro', $cepData['neighborhood'] ?? null);
-                                    $set('cidade', $cepData['city'] ?? null);
-                                    $set('estado', $cepData['state'] ?? null);
                                 }
+
+                                $set('rua', $cepData['street'] ?? null);
+                                $set('bairro', $cepData['neighborhood'] ?? null);
+                                $set('cidade', $cepData['city'] ?? null);
+                                $set('estado', $cepData['state'] ?? null);
                             }
                         })
                         ->columnSpan(2),
@@ -372,6 +359,13 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('certidao_nascimento')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('naturalidade_municipio_ibge')
+                    ->label('Naturalidade')
+                    ->formatStateUsing(fn (Associado $associado) => self::getMunicipios()->firstWhere('id', $associado->naturalidade_municipio_ibge)['nome'])
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('naturalidade_uf')
+                    ->label('UF')
+                    ->formatStateUsing(fn (Associado $associado) => Str::upper($associado->naturalidade_uf->value))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('mae')
@@ -392,11 +386,11 @@ class AssociadoResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('crm')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cid10')
+                Tables\Columns\TextColumn::make('cid10.codigo')
                     ->label('Deficiência')
                     ->toggleable(isToggledHiddenByDefault: false)
-                    ->formatStateUsing(fn (Associado $associado, string $state) => $associado->cid10()->get()->where('id', $state)->map(fn (Cid10 $cid10) => $cid10->codigo)->join(', '))
-                    ->tooltip(fn (Associado $associado) => $associado->cid10()->get()->map(fn (Cid10 $cid10) => "{$cid10->codigo} - {$cid10->descricao}")->join(', '))
+                   // ->formatStateUsing(fn (Associado $associado, string $state) => $associado->cid10()->get()->where('id', $state)->map(fn (Cid10 $cid10) => $cid10->codigo)->join(', '))
+                   // ->tooltip(fn (Associado $associado) => $associado->cid10()->get()->map(fn (Cid10 $cid10) => "{$cid10->codigo} - {$cid10->descricao}")->join(', '))
                     ->badge(),
                 Tables\Columns\TextColumn::make('tipo_deficiencia')
                     ->label('Tipo')
@@ -426,7 +420,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('telefone_celular')
                     ->label('Celular')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('telefone_whatsapp')
                     ->label('WhatsApp')
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -446,6 +440,12 @@ class AssociadoResource extends Resource
             ->filters([
                 SelectFilter::make('status')
                     ->options(AssociadoStatus::class)
+                    ->multiple(),
+                SelectFilter::make('tipo_deficiencia')
+                    ->options(TipoDeficiencia::class)
+                    ->multiple(),
+                SelectFilter::make('causa_deficiencia')
+                    ->options(CausaDeficiencia::class)
                     ->multiple(),
                 \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at'),
             ])
@@ -476,15 +476,16 @@ class AssociadoResource extends Resource
         ];
     }
 
-    private static function getMunicipioByUf($uf)
+    private static function getMunicipiosByUf($uf)
     {
-        if (! $uf || is_string($uf)) {
+        $uf = $uf->value ?? $uf;
+        if (! $uf) {
             return [];
         }
 
-        $url = "https://brasilapi.com.br/api/ibge/municipios/v1/{$uf->value}?providers=dados-abertos-br,gov,wikipedia";
+        $url = "https://brasilapi.com.br/api/ibge/municipios/v1/{$uf}?providers=dados-abertos-br,gov,wikipedia";
 
-        return cache()->remember("municipios-{$uf->value}", now()->addDay(), function () use ($url) {
+        return cache()->remember("municipios-{$uf}", now()->addDay(), function () use ($url) {
             return Http::get($url)->collect()
                 ->mapWithKeys(fn ($item) => [$item['codigo_ibge'] => $item['nome']])
                 ->all();
@@ -494,5 +495,15 @@ class AssociadoResource extends Resource
     private static function getCepAddress(?string $cep)
     {
         return Http::get('https://brasilapi.com.br/api/cep/v1/'.$cep)->json();
+    }
+
+    private static function getMunicipios(): Collection
+    {
+        // https://servicodados.ibge.gov.br/api/v1/localidades/municipios
+        return cache()->rememberForever('municipios', function () {
+            $response = Http::get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
+
+            return $response->collect();
+        });
     }
 }
