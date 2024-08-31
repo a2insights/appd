@@ -6,7 +6,6 @@ use App\CarteirinhaStatus;
 use Filament\Forms;
 use Filament\Forms\ComponentContainer;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Enums\FontWeight;
@@ -14,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class CarteirinhasRelationManager extends RelationManager
 {
@@ -42,7 +42,7 @@ class CarteirinhasRelationManager extends RelationManager
                 // ->uploadButtonPosition('left')
                 // ->uploadProgressIndicatorPosition('left')
                     ->required()
-                    ->directory('avatars')
+                    ->directory('carteirinhas')
                     ->downloadable()
                     ->maxSize(1024)
                     ->image()
@@ -117,31 +117,34 @@ class CarteirinhasRelationManager extends RelationManager
                     })
                     ->createAnother(false)
                     ->mountUsing(fn (ComponentContainer $form) => $form->fill([
+                        'associado_id' => $this->getOwnerRecord()->id,
                         'foto' => $this->getOwnerRecord()->foto,
                         'status' => CarteirinhaStatus::ATIVA,
                         'data_emissao' => now(),
                         'data_vencimento' => now()->addYear(2),
                     ]))
                     ->using(function (array $data, string $model): Model {
-                        //
+                        $associado = $this->getOwnerRecord();
+
+                        if ($associado->foto === $data['foto']) {
+                            $filename = basename($data['foto']);
+                            $targetPath = 'carteirinhas/'.uniqid().'_'.$filename;
+
+                            Storage::disk(config('filament.default_filesystem_disk'))
+                                ->copy($associado->foto, $targetPath);
+
+                            $data['foto'] = $targetPath;
+                        }
+
+                        $data['associado_id'] = $associado->id;
 
                         return $model::create($data);
                     }),
-                // ->afterFormFilled(function (array $data): array {
-                //     $data['foto'] = $this->getOwnerRecord()->foto;
-
-                //     return $data;
-                // }),
-                // ->afterFormFilled(function (Set $set) {
-                //     // associado foto
-                //     $associado = $this->getOwnerRecord();
-                //     $set('foto', $associado->foto);
-                // }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                // Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([

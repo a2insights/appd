@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -93,6 +94,12 @@ class Associado extends Model implements HasMedia
             $associado->beneficios()->detach();
             // Don't need to delete media, it will be deleted automatically by spatie/laravel-medialibrary
             //  $associado->media()->delete();
+        });
+
+        static::deleted(function ($carteirinha) {
+            $disk = config('filament.default_filesystem_disk');
+
+            Storage::disk($disk)->delete($carteirinha->foto);
         });
     }
 

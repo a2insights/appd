@@ -6,6 +6,7 @@ use App\CarteirinhaStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Carteirinha extends Model
 {
@@ -17,6 +18,7 @@ class Carteirinha extends Model
      * @var array
      */
     protected $fillable = [
+        'associado_id',
         'foto',
         'status',
         'data_emissao',
@@ -33,6 +35,17 @@ class Carteirinha extends Model
         'data_emissao' => 'date',
         'data_vencimento' => 'date',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($carteirinha) {
+            $disk = config('filament.default_filesystem_disk');
+
+            Storage::disk($disk)->delete($carteirinha->foto);
+        });
+    }
 
     public function associado(): BelongsTo
     {
