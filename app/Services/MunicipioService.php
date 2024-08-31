@@ -12,45 +12,50 @@ use Throwable;
 class MunicipioService
 {
     private $repositories = [
-        'ibge' => MunicipioRepositoryIbge::class,
         'brasil_api' => MunicipioRepositoryBrasilApi::class,
+        'ibge' => MunicipioRepositoryIbge::class,
     ];
 
     public function all(): Collection
     {
-        return $this->handleRequest(fn ($repository) => $repository->all());
+        return $this->handleRequest(fn ($repository) => $repository->all(), false, 'all');
     }
 
     public function allByUf(string $uf): Collection
     {
-        return $this->handleRequest(fn ($repository) => $repository->allByUf($uf));
+        return $this->handleRequest(fn ($repository) => $repository->allByUf($uf), false, 'allByUf');
     }
 
     public function find(string $codigoIbge): ?Municipio
     {
-        return $this->handleRequest(fn ($repository) => $repository->find($codigoIbge), true);
+        return $this->handleRequest(fn ($repository) => $repository->find($codigoIbge), true, 'find');
     }
 
-    private function handleRequest(callable $callback, bool $expectSingle = false)
+    private function handleRequest(callable $callback, bool $expectSingle = false, $method = 'all')
     {
+        $cacheKey = "municipio_service_{$method}";
+        if (cache()->has($cacheKey)) {
+            return cache($cacheKey);
+        }
+
         foreach ($this->repositories as $name => $repositoryClass) {
             $repository = $this->getRepository($name);
 
             try {
                 $result = $callback($repository);
                 if ($expectSingle && ! is_null($result)) {
-                    return $result;
+                    return cache()->remember($cacheKey, now()->addDay(), fn () => $result);
                 }
 
                 if (! $expectSingle && $result->isNotEmpty()) {
-                    return $result;
+                    return cache()->remember($cacheKey, now()->addDay(), fn () => $result);
                 }
             } catch (Throwable $e) {
                 Log::warning("Error fetching data from {$name} repository: ".$e->getMessage());
             }
         }
 
-        return $expectSingle ? null : collect();
+        return $expectSingle ? null : collect([]);
     }
 
     private function getRepository(string $name)

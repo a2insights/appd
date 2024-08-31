@@ -13,6 +13,7 @@ use App\Filament\Resources\AssociadoResource\RelationManagers\CarteirinhasRelati
 use App\Filament\Resources\AssociadoResource\Widgets\AssociadosOverview;
 use App\Models\Associado;
 use App\Models\Cid10;
+use App\Municipio;
 use App\NaturalidadeUf;
 use App\Ocupacao;
 use App\OrgaoExpedidor;
@@ -21,6 +22,7 @@ use App\Raca;
 use App\Religiao;
 use App\Sexo;
 use App\TipoDeficiencia;
+use Facades\App\Services\MunicipioService;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
@@ -246,19 +248,18 @@ class AssociadoResource extends Resource
                         ->required()
                         ->mask('99999-999')
                         ->live()
-                        ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component, Set $set, Get $get) {
-                            $value = $component->getState('cep');
-                            // if is editing and cep is not changed
+                        ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component, Set $set, Get $get, $record) {
+                            $state = (int) preg_replace('/[^0-9]/is', '', $component->getState('cep'));
+                            $oldState = (int) preg_replace('/[^0-9]/is', '', $component->getOldState('cep'));
 
-                            if ($value === $get('cep')) {
-                                // return;
+                            $isEditing = ! is_null($record);
+
+                            if ($isEditing && $state === $oldState) {
+                                return;
                             }
 
-                            $cep = preg_replace('/[^0-9]/is', '', $value);
-
-                            if (strlen($cep) === 8) {
-                                $cepData = self::getCepAddress($cep);
-
+                            if (strlen((string) $state) === 8 && $state !== $oldState) {
+                                $cepData = self::getCepAddress($state);
                                 if (isset($cepData['message'])) {
                                     Notification::make()
                                         ->title('CEP não encontrado')
@@ -393,7 +394,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('naturalidade_municipio_ibge')
                     ->label('Naturalidade')
-                    ->formatStateUsing(fn (Associado $associado) => self::getMunicipios()->firstWhere('id', $associado->naturalidade_municipio_ibge)['nome'])
+                    ->formatStateUsing(fn (Associado $associado) => self::getMunicipios()->firstWhere('id', $associado->naturalidade_municipio_ibge)->nome)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('naturalidade_uf')
@@ -549,7 +550,7 @@ class AssociadoResource extends Resource
                     ->options(Ocupacao::class)
                     ->multiple(),
                 SelectFilter::make('cidade')
-                    ->options(fn (): array => self::getMunicipios()->mapWithKeys(fn ($item) => [$item['nome'] => $item['nome']])->all())
+                    ->options(fn (): array => self::getMunicipios()->mapWithKeys(fn (Municipio $item) => [$item->nome => $item->nome])->all())
                     ->query(function ($query, array $data) {
                         if (! isset($data['values']) || count($data['values']) === 0) {
                             return;
@@ -605,6 +606,9 @@ class AssociadoResource extends Resource
         ];
     }
 
+    /*
+    * @return Collection<\App\Municipio>
+    */
     private static function getMunicipiosByUf($uf)
     {
         $uf = $uf->value ?? $uf;
@@ -612,13 +616,10 @@ class AssociadoResource extends Resource
             return [];
         }
 
-        $url = "https://brasilapi.com.br/api/ibge/municipios/v1/{$uf}?providers=dados-abertos-br,gov,wikipedia";
-
-        return cache()->remember("municipios-{$uf}", now()->addDay(), function () use ($url) {
-            return Http::get($url)->collect()
-                ->mapWithKeys(fn ($item) => [$item['codigo_ibge'] => $item['nome']])
-                ->all();
-        });
+        return MunicipioService::all()
+            ->filter(fn ($item) => $item->uf === $uf)
+            ->mapWithKeys(fn ($item) => [$item->codigoIbge => $item->nome])
+            ->all();
     }
 
     private static function getCepAddress(?string $cep)
@@ -626,24 +627,22 @@ class AssociadoResource extends Resource
         return Http::get('https://brasilapi.com.br/api/cep/v1/'.$cep)->json();
     }
 
+    /*
+    * @return Collection<\App\Municipio>
+    */
     private static function getMunicipios(): Collection
     {
-        // https://servicodados.ibge.gov.br/api/v1/localidades/municipios
-        return cache()->rememberForever('municipios', function () {
-            $response = Http::get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
-
-            return $response->collect();
-        });
+        return MunicipioService::all();
     }
 
-    private static function getBairros(): Collection
-    {
-        return cache()->remember('bairros', now()->addDay(), function () {
-            return Associado::query()
-                ->select('bairro')
-                ->distinct('bairro')
-                ->get()
-                ->mapWithKeys(fn ($item) => [$item['bairro'] => $item['bairro']]);
-        });
-    }
+    // private static function getBairros(): Collection
+    // {
+    //     return cache()->remember('bairros', now()->addDay(), function () {
+    //         return Associado::query()
+    //             ->select('bairro')
+    //             ->distinct('bairro')
+    //             ->get()
+    //             ->mapWithKeys(fn ($item) => [$item['bairro'] => $item['bairro']]);
+    //     });
+    // }
 }
