@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\CarteirinhaStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,7 @@ class Carteirinha extends Model
      * @var array
      */
     protected $fillable = [
+        'foto',
         'status',
         'data_emissao',
         'data_vencimento',
@@ -27,12 +29,12 @@ class Carteirinha extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
+        'status' => CarteirinhaStatus::class,
         'data_emissao' => 'date',
         'data_vencimento' => 'date',
     ];
 
-    public function id(): BelongsTo
+    public function associado(): BelongsTo
     {
         return $this->belongsTo(Associado::class);
     }

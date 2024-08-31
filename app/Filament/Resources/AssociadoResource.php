@@ -9,6 +9,7 @@ use App\DeclaracaoSexual;
 use App\Escolaridade;
 use App\EstadoCivil;
 use App\Filament\Resources\AssociadoResource\Pages;
+use App\Filament\Resources\AssociadoResource\RelationManagers\CarteirinhasRelationManager;
 use App\Filament\Resources\AssociadoResource\Widgets\AssociadosOverview;
 use App\Models\Associado;
 use App\Models\Cid10;
@@ -62,7 +63,6 @@ class AssociadoResource extends Resource
     {
         return $form
             ->schema([
-
                 Forms\Components\FileUpload::make('foto')
                     ->imagePreviewHeight('200')
                     ->imageEditor()
@@ -592,7 +592,7 @@ class AssociadoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CarteirinhasRelationManager::class,
         ];
     }
 

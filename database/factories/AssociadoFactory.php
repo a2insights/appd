@@ -38,7 +38,7 @@ class AssociadoFactory extends Factory
         $naturalidadeMunicipio = $this->selectRandomMunicipio(self::$municipios);
 
         return [
-            //  'foto' => 'avatars/'.$this->faker->image(storage_path('app/public/avatars'), 640, 480, null, false),
+            'foto' => 'avatars/'.$this->faker->image(storage_path('app/public/avatars'), 640, 480, null, false),
             'nome' => $this->faker->name(),
             'status' => $this->faker->randomElement(['ativo', 'inativo', 'falecido']),
             'data_nascimento' => $this->faker->date(),

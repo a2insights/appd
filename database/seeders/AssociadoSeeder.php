@@ -12,6 +12,6 @@ class AssociadoSeeder extends Seeder
      */
     public function run(): void
     {
-        Associado::factory()->count(200)->create();
+        Associado::factory()->count(5)->create();
     }
 }
