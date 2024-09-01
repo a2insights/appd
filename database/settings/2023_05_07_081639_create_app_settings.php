@@ -6,7 +6,7 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('settings.name', 'Laravel');
+        $this->migrator->add('settings.name', config('app.name'));
         $this->migrator->add('settings.description', 'Laravel is a web application framework with expressive, elegant syntax.');
         $this->migrator->add('settings.keywords', ['laravel', 'php']);
 
