@@ -14,6 +14,7 @@ use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField;
 
 class CarteirinhasRelationManager extends RelationManager
 {
@@ -23,6 +24,8 @@ class CarteirinhasRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                Forms\Components\FileUpload::make('pdf')
+                    ->hidden(),
                 Forms\Components\FileUpload::make('foto')
                     ->imagePreviewHeight('200')
                     ->imageEditor()
@@ -58,12 +61,20 @@ class CarteirinhasRelationManager extends RelationManager
                     ->columnSpan(2),
                 Forms\Components\DatePicker::make('data_emissao')
                     ->default(now())
+                    ->native(false)
+                    ->displayFormat('d/m/Y')
                     ->required()
                     ->columnSpan(1),
                 Forms\Components\DatePicker::make('data_vencimento')
                     ->default(now()->addYear(2))
+                    ->native(false)
+                    ->displayFormat('d/m/Y')
                     ->required()
                     ->columnSpan(1),
+                PdfViewerField::make('pdf')
+                    ->label('Carteirinha')
+                    ->minHeight('40svh')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -99,31 +110,30 @@ class CarteirinhasRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->beforeFormFilled(function (CreateAction $action) {
+                    ->beforeFormValidated(function (CreateAction $action) {
                         $carterinhas = $this->getOwnerRecord()
                             ->carteirinhas()
-                            ->whereStatus(CarteirinhaStatus::ATIVA)->count();
+                            ->whereStatus(CarteirinhaStatus::ATIVA)
+                            ->count();
                         if ($carterinhas > 0) {
                             Notification::make()
                                 ->inline()
                                 ->danger()
                                 ->title('Existe uma carteirinha em ativa.')
                                 ->body('Não é possível criar uma nova carteirinha enquanto houver uma ativa.')
-                                ->persistent()
                                 ->send();
-
                             $action->halt();
                         }
                     })
                     ->createAnother(false)
-                    ->mountUsing(fn (ComponentContainer $form) => $form->fill([
+                    ->mutateFormDataUsing(fn (ComponentContainer $form, $model) => $form->fill([
                         'associado_id' => $this->getOwnerRecord()->id,
                         'foto' => $this->getOwnerRecord()->foto,
                         'status' => CarteirinhaStatus::ATIVA,
                         'data_emissao' => now(),
                         'data_vencimento' => now()->addYear(2),
                     ]))
-                    ->using(function (array $data, string $model): Model {
+                    ->using(function (array $data, $model): Model {
                         $associado = $this->getOwnerRecord();
 
                         if ($associado->foto === $data['foto']) {

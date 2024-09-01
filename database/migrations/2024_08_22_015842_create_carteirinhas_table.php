@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('associado_id');
             $table->enum('status', ['ativa', 'cancelada', 'vencida']);
             $table->string('foto')->nullable();
+            $table->string('pdf')->nullable();
             $table->date('data_emissao');
             $table->date('data_vencimento');
             $table->timestamps();

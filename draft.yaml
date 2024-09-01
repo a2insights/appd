@@ -53,6 +53,8 @@ models:
       id: id
       associado_id: bigInteger foreign:associados.id
       status: enum:"ativa","cancelada","vencida"
+      foto: string
+      pdf: string nullable
       data_emissao: date
       data_vencimento: date
 seeders: Associado

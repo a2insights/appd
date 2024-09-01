@@ -104,6 +104,8 @@ class AssociadoResource extends Resource
                         ->required()
                         ->columnSpan(2),
                     Forms\Components\DatePicker::make('data_nascimento')
+                        ->native(false)
+                        ->displayFormat('d/m/Y')
                         ->required()
                         ->columnSpan(1),
                 ])
