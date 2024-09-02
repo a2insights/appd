@@ -96,7 +96,11 @@ class Carteirinha extends Model
             }
         }
 
-        return 'https://www.w3schools.com/w3images/avatar2.png';
+        if (app()->environment('local')) {
+            return 'https://www.w3schools.com/w3images/avatar2.png';
+        }
+
+        return Storage::disk($disk)->url($this->foto);
     }
 
     public function getDocumento()
