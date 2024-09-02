@@ -19,9 +19,10 @@ class AppdOverview extends BaseWidget
         $asssociadosQuery = Associado::query();
         $carteirinhasQuery = Carteirinha::query();
 
-        $carteirinhasRenovadas = $asssociadosQuery->whereHas('carteirinhas', function ($query) {
-            $query->where('status', 'ativa');
-        }, '>', 1);
+        $carteirinhasRenovadas = Carteirinha::query()
+            ->select('associado_id')
+            ->groupBy('associado_id')
+            ->havingRaw('count(*) > 1');
 
         return [
             Stat::make('Total de associados', $asssociadosQuery->count()),
