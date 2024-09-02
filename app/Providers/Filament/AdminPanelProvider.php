@@ -43,9 +43,9 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
             ])
-            ->resources([
-                config('filament-logger.activity_resource'),
-            ])
+            // ->resources([
+            //     config('filament-logger.activity_resource'),
+            // ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([
@@ -64,21 +64,21 @@ class AdminPanelProvider extends PanelProvider
                     permissions: ['create', 'update', 'view', 'delete'] // optional, customize the permissions (default = ["create", "view", "update", "delete"])
                 )->myProfileComponents([Phone::class, Username::class]),
                 \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage(fn () => auth()->user() ? auth()->user()?->hasRole('super_admin') : false),
-                \Marjose123\FilamentWebhookServer\WebhookPlugin::make(),
-                \HusamTariq\FilamentDatabaseSchedule\FilamentDatabaseSchedulePlugin::make(),
-                \SolutionForest\FilamentFirewall\FilamentFirewallPanel::make(),
+                // \Marjose123\FilamentWebhookServer\WebhookPlugin::make(),
+                // \HusamTariq\FilamentDatabaseSchedule\FilamentDatabaseSchedulePlugin::make(),
+                // \SolutionForest\FilamentFirewall\FilamentFirewallPanel::make(),
                 \pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin::make(),
-                \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
-                \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::make()
-                    ->label('Job')
-                    ->pluralLabel('Jobs')
-                    ->enableNavigation(true)
-                    ->navigationIcon('heroicon-o-cpu-chip')
-                    ->navigationGroup('Settings')
-                    ->navigationSort(5)
-                    ->navigationCountBadge(true)
-                    ->enablePruning(true)
-                    ->pruningRetention(7),
+                // \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
+                // \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::make()
+                //     ->label('Job')
+                //     ->pluralLabel('Jobs')
+                //     ->enableNavigation(true)
+                //     ->navigationIcon('heroicon-o-cpu-chip')
+                //     ->navigationGroup('Settings')
+                //     ->navigationSort(5)
+                //     ->navigationCountBadge(true)
+                //     ->enablePruning(true)
+                //     ->pruningRetention(7),
                 // ->resource(\App\Filament\Resources\CustomJobMonitorResource::class),
                 \Octo\User\UserPlugin::make(),
                 \Octo\Settings\SettingsPlugin::make(),
