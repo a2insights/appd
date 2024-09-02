@@ -27,6 +27,7 @@ class CarteirinhasRelationManager extends RelationManager
                 Forms\Components\FileUpload::make('pdf')
                     ->hidden(),
                 Forms\Components\FileUpload::make('foto')
+                    ->default($this->getOwnerRecord()->foto)
                     ->imagePreviewHeight('200')
                     ->imageEditor()
                     ->imageResizeMode('cover')
@@ -73,7 +74,7 @@ class CarteirinhasRelationManager extends RelationManager
                     ->columnSpan(1),
                 PdfViewerField::make('pdf')
                     ->label('Carteirinha')
-                    ->minHeight('40svh')
+                    ->minHeight('41svh')
                     ->columnSpanFull(),
             ]);
     }
@@ -126,13 +127,13 @@ class CarteirinhasRelationManager extends RelationManager
                         }
                     })
                     ->createAnother(false)
-                    ->mutateFormDataUsing(fn (ComponentContainer $form, $model) => $form->fill([
-                        'associado_id' => $this->getOwnerRecord()->id,
-                        'foto' => $this->getOwnerRecord()->foto,
-                        'status' => CarteirinhaStatus::ATIVA,
-                        'data_emissao' => now(),
-                        'data_vencimento' => now()->addYear(2),
-                    ]))
+                    // ->mutateFormDataUsing(fn (ComponentContainer $form, $model) => $form->fill([
+                    //     'associado_id' => $this->getOwnerRecord()->id,
+                    //     'foto' => $this->getOwnerRecord()->foto,
+                    //     'status' => CarteirinhaStatus::ATIVA,
+                    //     'data_emissao' => now(),
+                    //     'data_vencimento' => now()->addYear(2),
+                    // ]))
                     ->using(function (array $data, $model): Model {
                         $associado = $this->getOwnerRecord();
 
