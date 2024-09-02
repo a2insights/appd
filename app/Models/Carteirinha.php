@@ -86,7 +86,7 @@ class Carteirinha extends Model
             if ($disk->exists($this->foto)) {
                 $command = $disk->getDriver()->getAdapter()->getClient()->getCommand('GetObject', [
                     'Bucket' => Config::get('filesystems.disks.s3.bucket'),
-                    'Key' => $path,
+                    'Key' => $this->foto,
                     'ResponseContentDisposition' => 'attachment;',
                 ]);
 
