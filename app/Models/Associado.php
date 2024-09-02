@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Overtrue\LaravelVersionable\VersionStrategy;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -29,7 +30,50 @@ class Associado extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
+    use \Overtrue\LaravelVersionable\Versionable;
     use \Staudenmeir\EloquentJsonRelations\HasJsonRelationships;
+
+    protected $versionable = [
+        'foto',
+        'nome',
+        'status',
+        'data_nascimento',
+        'nome_social',
+        'sexo',
+        'declaracao_sexual',
+        'cpf',
+        'rg',
+        'orgao_expedidor',
+        'orgao_expedidor_uf',
+        'estado_civil',
+        'certidao_nascimento',
+        'naturalidade_uf',
+        'naturalidade_municipio_ibge',
+        'mae',
+        'pai',
+        'religiao',
+        'ocupacoes',
+        'escolaridade',
+        'raca',
+        'cid10',
+        'crm',
+        'causa_deficiencia',
+        'tipo_deficiencia',
+        'aparelhos_utilizado',
+        'cep',
+        'rua',
+        'bairro',
+        'numero',
+        'estado',
+        'cidade',
+        'perimetro',
+        'telefone_celular',
+        'telefone_whatsapp',
+        'telefone_fixo',
+        'email',
+    ];
+
+    protected $versionStrategy = VersionStrategy::SNAPSHOT;
 
     /**
      * The attributes that be default.

@@ -46,6 +46,8 @@ class AssociadoResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    protected static ?string $recordTitleAttribute = 'nome';
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['nome', 'cpf', 'rg'];
@@ -130,6 +132,7 @@ class AssociadoResource extends Resource
                     Forms\Components\TextInput::make('cpf')
                         ->maxLength(255)
                         ->columnSpan(2)
+                        ->stripCharacters(['-', '.'])
                         ->mask('999.999.999-99')
                         ->rules(['cpf'])
                         ->live()
@@ -605,6 +608,7 @@ class AssociadoResource extends Resource
             'index' => Pages\ListAssociados::route('/'),
             'create' => Pages\CreateAssociado::route('/create'),
             'edit' => Pages\EditAssociado::route('/{record}/edit'),
+            'revisions' => Pages\RevisionsAssociado::route('/{record}/revisions'),
         ];
     }
 
