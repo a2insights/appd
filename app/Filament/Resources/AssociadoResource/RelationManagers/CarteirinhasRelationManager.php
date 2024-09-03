@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AssociadoResource\RelationManagers;
 
 use App\CarteirinhaStatus;
+use App\Filament\Components\PdfViewerField;
 use Filament\Forms;
 use Filament\Forms\ComponentContainer;
 use Filament\Forms\Form;
@@ -14,7 +15,6 @@ use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField;
 
 class CarteirinhasRelationManager extends RelationManager
 {
@@ -29,8 +29,10 @@ class CarteirinhasRelationManager extends RelationManager
                 Forms\Components\FileUpload::make('foto')
                     ->default($this->getOwnerRecord()->foto)
                     ->imagePreviewHeight('200')
+                    ->maxSize(1024)
                     ->imageEditor()
                     ->imageResizeMode('cover')
+                    ->visibility('private')
                     ->imageCropAspectRatio('1:1')
                     ->panelLayout('integrated')
                 // ->imageEditorAspectRatios([
@@ -74,6 +76,7 @@ class CarteirinhasRelationManager extends RelationManager
                     ->columnSpan(1),
                 PdfViewerField::make('pdf')
                     ->label('Carteirinha')
+                    ->visibility('private')
                     ->minHeight('41svh')
                     ->columnSpanFull(),
             ]);
@@ -86,6 +89,7 @@ class CarteirinhasRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\ImageColumn::make('foto')
+                        ->visibility('private')
                         ->height('auto')
                         ->width('80px'),
                     Tables\Columns\Layout\Stack::make([

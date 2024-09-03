@@ -7,7 +7,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 
 class Carteirinha extends Model
@@ -71,11 +70,6 @@ class Carteirinha extends Model
         });
     }
 
-    public function associado(): BelongsTo
-    {
-        return $this->belongsTo(Associado::class);
-    }
-
     public function getFotoUrl()
     {
         $disk = config('filament.default_filesystem_disk');
@@ -84,20 +78,8 @@ class Carteirinha extends Model
             $disk = Storage::disk('s3');
 
             if ($disk->exists($this->foto)) {
-                $command = $disk->getDriver()->getAdapter()->getClient()->getCommand('GetObject', [
-                    'Bucket' => Config::get('filesystems.disks.s3.bucket'),
-                    'Key' => $this->foto,
-                    'ResponseContentDisposition' => 'attachment;',
-                ]);
-
-                $request = $disk->getDriver()->getAdapter()->getClient()->createPresignedRequest($command, '+450 minutes');
-
-                return (string) $request->getUri();
+                return Storage::disk('s3')->temporaryUrl($this->foto, now()->addMinutes(5));
             }
-        }
-
-        if (app()->environment('local')) {
-            return 'https://www.w3schools.com/w3images/avatar2.png';
         }
 
         return Storage::disk($disk)->url($this->foto);
@@ -112,5 +94,10 @@ class Carteirinha extends Model
         } elseif ($this->associado->data_de_nascimento) {
             return 'Ct/Nasc: '.$this->associado->certidao_de_nascimento;
         }
+    }
+
+    public function associado(): BelongsTo
+    {
+        return $this->belongsTo(Associado::class);
     }
 }
