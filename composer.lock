@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed62a7d7132de777c648c986ba48b76f",
+    "content-hash": "536ee28880d09171b91c76b5d65cc060",
     "packages": [
         {
             "name": "a2insights/octo-core",
@@ -2861,6 +2861,53 @@
                 "source": "https://github.com/dflydev/dflydev-dot-access-data/tree/v3.0.3"
             },
             "time": "2024-07-08T12:26:09+00:00"
+        },
+        {
+            "name": "discoverydesign/filament-gaze",
+            "version": "1.1.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/discoverydesign/filament-gaze.git",
+                "reference": "ac9f64a0c4c5e85ed7a6d40122f5b0971877e3a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/discoverydesign/filament-gaze/zipball/ac9f64a0c4c5e85ed7a6d40122f5b0971877e3a1",
+                "reference": "ac9f64a0c4c5e85ed7a6d40122f5b0971877e3a1",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "DiscoveryDesign\\FilamentGaze\\FilamentGazeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DiscoveryDesign\\FilamentGaze\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Discovery Design"
+                }
+            ],
+            "description": "See who's viewing a resource in Filament PHP.",
+            "support": {
+                "issues": "https://github.com/discoverydesign/filament-gaze/issues",
+                "source": "https://github.com/discoverydesign/filament-gaze/tree/1.1.10"
+            },
+            "time": "2024-09-03T14:57:55+00:00"
         },
         {
             "name": "doctrine/cache",

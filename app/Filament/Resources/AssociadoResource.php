@@ -69,6 +69,9 @@ class AssociadoResource extends Resource
         return $form
             ->extraAttributes(['autocomplete' => false], true)
             ->schema([
+                \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
+                    ->lock()
+                    ->columnSpanFull(),
                 Forms\Components\FileUpload::make('foto')
                     ->imagePreviewHeight('200')
                     // ->panelAspectRatio('2:1')
@@ -113,7 +116,13 @@ class AssociadoResource extends Resource
                     Forms\Components\DatePicker::make('data_nascimento')
                         ->native(false)
                         ->displayFormat('d/m/Y')
+                        ->format('Y-m-d')
+                        ->seconds(false)
+                        ->timezone('America/Fortaleza')
                         ->required()
+                        ->locale('pt_BR')
+                        ->minDate(now()->subYears(90))
+                        ->maxDate(now()->subMonths(2))
                         ->columnSpan(1),
                 ])
                     ->columnSpanFull()

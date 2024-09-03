@@ -24,6 +24,9 @@ class CarteirinhasRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
+                    ->lock()
+                    ->columnSpanFull(),
                 Forms\Components\FileUpload::make('pdf')
                     ->hidden(),
                 Forms\Components\FileUpload::make('foto')

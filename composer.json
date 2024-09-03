@@ -11,6 +11,7 @@
         "a2insights/octo-core": "dev-main",
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-dompdf": "^3.0",
+        "discoverydesign/filament-gaze": "^1.1",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
         "joaopaulolndev/filament-pdf-viewer": "^1.0",
