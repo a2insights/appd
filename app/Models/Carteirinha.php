@@ -7,7 +7,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 
 class Carteirinha extends Model
@@ -74,43 +73,5 @@ class Carteirinha extends Model
     public function associado(): BelongsTo
     {
         return $this->belongsTo(Associado::class);
-    }
-
-    public function getFotoUrl()
-    {
-        $disk = config('filament.default_filesystem_disk');
-
-        if (config('filesystems.default') === 's3') {
-            $disk = Storage::disk('s3');
-
-            if ($disk->exists($this->foto)) {
-                $command = $disk->getDriver()->getAdapter()->getClient()->getCommand('GetObject', [
-                    'Bucket' => Config::get('filesystems.disks.s3.bucket'),
-                    'Key' => $this->foto,
-                    'ResponseContentDisposition' => 'attachment;',
-                ]);
-
-                $request = $disk->getDriver()->getAdapter()->getClient()->createPresignedRequest($command, '+450 minutes');
-
-                return (string) $request->getUri();
-            }
-        }
-
-        if (app()->environment('local')) {
-            return 'https://www.w3schools.com/w3images/avatar2.png';
-        }
-
-        return Storage::disk($disk)->url($this->foto);
-    }
-
-    public function getDocumento()
-    {
-        if ($this->associado->rg) {
-            return 'RG: '.$this->associado->rg;
-        } elseif ($this->associado->cpf) {
-            return 'CPF: '.$this->associado->cpf;
-        } elseif ($this->associado->data_de_nascimento) {
-            return 'Ct/Nasc: '.$this->associado->certidao_de_nascimento;
-        }
     }
 }

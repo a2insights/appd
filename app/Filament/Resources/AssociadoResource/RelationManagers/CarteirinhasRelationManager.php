@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AssociadoResource\RelationManagers;
 
 use App\CarteirinhaStatus;
+use App\Filament\Components\PdfViewerField;
 use Filament\Forms;
 use Filament\Forms\ComponentContainer;
 use Filament\Forms\Form;
@@ -14,7 +15,6 @@ use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField;
 
 class CarteirinhasRelationManager extends RelationManager
 {
@@ -24,14 +24,19 @@ class CarteirinhasRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                // \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
+                //     ->lock()
+                //     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('pdf')
                     ->hidden(),
                 Forms\Components\FileUpload::make('foto')
                     ->default($this->getOwnerRecord()->foto)
                     ->imagePreviewHeight('200')
+                    ->maxSize(1024)
                     ->imageEditor()
                     ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('1:1')
+                    ->visibility('private')
+                    ->imageCropAspectRatio('3:4')
                     ->panelLayout('integrated')
                 // ->imageEditorAspectRatios([
                 //     '1:1',
@@ -74,6 +79,7 @@ class CarteirinhasRelationManager extends RelationManager
                     ->columnSpan(1),
                 PdfViewerField::make('pdf')
                     ->label('Carteirinha')
+                    ->visibility('private')
                     ->minHeight('41svh')
                     ->columnSpanFull(),
             ]);
@@ -86,8 +92,9 @@ class CarteirinhasRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\ImageColumn::make('foto')
+                        ->visibility('private')
                         ->height('auto')
-                        ->width('80px'),
+                        ->width('90px'),
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('status')
                             ->sortable(),
@@ -98,6 +105,11 @@ class CarteirinhasRelationManager extends RelationManager
                         Tables\Columns\TextColumn::make('data_vencimento')
                             ->date('d/m/Y')
                             ->color('danger')
+                            ->weight(FontWeight::Bold),
+                        Tables\Columns\TextColumn::make('created_at')
+                            ->label('Data da emissão')
+                            ->date('d/m/Y H:i:s')
+                            ->color('gray')
                             ->weight(FontWeight::Bold),
                     ]),
                 ]),
@@ -153,7 +165,7 @@ class CarteirinhasRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 // Tables\Actions\DeleteAction::make(),
             ])

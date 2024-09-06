@@ -11,6 +11,7 @@
         "a2insights/octo-core": "dev-main",
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-dompdf": "^3.0",
+        "discoverydesign/filament-gaze": "^1.1",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
         "joaopaulolndev/filament-pdf-viewer": "^1.0",
@@ -18,6 +19,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "laravellegends/pt-br-validator": "^11.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "mansoor/filament-versionable": "^0.0.9",
         "saloonphp/saloon": "^3.0",
         "staudenmeir/eloquent-json-relations": "^1.13"

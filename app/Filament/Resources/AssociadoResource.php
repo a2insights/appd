@@ -39,6 +39,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class AssociadoResource extends Resource
 {
@@ -66,12 +67,19 @@ class AssociadoResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->extraAttributes(['autocomplete' => false], true)
             ->schema([
+                \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
+                    ->lock()
+                    ->columnSpanFull(),
                 Forms\Components\FileUpload::make('foto')
                     ->imagePreviewHeight('200')
+                    // ->panelAspectRatio('2:1')
+                    // ->panelLayout('integrated')
                     ->imageEditor()
+                    ->visibility('private')
                     ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('1:1')
+                    ->imageCropAspectRatio('3:4')
                     ->panelLayout('integrated')
                     // ->imageEditorAspectRatios([
                     //     '1:1',
@@ -108,7 +116,13 @@ class AssociadoResource extends Resource
                     Forms\Components\DatePicker::make('data_nascimento')
                         ->native(false)
                         ->displayFormat('d/m/Y')
+                        ->format('Y-m-d')
+                        ->seconds(false)
+                        ->timezone('America/Fortaleza')
                         ->required()
+                        ->locale('pt_BR')
+                        ->minDate(now()->subYears(90))
+                        ->maxDate(now()->subMonths(2))
                         ->columnSpan(1),
                 ])
                     ->columnSpanFull()
@@ -319,25 +333,54 @@ class AssociadoResource extends Resource
                     ->columnSpanFull()
                     ->columns(10),
                 Forms\Components\Group::make([
-                    PhoneInput::make('telefone_celular')
-                        ->defaultCountry('BR')
-                        ->validateFor(
-                            lenient: true,
-                        )
+                    Forms\Components\TextInput::make('telefone_celular')
+                        ->tel()
+                        ->stripCharacters(['-', '.', '(', ')'])
+                        ->placeholder('(DDD) + NÚMERO')
+                        ->mask('(99) 99999-9999')
                         ->columnSpan(2),
-                    PhoneInput::make('telefone_whatsap')
-                        ->defaultCountry('BR')
-                        ->validateFor(
-                            lenient: true,
-                        )
+                    Forms\Components\TextInput::make('telefone_whatsapp')
+                        ->stripCharacters(['-', '.'])
+                        ->tel()
+                        ->placeholder('(DDD) + NÚMERO')
+                        ->mask('(99) 99999-9999')
                         ->columnSpan(2),
-                    PhoneInput::make('telefone_fixo')
-                        ->defaultCountry('BR')
-                        ->validateFor(
-                            lenient: true,
-                        )
-                        ->placeholderNumberType('FIXED_LINE')
+                    Forms\Components\TextInput::make('telefone_fixo')
+                        ->tel()
+                        ->stripCharacters(['-', '.'])
+                        ->placeholder('(DDD) + NÚMERO')
+                        ->mask('(99) 9999-9999')
                         ->columnSpan(2),
+                    // PhoneInput::make('telefone_celular')
+                    //     ->disallowDropdown()
+                    //     ->defaultCountry('BR')
+                    //     ->validateFor(
+                    //         lenient: true,
+                    //     )
+                    //     ->columnSpan(2),
+                    // PhoneInput::make('telefone_whatsap')
+                    //     ->disallowDropdown()
+                    //     ->defaultCountry('BR')
+                    //     ->validateFor(
+                    //         lenient: true,
+                    //     )
+                    //     ->columnSpan(2),
+                    // PhoneInput::make('telefone_fixo')
+                    //     ->defaultCountry('br')
+                    //     ->displayNumberFormat(PhoneInputNumberType::NATIONAL)
+                    //     ->inputNumberFormat(PhoneInputNumberType::NATIONAL)
+                    //     ->formatOnDisplay(true)
+                    //     ->formatAsYouType(true)
+                    //     ->disableIpLookUp()
+                    //     ->disallowDropdown()
+                    //     ->placeholderNumberType('FIXED_LINE')
+                    //     ->autoPlaceholder('aggressive')
+                    //     ->validateFor(
+                    //         country: 'br',
+                    //         lenient: false,
+                    //     )
+                    //     ->placeholderNumberType('FIXED_LINE')
+                    //     ->columnSpan(2),
                     Forms\Components\TextInput::make('email')
                         ->email()
                         ->columnSpan(4),
@@ -346,7 +389,9 @@ class AssociadoResource extends Resource
                     ->columns(10),
                 SpatieMediaLibraryFileUpload::make('arquivos')
                     ->multiple()
+                    ->maxSize(2048)
                     ->reorderable()
+                    ->visibility('private')
                     ->preserveFilenames()
                     ->downloadable()
                     ->panelLayout('grid')
@@ -359,12 +404,18 @@ class AssociadoResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('foto')
                     ->circular()
+                    ->visibility('private')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->state(fn (Associado $associado) => $associado->foto ?? 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=true&bold=true&color=fff&background=7F9CF5'),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
+                    ->extraAttributes(['autocomplete' => false])
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
