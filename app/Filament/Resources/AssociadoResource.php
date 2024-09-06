@@ -79,7 +79,7 @@ class AssociadoResource extends Resource
                     ->imageEditor()
                     ->visibility('private')
                     ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('1:1')
+                    ->imageCropAspectRatio('3:4')
                     ->panelLayout('integrated')
                     // ->imageEditorAspectRatios([
                     //     '1:1',

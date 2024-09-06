@@ -70,32 +70,6 @@ class Carteirinha extends Model
         });
     }
 
-    public function getFotoUrl()
-    {
-        $disk = config('filament.default_filesystem_disk');
-
-        if (config('filesystems.default') === 's3') {
-            $disk = Storage::disk('s3');
-
-            if ($disk->exists($this->foto)) {
-                return Storage::disk('s3')->temporaryUrl($this->foto, now()->addMinutes(5));
-            }
-        }
-
-        return Storage::disk($disk)->url($this->foto);
-    }
-
-    public function getDocumento()
-    {
-        if ($this->associado->rg) {
-            return 'RG: '.$this->associado->rg;
-        } elseif ($this->associado->cpf) {
-            return 'CPF: '.$this->associado->cpf;
-        } elseif ($this->associado->data_de_nascimento) {
-            return 'Ct/Nasc: '.$this->associado->certidao_de_nascimento;
-        }
-    }
-
     public function associado(): BelongsTo
     {
         return $this->belongsTo(Associado::class);

@@ -24,9 +24,9 @@ class CarteirinhasRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
-                    ->lock()
-                    ->columnSpanFull(),
+                // \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
+                //     ->lock()
+                //     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('pdf')
                     ->hidden(),
                 Forms\Components\FileUpload::make('foto')
@@ -36,7 +36,7 @@ class CarteirinhasRelationManager extends RelationManager
                     ->imageEditor()
                     ->imageResizeMode('cover')
                     ->visibility('private')
-                    ->imageCropAspectRatio('1:1')
+                    ->imageCropAspectRatio('3:4')
                     ->panelLayout('integrated')
                 // ->imageEditorAspectRatios([
                 //     '1:1',
@@ -94,7 +94,7 @@ class CarteirinhasRelationManager extends RelationManager
                     Tables\Columns\ImageColumn::make('foto')
                         ->visibility('private')
                         ->height('auto')
-                        ->width('80px'),
+                        ->width('90px'),
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('status')
                             ->sortable(),
@@ -105,6 +105,11 @@ class CarteirinhasRelationManager extends RelationManager
                         Tables\Columns\TextColumn::make('data_vencimento')
                             ->date('d/m/Y')
                             ->color('danger')
+                            ->weight(FontWeight::Bold),
+                        Tables\Columns\TextColumn::make('created_at')
+                            ->label('Data da emissão')
+                            ->date('d/m/Y H:i:s')
+                            ->color('gray')
                             ->weight(FontWeight::Bold),
                     ]),
                 ]),
