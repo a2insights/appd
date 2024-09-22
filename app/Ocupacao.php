@@ -17,6 +17,7 @@ enum Ocupacao: string implements HasLabel
     case FUNCIONARIO_PRIVADO = 'funcionario_privado';
     case DONO_DE_CASA = 'dono_de_casa';
     case PROFISSIONAL_LIBERAL = 'profissional_liberal';
+    case TRABALHADOR = 'trabalhador';
 
     public function getLabel(): string
     {
@@ -32,6 +33,7 @@ enum Ocupacao: string implements HasLabel
             self::FUNCIONARIO_PRIVADO => 'Funcionário Privado',
             self::DONO_DE_CASA => 'Dono de Casa',
             self::PROFISSIONAL_LIBERAL => 'Profissional Liberal',
+            self::TRABALHADOR => 'Trabalhador',
         };
     }
 }

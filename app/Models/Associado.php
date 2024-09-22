@@ -189,6 +189,6 @@ class Associado extends Model implements HasMedia
 
     public function cid10(): \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
     {
-        return $this->belongsToJson(Cid10::class, 'cid10');
+        return $this->belongsToJson(Cid10::class, 'cid10', 'codigo');
     }
 }

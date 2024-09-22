@@ -27,11 +27,11 @@ models:
       raca: enum:"branca","negra","amarela","parda","indigena","ignorado"
       cid10: json
       crm: string nullable
-      causa_deficiencia: enum:"acidente_de_trabalho","artrite_reumatoide","acidente_domestico","acidente","poliomielite","congenito","polio","avc","acidente_de_transito","meningite","sequelas_poliomielite","paralisia_cerebral","hanseniase","reumatismo","pci"
+      causa_deficiencia: enum:"acidente", "acidente_de_moto", "acidente_com_arma_de_fogo", "acidente_de_trabalho", "acidente_de_transito", "acidente_domestico", "acidente_medico", "acidente_motor_de_barco", "adquirida", "adquirida_anemia_falciforme", "aneurisma", "arma_branca", "arma_de_fogo", "artrite_reumatoide", "artrodese", "artrodese_da_coluna", "artrose", "auditiva", "avc", "causa_sem_definicao", "cancer_de_mama", "cegueira", "circulacao_de_sangue", "congenita", "congenita_adquirida", "derrame", "descarga_eletrica", "desconhecida", "deslocamento_da_retina", "diabetes", "erro_medico", "fogos_de_artificio", "gangrena", "glaucoma", "hanseniase", "hereditaria", "hidrocefalia", "lesao_muscular", "leucemia_linfoblastica", "meningite", "mergulho_aguas_razas", "mhv", "mmii", "neurologica", "operacao_parafusos", "osteomielite", "paralisia_cerebral", "paralisia_cerebral_infantil", "paralisia_infantil", "pci", "perda_audicao_bilateral", "picada_de_cobra", "polineuropatia_nao_especificada", "polio", "poliomielite", "queda", "retinose_pigmentar", "reumatismo", "sequela_paralisia", "sequelas_poliomielite", "traumatismo_no_nervo", "visual"
       tipo_deficiencia: enum:"visual","auditiva","mental","fisica","multipla","intelectual"
       aparelhos_utilizado: enum:"cadeira_de_rodas","andador","muleta","bengala","parafusos","perna_mecanica","bengala_canadense","bastao","muletas_auxiliares","braco_mecanico","oculos_e_protese","muleta_canadense","protese","protese_auricular","coupar","muletas","colete","bota_ortopedica","oculos","fistula","protese_ocular","fistula_mse","fistula_msd","fistula_esquerda","bolsa_de_colostomia" nullable
       cep: integer
-      ocupacoes: enum:"estudante","empresario","funcionario_publico","bancario","militar","autonomo","aposentado","pensionista","funcionario_privado","dono_de_casa","profissional_liberal" nullable
+      ocupacoes: enum:"estudante","empresario","funcionario_publico","bancario","militar","autonomo","aposentado","pensionista","funcionario_privado","dono_de_casa","profissional_liberal","trabalhador" nullable
       rua: string
       bairro: string
       numero: string
