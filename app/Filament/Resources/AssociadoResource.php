@@ -30,6 +30,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
@@ -105,6 +106,9 @@ class AssociadoResource extends Resource
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('nome')
                         ->required()
+                        ->mask(RawJs::make(<<<'JS'
+                            $input.toUpperCase();
+                        JS))
                         ->maxLength(255)
                         ->columnSpan(4),
                     Forms\Components\ToggleButtons::make('status')
@@ -130,6 +134,9 @@ class AssociadoResource extends Resource
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('nome_social')
                         ->maxLength(255)
+                        ->mask(RawJs::make(<<<'JS'
+                            $input.toUpperCase();
+                        JS))
                         ->columnSpan(5),
                     Forms\Components\Radio::make('sexo')
                         ->options(Sexo::class)
@@ -198,9 +205,15 @@ class AssociadoResource extends Resource
                 Forms\Components\Group::make([
                     Forms\Components\TextInput::make('mae')
                         ->required()
+                        ->mask(RawJs::make(<<<'JS'
+                            $input.toUpperCase();
+                        JS))
                         ->maxLength(255)
                         ->columnSpan(3),
                     Forms\Components\TextInput::make('pai')
+                        ->mask(RawJs::make(<<<'JS'
+                            $input.toUpperCase();
+                        JS))
                         ->maxLength(255)
                         ->columnSpan(3),
                 ])
@@ -476,7 +489,7 @@ class AssociadoResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('crm')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cid10.codigo')
+                Tables\Columns\TextColumn::make('cid10')
                     ->label('Deficiência')
                     ->toggleable(isToggledHiddenByDefault: false)
                    // ->formatStateUsing(fn (Associado $associado, string $state) => $associado->cid10()->get()->where('id', $state)->map(fn (Cid10 $cid10) => $cid10->codigo)->join(', '))
