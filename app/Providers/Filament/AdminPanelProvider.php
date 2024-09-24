@@ -7,6 +7,7 @@ use App\Filament\Widgets\AssociadosChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -41,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                \App\Filament\Pages\Dashboard::class,
+                Pages\Dashboard::class,
             ])
             ->resources([
                 config('filament-logger.activity_resource'),
@@ -49,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([
+                \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \CmsMulti\FilamentClearCache\FilamentClearCachePlugin::make(),
                 \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
@@ -60,30 +62,34 @@ class AdminPanelProvider extends PanelProvider
                 )->enableTwoFactorAuthentication(
                     force: false, // force the user to enable 2FA before they can use the application (default = false)
                     // action: CustomTwoFactorPage::class // optionally, use a custom 2FA page
-                )->enableSanctumTokens(
-                    permissions: ['create', 'update', 'view', 'delete'] // optional, customize the permissions (default = ["create", "view", "update", "delete"])
-                )->myProfileComponents([Phone::class, Username::class]),
+                )
+                // TODO: Disable becouse we cant disable from features settings
+                // ->enableSanctumTokens(
+                //     permissions: ['create', 'update', 'view', 'delete'] // optional, customize the permissions (default = ["create", "view", "update", "delete"])
+                // )
+                    ->myProfileComponents([Phone::class, Username::class]),
                 \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage(fn () => auth()->user() ? auth()->user()?->hasRole('super_admin') : false),
                 \Marjose123\FilamentWebhookServer\WebhookPlugin::make(),
                 \HusamTariq\FilamentDatabaseSchedule\FilamentDatabaseSchedulePlugin::make(),
                 \SolutionForest\FilamentFirewall\FilamentFirewallPanel::make(),
                 \pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin::make(),
-                \DiscoveryDesign\FilamentGaze\FilamentGazePlugin::make(),
-                \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
+                // TODO: Navigation inconfigurable
+                // \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
                 \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::make()
                     ->label('Job')
                     ->pluralLabel('Jobs')
                     ->enableNavigation(true)
                     ->navigationIcon('heroicon-o-cpu-chip')
-                    ->navigationGroup('Settings')
+                    ->navigationGroup('System')
                     ->navigationSort(5)
                     ->navigationCountBadge(true)
                     ->enablePruning(true)
                     ->pruningRetention(7),
                 // ->resource(\App\Filament\Resources\CustomJobMonitorResource::class),
                 \Octo\User\UserPlugin::make(),
-                \Octo\Settings\SettingsPlugin::make(),
                 \Octo\Features\FeaturesPlugin::make(),
+                \Octo\Settings\SettingsPlugin::make(),
+                \Octo\System\SystemPlugin::make(),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -91,7 +97,6 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 AssociadosChart::class,
             ])
-            ->registration(false)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

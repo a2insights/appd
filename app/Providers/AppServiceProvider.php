@@ -23,7 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Relation::morphMap([
+            'associado' => Associado::class,
+        ]);
     }
 
     /**
@@ -31,10 +33,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Relation::morphMap([
-            'associado' => Associado::class,
-        ]);
-
         Gate::policy(Ip::class, \App\Policies\IpPolicy::class);
         Gate::policy(QueueMonitor::class, \App\Policies\QueueMonitorPolicy::class);
         Gate::policy(FilamentWebhookServer::class, \App\Policies\WebhookPolicy::class);
