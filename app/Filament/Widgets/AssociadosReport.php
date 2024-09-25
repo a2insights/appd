@@ -13,6 +13,8 @@ class AssociadosReport extends ChartWidget
 
     protected static ?string $pollingInterval = null;
 
+    protected static bool $isDiscovered = false;
+
     protected static ?string $heading = 'Associados';
 
     protected static ?string $maxHeight = '450px';

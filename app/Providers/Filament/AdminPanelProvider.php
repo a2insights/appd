@@ -4,7 +4,6 @@ namespace App\Providers\Filament;
 
 use App\Filament\Resources\AssociadoResource\Pages\ReportAssociados;
 use App\Filament\Widgets\AppdInfoWidget;
-use App\Filament\Widgets\AssociadosChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -97,7 +96,6 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AppdInfoWidget::class,
                 Widgets\AccountWidget::class,
-                AssociadosChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

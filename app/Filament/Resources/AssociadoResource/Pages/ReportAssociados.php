@@ -110,7 +110,7 @@ class ReportAssociados extends Page
 
                                 return Storage::disk(config('livewire.temporary_file.disk'))->download($filePath);
                             }),
-                        Action::make('csv')
+                        Action::make('planilha')
                             ->icon('heroicon-o-table-cells')
                             ->color('gray')
                             ->action(function (array $state) {
