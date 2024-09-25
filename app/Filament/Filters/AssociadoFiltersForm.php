@@ -27,42 +27,11 @@ class AssociadoFiltersForm
             Select::make('status')
                 ->options(AssociadoStatus::class)
                 ->multiple(),
-            Select::make('aniversariantes')
-                // ->attribute('data_nascimento')
-                ->multiple()
-                ->options([
-                    1 => 'Janeiro',
-                    2 => 'Fevereiro',
-                    3 => 'Março',
-                    4 => 'Abril',
-                    5 => 'Maio',
-                    6 => 'Junho',
-                    7 => 'Julho',
-                    8 => 'Agosto',
-                    9 => 'Setembro',
-                    10 => 'Outubro',
-                    11 => 'Novembro',
-                    12 => 'Dezembro',
-                ]),
-            // ->query(function ($query, array $data) {
-            //     if (! isset($data['values']) || count($data['values']) === 0) {
-            //         return;
-            //     }
-
-            //     $query->whereRaw('MONTH(data_nascimento) IN ('.implode(',', $data['values']).')');
-            // }),
-            // \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('data_nascimento'),
             Select::make('sexo')
                 ->options(Sexo::class),
             Select::make('declaracao_sexual')
                 ->options(DeclaracaoSexual::class)
                 ->multiple(),
-            // Select::make('orgao_expedidor')
-            //     ->options(OrgaoExpedidor::class)
-            //     ->multiple(),
-            // Select::make('orgao_expedidor_uf')
-            //     ->options(OrgaoExpedidorUf::class)
-            //     ->multiple(),
             Select::make('estado_civil')
                 ->options(EstadoCivil::class)
                 ->multiple(),
@@ -92,44 +61,21 @@ class AssociadoFiltersForm
                 ->options(AparelhoUtilizado::class)
                 ->multiple(),
             Select::make('beneficios')
-                // ->relationship('beneficios', 'nome')
                 ->preload()
                 ->multiple(),
             Select::make('cid10')
-                // ->relationship('cid10', 'codigo')
                 ->multiple(),
             Select::make('ocupacoes')
                 ->options(Ocupacao::class)
                 ->multiple(),
-            Select::make('cidade')
-                ->options(fn (): array => self::getMunicipios()->mapWithKeys(fn (Municipio $item) => [$item->nome => $item->nome])->all())
-                // ->query(function ($query, array $data) {
-                //     if (! isset($data['values']) || count($data['values']) === 0) {
-                //         return;
-                //     }
-
-                //     $query->whereIn('cidade', $data['values']);
-                // })
-                ->multiple(),
-            // Select::make('bairro')
-            //     ->multiple()
-            //     ->options(fn (): array => self::getBairros()->all())
-            //     ->query(function ($query, array $data) {
-            //         if (! $data['values']) {
-            //             return;
-            //         }
-
-            //         $query->whereIn('bairro', $data['values']);
-            //     }),
-            // \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at'),
         ];
     }
 
     /*
     * @return Collection<\App\Municipio>
     */
-    private static function getMunicipios(): Collection
-    {
-        return MunicipioService::all();
-    }
+    // private static function getMunicipios(): Collection
+    // {
+    //     return MunicipioService::all();
+    // }
 }
