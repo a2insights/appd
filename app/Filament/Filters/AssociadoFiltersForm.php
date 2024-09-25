@@ -60,11 +60,6 @@ class AssociadoFiltersForm
             Select::make('aparelhos_utilizado')
                 ->options(AparelhoUtilizado::class)
                 ->multiple(),
-            Select::make('beneficios')
-                ->preload()
-                ->multiple(),
-            Select::make('cid10')
-                ->multiple(),
             Select::make('ocupacoes')
                 ->options(Ocupacao::class)
                 ->multiple(),
