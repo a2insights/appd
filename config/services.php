@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'serverless' => [
+        'chart_image' => [
+            'url' => env('CHART_IMAGE_URL'),
+        ],
+    ],
 ];

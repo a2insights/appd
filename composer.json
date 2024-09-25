@@ -20,6 +20,7 @@
         "laravel/tinker": "^2.9",
         "laravellegends/pt-br-validator": "^11.0",
         "league/flysystem-aws-s3-v3": "^3.0",
+        "maatwebsite/excel": "^3.1",
         "mansoor/filament-versionable": "^0.0.9",
         "saloonphp/saloon": "^3.0",
         "staudenmeir/eloquent-json-relations": "^1.13"
