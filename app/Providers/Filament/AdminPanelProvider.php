@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\AssociadoResource\Pages\ReportAssociados;
 use App\Filament\Widgets\AppdInfoWidget;
 use App\Filament\Widgets\AssociadosChart;
 use Filament\Http\Middleware\Authenticate;
@@ -43,6 +44,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                ReportAssociados::class,
             ])
             ->resources([
                 config('filament-logger.activity_resource'),
