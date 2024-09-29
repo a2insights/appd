@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
 
-        Schema::create('historicos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('acao_id');
+        Schema::create('atendimento_tipo', function (Blueprint $table) {
             $table->foreignId('atendimento_id');
-            $table->json('data');
-            $table->timestamps();
+            $table->foreignId('tipo_id');
+            $table->unique(['atendimento_id', 'tipo_id']);
         });
 
-        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -29,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('historicos');
+        Schema::dropIfExists('atendimento_tipo');
     }
 };

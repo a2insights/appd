@@ -75,6 +75,8 @@ models:
     id: id
     titulo: string
     descricao: string nullable
+    relationships:
+      belongsToMany: Acao
   Acao:
     id: id
     nome: bigInteger

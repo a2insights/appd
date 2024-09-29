@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('associado_beneficio', function (Blueprint $table) {
             $table->foreignId('associado_id');
             $table->foreignId('beneficio_id');
+            $table->unique(['associado_id', 'beneficio_id']);
         });
     }
 
