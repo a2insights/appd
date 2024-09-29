@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cid10', function (Blueprint $table) {
+        Schema::create('pessoas', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo');
-            $table->text('descricao');
+            $table->string('nome');
+            $table->string('cpf');
+            $table->string('telefone_whatsapp')->nullable();
+            $table->string('telefone_celular')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cid10');
+        Schema::dropIfExists('pessoas');
     }
 };

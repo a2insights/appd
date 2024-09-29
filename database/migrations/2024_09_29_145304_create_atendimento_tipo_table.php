@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cid10', function (Blueprint $table) {
-            $table->id();
-            $table->string('codigo');
-            $table->text('descricao');
+        Schema::create('atendimento_tipo', function (Blueprint $table) {
+            $table->foreignId('atendimento_id');
+            $table->foreignId('tipo_id');
+            $table->unique(['atendimento_id', 'tipo_id']);
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cid10');
+        Schema::dropIfExists('atendimento_tipo');
     }
 };

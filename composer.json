@@ -9,6 +9,7 @@
     "require": {
         "php": "^8.1",
         "a2insights/octo-core": "dev-main",
+        "awcodes/filament-quick-create": "^3.4",
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-dompdf": "^3.0",
         "discoverydesign/filament-gaze": "^1.1",

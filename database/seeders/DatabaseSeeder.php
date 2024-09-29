@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             Cid10Seeder::class,
             BeneficioSeeder::class,
+            TipoSeeder::class,
             AssociadoSeeder::class,
         ]);
     }
