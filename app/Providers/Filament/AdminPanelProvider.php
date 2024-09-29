@@ -51,6 +51,12 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([
+                \Awcodes\FilamentQuickCreate\QuickCreatePlugin::make()
+                    ->label('Novo')
+                    ->alwaysShowModal()
+                    ->includes([
+                        \App\Filament\Resources\AtendimentoResource::class,
+                    ]),
                 \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \CmsMulti\FilamentClearCache\FilamentClearCachePlugin::make(),

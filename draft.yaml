@@ -1,60 +1,87 @@
 models:
+  Pessoa:
+    id: id
+    nome: string
+    cpf: string
+    telefone_whatsapp: string
+    telefone_celular: string
   Cid10:
-      id: id
-      codigo: string
-      descricao: text
+    id: id
+    codigo: string
+    descricao: text
   Associado:
-      id: id
-      foto: string nullable
-      nome: string
-      status: enum:"ativo","inativo","falecido" default:"ativo"
-      data_nascimento: date
-      nome_social: string nullable
-      sexo: enum:"masculino","feminino"
-      declaracao_sexual: enum:"heterossexualidade","homossexualidade","bissexualidade","transsexualidade","pansexualidade","assexualidade","intergenero" nullable
-      cpf: string nullable
-      rg: string nullable
-      orgao_expedidor: enum:"abnc", "agu", "anac", "caer", "cau", "cbm", "cfa", "cfb", "cfbio", "cfbm", "cfc", "cfess", "cff", "cffa", "cfm", "cfmv", "cfn", "cfo", "cfp", "cfq", "cft", "cfta", "cgpi", "cgpmaf", "cipc", "cnig", "cnt", "cntv", "cofeci", "cofecon", "cofem", "cofen", "coffito", "comaer", "confe", "confea", "confef", "confere", "conre", "conrerp", "core", "corecon", "corem", "coren", "cra", "cras", "crb", "crbio", "crbm", "crc", "crea", "creci", "cref", "crefito", "cress", "crf", "crfa", "crm", "crmv", "crn", "cro", "crp", "crpre", "crq", "crt", "crta", "ctps", "cv", "delemig", "detran", "dgpc", "dic", "dicc", "direx", "dpf", "dpmaf", "dpt", "dptc", "drex", "drt", "eb", "fab", "fenaj", "fgts", "fipe", "fls", "funai", "gejsp", "gejspc", "gejuspc", "gesp", "govgo", "icla", "icp", "idamp", "ifp", "igp", "iiacm", "iicc", "iiccecf", "iicm", "iigp", "iijdm", "iipc", "iipm", "iirgd", "iirhm", "iitb", "iml", "ini", "ipf", "itcp", "itep", "maer", "mb", "md", "mds", "mec", "mex", "mindef", "mj", "mm", "mma", "mpas", "mpe", "mpf", "mpt", "mre", "mt", "mte", "mtps", "numig", "oab", "omb", "pc", "pf", "pgfn", "pm", "politec", "prf", "ptc", "scc", "scjds", "sds", "secc", "seccde", "seds", "segup", "sejsp", "sejuc", "sejusp", "sepc", "sepol", "ses", "sesc", "sesdc", "sesdec", "seseg", "sesp", "sespap", "sespdc", "sespds", "sgpc", "sgpj", "sim", "sj", "sjcdh", "sjds", "sjs", "sjtc", "sjts", "snj", "spmaf", "sptc", "srdpf", "srf", "srte", "ssdc", "ssds", "ssi", "ssp", "sspcgp", "sspdc", "sspds", "ssppc", "susep", "susepe", "tj", "tjaem", "tre", "trf", "tse" nullable
-      orgao_expedidor_uf: enum:"ac","al","ap","am","ba","ce","df","es","go","ma","mt","ms","mg","pa","pb","pr","pe","pi","rj","rn","rs","ro","rr","sc","sp","se","to" nullable
-      estado_civil: enum:"solteiro","casado","divorciado","viuvo","separado_judicialmente"
-      certidao_nascimento: string nullable
-      naturalidade_uf: enum:"ac","al","ap","am","ba","ce","df","es","go","ma","mt","ms","mg","pa","pb","pr","pe","pi","rj","rn","rs","ro","rr","sc","sp","se","to"
-      naturalidade_municipio_ibge: integer
-      mae: string
-      pai: string nullable
-      religiao: enum:"mormons","protestante","espiritismo","umbanda","budismo","candomble","judaismo","tradicoes_esotericas","islamismo","crencas_indigenas","catolico","ateu","outras"
-      escolaridade: enum:"sem_escolaridade","ensino_fundamental_incompleto","ensino_fundamental","ensino_medio_incompleto","ensino_medio","ensino_superior_incompleto","ensino_superior","mestrado","doutorado"
-      raca: enum:"branca","negra","amarela","parda","indigena","ignorado"
-      cid10: json
-      crm: string nullable
-      causa_deficiencia: enum:"acidente", "acidente_de_moto", "acidente_com_arma_de_fogo", "acidente_de_trabalho", "acidente_de_transito", "acidente_domestico", "acidente_medico", "acidente_motor_de_barco", "adquirida", "adquirida_anemia_falciforme", "aneurisma", "arma_branca", "arma_de_fogo", "artrite_reumatoide", "artrodese", "artrodese_da_coluna", "artrose", "auditiva", "avc", "causa_sem_definicao", "cancer_de_mama", "cegueira", "circulacao_de_sangue", "congenita", "congenita_adquirida", "derrame", "descarga_eletrica", "desconhecida", "deslocamento_da_retina", "diabetes", "erro_medico", "fogos_de_artificio", "gangrena", "glaucoma", "hanseniase", "hereditaria", "hidrocefalia", "lesao_muscular", "leucemia_linfoblastica", "meningite", "mergulho_aguas_razas", "mhv", "mmii", "neurologica", "operacao_parafusos", "osteomielite", "paralisia_cerebral", "paralisia_cerebral_infantil", "paralisia_infantil", "pci", "perda_audicao_bilateral", "picada_de_cobra", "polineuropatia_nao_especificada", "polio", "poliomielite", "queda", "retinose_pigmentar", "reumatismo", "sequela_paralisia", "sequelas_poliomielite", "traumatismo_no_nervo", "visual"
-      tipo_deficiencia: enum:"visual","auditiva","mental","fisica","multipla","intelectual"
-      aparelhos_utilizado: enum:"cadeira_de_rodas","andador","muleta","bengala","parafusos","perna_mecanica","bengala_canadense","bastao","muletas_auxiliares","braco_mecanico","oculos_e_protese","muleta_canadense","protese","protese_auricular","coupar","muletas","colete","bota_ortopedica","oculos","fistula","protese_ocular","fistula_mse","fistula_msd","fistula_esquerda","bolsa_de_colostomia" nullable
-      cep: integer
-      ocupacoes: enum:"estudante","empresario","funcionario_publico","bancario","militar","autonomo","aposentado","pensionista","funcionario_privado","dono_de_casa","profissional_liberal","trabalhador" nullable
-      rua: string
-      bairro: string
-      numero: string
-      estado: string
-      cidade: string
-      perimetro: string
-      telefone_celular: string nullable
-      telefone_whatsapp: string nullable
-      telefone_fixo: string nullable
-      email: string nullable
-      relationships:
-        hasMany: Carteirinha
-        belongsToMany: Beneficio
+    id: id
+    foto: string nullable
+    nome: string
+    status: enum:"ativo","inativo","falecido" default:"ativo"
+    data_nascimento: date
+    nome_social: string nullable
+    sexo: enum:"masculino","feminino"
+    declaracao_sexual: enum:"heterossexualidade","homossexualidade","bissexualidade","transsexualidade","panssexualidade","assexualidade","intergenero" nullable
+    cpf: string nullable
+    rg: string nullable
+    orgao_expedidor: enum:"abnc","agu","anac","caer","cau","cbm","cfa","cfb","cfbio","cfbm","cfc","cfess","cff","cffa","cfm","cfmv","cfn","cfo","cfp","cfq","cft","cfta","cgpi","cgpmaf","cipc","cnig","cnt","cntv","cofeci","cofecon","cofem","cofen","coffito","comaer","confe","confea","confef","confere","conre","conrerp","core","corecon","corem","coren","cra","cras","crb","crbio","crbm","crc","crea","creci","cref","crefito","cress","crf","crfa","crm","crmv","crn","cro","crp","crpre","crq","crt","crta","ctps","cv","delemig","detran","dgpc","dic","dicc","direx","dpf","dpmaf","dpt","dptc","drex","drt","eb","fab","fenaj","fgts","fipe","fls","funai","gejsp","gejspc","gejuspc","gesp","govgo","i_cla","icp","idamp","ifp","igp","iiacm","iicc","iiccecf","iicm","iigp","iijdm","iipc","iipm","iirgd","iirhm","iitb","iml","ini","ipf","itcp","itep","maer","mb","md","mds","mec","mex","mindef","mj","mm","mma","mpas","mpe","mpf","mpt","mre","mt","mte","mtps","numig","oab","omb","pc","pf","pgfn","pm","politec","prf","ptc","scc","scjds","sds","secc","seccde","seds","segup","sejsp","sejuc","sejusp","sepc","sepol","ses","sesc","sesdc","sesdec","seseg","sesp","sespap","sespdc","sespds","sgpc","sgpj","sim","sj","sjcdh","sjds","sjs","sjtc","sjts","snj","spmaf","sptc","srdpf","srf","srte","ssdc","ssds","ssi","ssp","sspcgp","sspdc","sspds","ssppc","susep","susepe","tj","tjaem","tre","trf","tse" nullable
+    orgao_expedidor_uf: enum:"ac","al","ap","am","ba","ce","df","es","go","ma","mt","ms","mg","pa","pb","pr","pe","pi","rj","rn","rs","ro","rr","sc","sp","se","to" nullable
+    estado_civil: enum:"solteiro","casado","divorciado","viuvo","separado_judicialmente"
+    certidao_nascimento: string nullable
+    naturalidade_uf: enum:"ac","al","ap","am","ba","ce","df","es","go","ma","mt","ms","mg","pa","pb","pr","pe","pi","rj","rn","rs","ro","rr","sc","sp","se","to"
+    naturalidade_municipio_ibge: integer
+    mae: string
+    pai: string nullable
+    religiao: enum:"mormons","protestante","espiritismo","umbanda","budismo","candomble","judaismo","tradicoes_esotericas","islamismo","crencas_indigenas","catolico","ateu","outras"
+    ocupacoes: enum:"estudante","empresario","funcionario_publico","bancario","militar","autonomo","aposentado","pensionista","funcionario_privado","dono_de_casa","profissional_liberal" nullable
+    escolaridade: enum:"sem_escolaridade","ensino_fundamental_incompleto","ensino_fundamental","ensino_medio_incompleto","ensino_medio","ensino_superior_incompleto","ensino_superior","mestrado","doutorado"
+    raca: enum:"branca","negra","amarela","parda","indigena","ignorado"
+    cid10: json
+    crm: string nullable
+    causa_deficiencia: enum:"acidente","acidente_de_moto","acidente_com_arma_de_fogo","acidente_de_trabalho","acidente_de_transito","acidente_domestico","acidente_medico","acidente_motor_de_barco","adquirida","adquirida_anemia_falciforme","aneurisma","arma_branca","arma_de_fogo","artrite_reumatoide","artrodese","artrodese_da_coluna","artrose","auditiva","avc","causa_sem_definicao","cancer_de_mama","cegueira","circulacao_de_sangue","congenita","congenita_adquirida","derrame","descarga_eletrica","desconhecida","deslocamento_da_retina","diabetes","erro_medico","fogos_de_artificio","gangrena","glaucoma","hanseniase","hereditaria","hidrocefalia","lesao_muscular","leucemia_linfoblastica","meningite","mergulho_aguas_razas","mhv","mmii","neurologica","operacao_parafusos","osteomielite","paralisia_cerebral","paralisia_cerebral_infantil","paralisia_infantil","pci","perda_audicao_bilateral","picada_de_cobra","polineuropatia_nao_especificada","polio","poliomielite","queda","retinose_pigmentar","reumatismo","sequela_paralisia","sequelas_poliomielite","traumatismo_no_nervo","visual"
+    tipo_deficiencia: enum:"visual","auditiva","mental","fisica","multipla","intelectual"
+    aparelhos_utilizado: enum:"cadeira_de_rodas","andador","muleta","bengala","parafusos","perna_mecanica","bengala_canadense","bastao","muletas_auxiliares","braco_mecanico","oculos_e_protese","muleta_canadense","protese","protese_auricular","coupar","muletas","colete","bota_ortopedica","oculos","fistula","protese_ocular","fistula_mse","fistula_msd","fistula_esquerda","bolsa_de_colostomia" nullable
+    cep: integer
+    rua: string
+    bairro: string
+    numero: string
+    estado: string
+    cidade: string
+    perimetro: string
+    telefone_celular: string nullable
+    telefone_whatsapp: string nullable
+    telefone_fixo: string nullable
+    email: string nullable
+    relationships:
+      hasMany: Carteirinha
+      belongsToMany: Beneficio
   Beneficio:
-      id: id
-      nome: string nullable
-      descricao: string
+    id: id
+    nome: string nullable
+    descricao: string
+  Atendimento:
+    id: id
+    tipo_id: bigInteger foreign:tipos.id
+    em_andamento: boolean default:true
+    finalizado_automaticamente: boolean default:false
+    pessoa_id: bigInteger foreign:pessoas.id
+    associado_id: bigInteger foreign:associados.id
+    finalizado_em: dateTime
   Carteirinha:
-      id: id
-      associado_id: bigInteger foreign:associados.id
-      status: enum:"ativa","cancelada","vencida"
-      foto: string
-      pdf: string nullable
-      data_emissao: date
-      data_vencimento: date
-seeders: Associado
+    id: id
+    associado_id: bigInteger foreign:associados.id
+    foto: string nullable
+    pdf: string
+    status: enum:"ativa","cancelada","vencida"
+    data_emissao: date
+    data_vencimento: date
+  Tipo:
+    id: id
+    titulo: string
+    descricao: string nullable
+  Acao:
+    id: id
+    nome: bigInteger
+    descricao: bigInteger nullable
+    icon: bigInteger nullable
+  Historico:
+    id: id
+    acao_id: bigInteger foreign:acoes.id
+    atendimento_id: bigInteger foreign:atendimentos.id
+    data: json
