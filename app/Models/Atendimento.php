@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Atendimento extends Model
 {
@@ -16,7 +17,6 @@ class Atendimento extends Model
      * @var array
      */
     protected $fillable = [
-        'tipo_id',
         'em_andamento',
         'finalizado_automaticamente',
         'pessoa_id',
@@ -30,18 +30,14 @@ class Atendimento extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
-        'tipo_id' => 'integer',
         'em_andamento' => 'boolean',
         'finalizado_automaticamente' => 'boolean',
-        'pessoa_id' => 'integer',
-        'associado_id' => 'integer',
         'finalizado_em' => 'datetime',
     ];
 
-    public function tipo(): BelongsTo
+    public function tipos(): BelongsToMany
     {
-        return $this->belongsTo(Tipo::class);
+        return $this->belongsToMany(Tipo::class, 'atendimento_tipo');
     }
 
     public function pessoa(): BelongsTo

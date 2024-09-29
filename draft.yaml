@@ -55,14 +55,6 @@ models:
     id: id
     nome: string nullable
     descricao: string
-  Atendimento:
-    id: id
-    tipo_id: bigInteger foreign:tipos.id
-    em_andamento: boolean default:true
-    finalizado_automaticamente: boolean default:false
-    pessoa_id: bigInteger foreign:pessoas.id
-    associado_id: bigInteger foreign:associados.id
-    finalizado_em: dateTime
   Carteirinha:
     id: id
     associado_id: bigInteger foreign:associados.id
@@ -71,19 +63,17 @@ models:
     status: enum:"ativa","cancelada","vencida"
     data_emissao: date
     data_vencimento: date
+  Atendimento:
+    id: id
+    tipo_id: bigInteger foreign:tipos.id
+    em_andamento: boolean default:true
+    finalizado_automaticamente: boolean default:false
+    pessoa_id: bigInteger foreign:pessoas.id nullable
+    associado_id: bigInteger foreign:associados.id nullable
+    finalizado_em: dateTime nullable
+    relationships:
+      belongsToMany: Tipo
   Tipo:
     id: id
     titulo: string
     descricao: string nullable
-    relationships:
-      belongsToMany: Acao
-  Acao:
-    id: id
-    nome: bigInteger
-    descricao: bigInteger nullable
-    icon: bigInteger nullable
-  Historico:
-    id: id
-    acao_id: bigInteger foreign:acoes.id
-    atendimento_id: bigInteger foreign:atendimentos.id
-    data: json

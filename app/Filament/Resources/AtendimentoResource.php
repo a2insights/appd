@@ -3,41 +3,95 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AtendimentoResource\Pages;
-use App\Filament\Resources\AtendimentoResource\RelationManagers;
+use App\Filament\Schemas\AssociadoSchema;
+use App\Models\Associado;
 use App\Models\Atendimento;
+use App\Models\Tipo;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class AtendimentoResource extends Resource
 {
     protected static ?string $model = Atendimento::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-information-circle';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tipo_id')
-                    ->relationship('tipo', 'id')
-                    ->required(),
-                Forms\Components\Select::make('pessoa_id')
-                    ->relationship('pessoa', 'id')
-                    ->required(),
+                CheckboxList::make('tipos')
+                    ->label('Tipos de Atendimento')
+                    ->required()
+                    ->helperText('Selecione os tipos de atendimento')
+                    ->relationship(titleAttribute: 'titulo')
+                    ->columns(4)
+                    ->gridDirection('row')
+                    ->columnSpanFull(),
                 Forms\Components\Select::make('associado_id')
-                    ->relationship('associado', 'id')
-                    ->required(),
-                Forms\Components\Toggle::make('em_andamento')
-                    ->required(),
-                Forms\Components\Toggle::make('finalizado_automaticamente')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('finalizado_em')
-                    ->required(),
+                    ->label('Associado')
+                    ->relationship('associado', 'nome')
+                    ->helperText('Selecione o associado')
+                    ->preload()
+                    ->searchable(),
+                Forms\Components\Select::make('pessoa_id')
+                    ->label('Pessoa')
+                    ->relationship('pessoa', 'nome')
+                    ->helperText('Selecione a pessoa')
+                    ->preload()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('nome')
+                            ->label('Nome')
+                            ->required()
+                            ->maxLength(255)
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('cpf')
+                            ->maxLength(255)
+                            ->columnSpan(2)
+                            ->stripCharacters(['-', '.'])
+                            ->mask('999.999.999-99')
+                            ->rules(['cpf'])
+                            ->live()
+                            ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component) {
+                                $livewire->validateOnly($component->getStatePath());
+                            })
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('telefone_whatsapp')
+                            ->stripCharacters(['-', '.'])
+                            ->tel()
+                            ->placeholder('(DDD) + NÚMERO')
+                            ->mask('(99) 99999-9999')
+                            ->columnSpanFull(),
+                    ])
+                    ->createOptionAction(function (Action $action) {
+                        return $action
+                            ->modalHeading('Criar Pessoa')
+                            ->modalSubmitActionLabel('Criar')
+                            ->modalWidth('lg');
+                    }),
+                Wizard::make(fn (array $state, ?Model $record) => self::steps($state, $record, $form))
+                    ->columnSpanFull()
+                    ->nextAction(
+                        fn (Action $action) => $action->label('Editar Associado'),
+                    )
+                    ->hidden(),
             ]);
     }
 
@@ -45,30 +99,28 @@ class AtendimentoResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tipo.id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('pessoa.id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('associado.id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('em_andamento')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('finalizado_automaticamente')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('finalizado_em')
-                    ->dateTime()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('associado.nome')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('pessoa.nome')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tipos.titulo')
+                    ->badge()
+                    ->searchable(),
+                // Tables\Columns\IconColumn::make('em_andamento')
+                //     ->boolean(),
+                // Tables\Columns\IconColumn::make('finalizado_automaticamente')
+                //     ->boolean(),
+                // Tables\Columns\TextColumn::make('finalizado_em')
+                //     ->dateTime()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Data do Atendimento')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -77,9 +129,9 @@ class AtendimentoResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -97,5 +149,63 @@ class AtendimentoResource extends Resource
             'create' => Pages\CreateAtendimento::route('/create'),
             'edit' => Pages\EditAtendimento::route('/{record}/edit'),
         ];
+    }
+
+    public static function steps(array $state, ?Model $record, $form): array
+    {
+        return [];
+
+        // TODO: Implementar lógica para exibir os steps
+        if (! $record) {
+            return [];
+        }
+
+        $steps = [];
+
+        $tipos = $record->tipos->map(fn (Tipo $tipo) => Str::slug($tipo->titulo));
+        if ($tipos->contains('atualizacao-cadastral')) {
+            $steps[] = self::selecionarAssociado();
+            $steps[] = self::editarAssociado($form);
+        }
+
+        $steps[] = self::finalizarAtendimento();
+
+        return $steps;
+    }
+
+    private static function finalizarAtendimento()
+    {
+        return Wizard\Step::make('Finalizar Atendimento')
+            ->description('Finalize o atendimento')
+            ->schema([
+            ]);
+    }
+
+    private static function selecionarAssociado()
+    {
+        return Wizard\Step::make('Associado')
+            ->description('Selecione o associado')
+            ->schema([
+                Forms\Components\Select::make('associado_id')
+                    ->label('Associado')
+                    ->relationship('associado', 'nome')
+                    ->preload()
+                    ->afterStateUpdated(function ($state, $record, Get $get, Set $set) {
+                        $associado = Associado::find($state);
+                        $set('nome', $associado->nome);
+
+                        return $state;
+                    })
+                    ->searchable()
+                    ->required()
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    private static function editarAssociado($form)
+    {
+        return Wizard\Step::make('Editar Associado')
+            ->description('Atualize os dados do associado')
+            ->schema(AssociadoSchema::schema(true));
     }
 }

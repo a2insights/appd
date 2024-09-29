@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('cpf');
-            $table->string('telefone_whatsapp');
-            $table->string('telefone_celular');
+            $table->string('telefone_whatsapp')->nullable();
+            $table->string('telefone_celular')->nullable();
             $table->timestamps();
         });
     }

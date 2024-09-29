@@ -11,20 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
         Schema::create('atendimentos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tipo_id');
-            $table->foreignId('pessoa_id');
-            $table->foreignId('associado_id');
+            $table->foreignId('pessoa_id')->nullable();
+            $table->foreignId('associado_id')->nullable();
             $table->boolean('em_andamento')->default(true);
             $table->boolean('finalizado_automaticamente')->default(false);
-            $table->dateTime('finalizado_em');
+            $table->dateTime('finalizado_em')->nullable();
             $table->timestamps();
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
     /**

@@ -10,10 +10,20 @@ class EditAtendimento extends EditRecord
 {
     protected static string $resource = AtendimentoResource::class;
 
+    // public function getBreadcrumb(): string
+    // {
+    //     return 'Em andamento';
+    // }
+
+    // public function getTitle(): string
+    // {
+    //     return $this->record->associado?->nome ?? $this->record->pessoa?->nome ?? 'em atendimento';
+    // }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            // Actions\DeleteAction::make(),
         ];
     }
 }
