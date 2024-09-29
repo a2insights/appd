@@ -5,16 +5,16 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Associado;
-use App\Models\Carteirinha;
+use App\Models\Talento;
 
-class CarteirinhaFactory extends Factory
+class TalentoFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Carteirinha::class;
+    protected $model = Talento::class;
 
     /**
      * Define the model's default state.
@@ -23,11 +23,6 @@ class CarteirinhaFactory extends Factory
     {
         return [
             'associado_id' => Associado::factory(),
-            'foto' => $this->faker->word(),
-            'pdf' => $this->faker->word(),
-            'status' => $this->faker->randomElement(["ativa","cancelada","vencida"]),
-            'data_emissao' => $this->faker->date(),
-            'data_vencimento' => $this->faker->date(),
         ];
     }
 }
