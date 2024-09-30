@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Competencia extends Model
+class Cargo extends Model
 {
     use HasFactory;
 
@@ -22,11 +22,11 @@ class Competencia extends Model
 
     public function talentos(): BelongsToMany
     {
-        return $this->belongsToMany(Talento::class, 'competencia_talento');
+        return $this->belongsToMany(Talento::class, 'Cargo_talento');
     }
 
     public function vagas(): BelongsToMany
     {
-        return $this->belongsToMany(Vaga::class, 'competencia_vaga');
+        return $this->belongsToMany(Vaga::class, 'Cargo_vaga');
     }
 }

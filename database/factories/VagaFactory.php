@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Vaga;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VagaFactory extends Factory
 {
@@ -21,8 +20,8 @@ class VagaFactory extends Factory
     public function definition(): array
     {
         return [
-            'titulo' => $this->faker->numberBetween(-100000, 100000),
-            'descricao' => $this->faker->numberBetween(-100000, 100000),
+            'titulo' => $this->faker->jobTitle(),
+            'descricao' => $this->faker->text(),
             'requisitos' => '{}',
             'inicia_em' => $this->faker->dateTime(),
             'finaliza_em' => $this->faker->dateTime(),

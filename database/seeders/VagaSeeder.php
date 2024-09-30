@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Associado;
+use App\Models\Vaga;
 use Illuminate\Database\Seeder;
 
-class AssociadoSeeder extends Seeder
+class VagaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Associado::factory()->count(50)->create();
+        Vaga::factory()->count(10)->create();
     }
 }

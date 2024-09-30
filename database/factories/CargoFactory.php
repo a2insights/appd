@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\Competencia;
+use App\Models\Cargo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class CompetenciaFactory extends Factory
+class CargoFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Competencia::class;
+    protected $model = Cargo::class;
 
     /**
      * Define the model's default state.

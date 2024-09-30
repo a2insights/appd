@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             BeneficioSeeder::class,
             TipoSeeder::class,
             AssociadoSeeder::class,
+            CargoSeeder::class,
         ]);
     }
 }

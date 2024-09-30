@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('competencia_talento', function (Blueprint $table) {
-            $table->foreignId('competencia_id');
-            $table->foreignId('talento_id');
-            $table->unique(['competencia_id', 'talento_id']);
+        Schema::create('cargo_vaga', function (Blueprint $table) {
+            $table->foreignId('cargo_id');
+            $table->foreignId('vaga_id');
+            $table->unique(['cargo_id', 'vaga_id']);
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('competencia_talento');
+        Schema::dropIfExists('cargo_vaga');
     }
 };

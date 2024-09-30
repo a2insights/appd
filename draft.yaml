@@ -86,7 +86,7 @@ models:
     inicia_em: dateTime
     finaliza_em: dateTime nullable
     relationships:
-      belongsToMany: Competencia
+      belongsToMany: Cargo
   Candidato:
     id: id
     vaga_id: bigInteger foreign:vagas.id
@@ -94,7 +94,7 @@ models:
     status: enum:"nova","em_andamento","selecionado","desclassificado","finalizado" default:"nova"
     relationships:
       belongsToMany: Vaga
-  Competencia:
+  Cargo:
     id: id
     nome: string
     descricao: string nullable
@@ -104,5 +104,5 @@ models:
     id: id
     associado_id: bigInteger
     relationships:
-      belongsToMany: Competencia
+      belongsToMany: Cargo
       belongsTo: Associado

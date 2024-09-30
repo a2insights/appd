@@ -36,9 +36,9 @@ class Vaga extends Model
         'finaliza_em' => 'datetime',
     ];
 
-    public function competencias(): BelongsToMany
+    public function cargos(): BelongsToMany
     {
-        return $this->belongsToMany(Competencia::class);
+        return $this->belongsToMany(Cargo::class, 'cargo_vaga');
     }
 
     public function talentos(): HasMany

@@ -20,9 +20,9 @@ class Talento extends Model
         'associado_id',
     ];
 
-    public function competencias(): BelongsToMany
+    public function cargos(): BelongsToMany
     {
-        return $this->belongsToMany(Competencia::class, 'competencia_talento');
+        return $this->belongsToMany(Cargo::class, 'cargo_talento');
     }
 
     public function associado(): BelongsTo
