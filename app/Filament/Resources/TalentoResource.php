@@ -55,9 +55,11 @@ class TalentoResource extends Resource
                     ->url(function (Model $record): ?string {
                         return AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
                     })
+                    ->searchable()
                     ->color('primary'),
                 Tables\Columns\TextColumn::make('associado.cpf')
-                    ->label('CPF'),
+                    ->label('CPF')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('associado.telefone_whatsapp')
                     ->label('WhatsApp'),
                 Tables\Columns\TextColumn::make('cargos.nome')
