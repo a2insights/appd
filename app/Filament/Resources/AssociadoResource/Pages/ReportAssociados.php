@@ -26,7 +26,7 @@ class ReportAssociados extends Page
 
     protected static string $routePath = '/report-associados';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     protected ?string $maxContentWidth = 'full';
 

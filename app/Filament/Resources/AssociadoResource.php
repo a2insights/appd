@@ -28,6 +28,8 @@ class AssociadoResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'nome';
 
+    protected static ?int $navigationSort = 1;
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['nome', 'cpf', 'rg'];

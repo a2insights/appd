@@ -48,6 +48,9 @@ class AdminPanelProvider extends PanelProvider
             ->resources([
                 config('filament-logger.activity_resource'),
             ])
+            ->navigationGroups([
+                'Banco de Talentos',
+            ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([
