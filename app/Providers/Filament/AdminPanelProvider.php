@@ -2,13 +2,11 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\AssociadoResource\Pages\ReportAssociados;
-use App\Filament\Resources\AssociadoResource\Pages\ReportAtendimentos;
+use App\Filament\Pages;
 use App\Filament\Widgets\AppdInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -44,8 +42,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-                ReportAssociados::class,
-                ReportAtendimentos::class,
+                Pages\ReportAssociados::class,
+                Pages\ReportAtendimentos::class,
             ])
             ->resources([
                 config('filament-logger.activity_resource'),

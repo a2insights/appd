@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AssociadoResource\Pages;
+namespace App\Filament\Pages;
 
 use App\Exports\AssociadosChartExport;
 use App\Filament\Filters\AssociadoFiltersForm;
@@ -34,7 +34,7 @@ class ReportAssociados extends Page
 
     public static function getNavigationIcon(): ?string
     {
-        return 'heroicon-o-document-chart-bar';
+        return 'heroicon-c-chart-pie';
     }
 
     public static function getNavigationLabel(): string

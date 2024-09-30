@@ -115,12 +115,15 @@ class AssociadoSchema
                 Forms\Components\TextInput::make('cpf')
                     ->maxLength(255)
                     ->columnSpan(2)
+                    ->unique()
                     ->stripCharacters(['-', '.'])
                     ->mask('999.999.999-99')
                     ->rules(['cpf'])
                     ->live()
                     ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component) {
-                        $livewire->validateOnly($component->getStatePath());
+                        if ($component->getState('cpf') && strlen($component->getState('cpf')) === 14) {
+                            $livewire->validateOnly($component->getStatePath());
+                        }
                     }),
                 Forms\Components\TextInput::make('rg')
                     ->maxLength(255)

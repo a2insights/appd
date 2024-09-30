@@ -5,13 +5,16 @@ namespace App\Filament\Exports;
 use App\Models\Associado;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
-use Filament\Actions\Exports\Models\Export;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class AssociadoExporter extends Exporter
 {
+    use ExportConcerns;
+
     protected static ?string $model = Associado::class;
+
+    protected static string $type = 'associados';
 
     private static $municipios = null;
 
@@ -61,59 +64,13 @@ class AssociadoExporter extends Exporter
             ExportColumn::make('telefone_whatsapp'),
             ExportColumn::make('telefone_fixo'),
             ExportColumn::make('email'),
-            ExportColumn::make('created_at')->formatStateUsing(fn ($record) => $record->created_at->format('d/m/Y H:i:s')),
-            ExportColumn::make('updated_at')->formatStateUsing(fn ($record) => $record->updated_at->format('d/m/Y H:i:s')),
-
-            // ExportColumn::make('nome'),
-            // ExportColumn::make('status'),
-            // ExportColumn::make('data_nascimento'),
-            // ExportColumn::make('nome_social'),
-            // ExportColumn::make('sexo'),
-            // ExportColumn::make('declaracao_sexual'),
-            // ExportColumn::make('cpf'),
-            // ExportColumn::make('rg'),
-            // ExportColumn::make('orgao_expedidor'),
-            // ExportColumn::make('orgao_expedidor_uf'),
-            // ExportColumn::make('estado_civil'),
-            // ExportColumn::make('certidao_nascimento'),
-            // ExportColumn::make('naturalidade_uf'),
-            // ExportColumn::make('naturalidade_municipio_ibge'),
-            // ExportColumn::make('mae'),
-            // ExportColumn::make('pai'),
-            // ExportColumn::make('religiao'),
-            // ExportColumn::make('ocupacoes'),
-            // ExportColumn::make('escolaridade'),
-            // ExportColumn::make('raca'),
-            // ExportColumn::make('cid10'),
-            // ExportColumn::make('crm'),
-            // ExportColumn::make('causa_deficiencia'),
-            // ExportColumn::make('tipo_deficiencia'),
-            // ExportColumn::make('aparelhos_utilizado'),
-            // ExportColumn::make('cep'),
-            // ExportColumn::make('rua'),
-            // ExportColumn::make('bairro'),
-            // ExportColumn::make('numero'),
-            // ExportColumn::make('estado'),
-            // ExportColumn::make('cidade'),
-            // ExportColumn::make('perimetro'),
-            // ExportColumn::make('telefone_celular'),
-            // ExportColumn::make('telefone_whatsapp'),
-            // ExportColumn::make('telefone_fixo'),
-            // ExportColumn::make('email'),
-            // ExportColumn::make('created_at'),
-            // ExportColumn::make('updated_at'),
+            ExportColumn::make('created_at')
+                ->label('Data de Associação')
+                ->formatStateUsing(fn ($record) => $record->created_at->format('d/m/Y H:i:s')),
+            ExportColumn::make('updated_at')
+                ->label('Última Atualização')
+                ->formatStateUsing(fn ($record) => $record->updated_at->format('d/m/Y H:i:s')),
         ];
-    }
-
-    public static function getCompletedNotificationBody(Export $export): string
-    {
-        $body = 'Your associado export has completed and '.number_format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
-
-        if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.number_format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
-        }
-
-        return $body;
     }
 
     private static function getMunicipios(): Collection

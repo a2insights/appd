@@ -10,6 +10,7 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class VagaResource extends Resource
@@ -77,8 +78,6 @@ class VagaResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('titulo')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('descricao')
-                    ->searchable(),
                 Tables\Columns\IconColumn::make('ativa')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('inicia_em')
@@ -100,15 +99,19 @@ class VagaResource extends Resource
                 //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('cargos')
+                    ->relationship('cargos', 'nome')
+                    ->preload()
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
