@@ -10,4 +10,9 @@ class CreateTipo extends CreateRecord
     protected static string $resource = TipoResource::class;
 
     protected static bool $canCreateAnother = false;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

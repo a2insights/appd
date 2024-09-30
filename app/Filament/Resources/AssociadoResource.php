@@ -54,7 +54,7 @@ class AssociadoResource extends Resource
     {
         return $form
             ->extraAttributes(['autocomplete' => false], true)
-            ->schema(AssociadoSchema::schema());
+            ->schema(AssociadoSchema::schema($form));
     }
 
     public static function table(Table $table): Table

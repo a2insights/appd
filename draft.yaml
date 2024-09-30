@@ -91,7 +91,7 @@ models:
     id: id
     vaga_id: bigInteger foreign:vagas.id
     talento_id: bigInteger foreign:talentos.id
-    status: enum:"nova","em_andamento","selecionado","desclassificado","finalizado" default:"nova"
+    status: enum:"novo","em_andamento","selecionado","desclassificado","finalizado" default:"novo"
     relationships:
       belongsToMany: Vaga
   Cargo:

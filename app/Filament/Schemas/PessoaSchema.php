@@ -3,12 +3,15 @@
 namespace App\Filament\Schemas;
 
 use Filament\Forms;
+use Filament\Forms\Form;
 use Filament\Support\RawJs;
 
 class PessoaSchema
 {
-    public static function schema(): array
+    public static function schema(?Form $form = null): array
     {
+        $record = $form->getRecord();
+
         return [
             Forms\Components\Group::make([
                 Forms\Components\TextInput::make('nome')
@@ -21,7 +24,7 @@ class PessoaSchema
                 Forms\Components\TextInput::make('cpf')
                     ->maxLength(255)
                     ->required()
-                    ->unique()
+                    ->unique('pessoas', 'cpf', $record ?? null)
                     ->stripCharacters(['-', '.'])
                     ->mask('999.999.999-99')
                     ->rules(['cpf'])

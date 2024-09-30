@@ -20,6 +20,7 @@ use App\TipoDeficiencia;
 use Facades\App\Services\MunicipioService;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
@@ -31,9 +32,9 @@ use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class AssociadoSchema
 {
-    public static function schema($outResource = false): array
+    public static function schema(?Form $form = null): array
     {
-        $fields = [
+        return [
             \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
                 ->lock()
                 ->columnSpanFull(),
@@ -365,10 +366,7 @@ class AssociadoSchema
             ])
                 ->columnSpanFull()
                 ->columns(10),
-        ];
-
-        if (! $outResource) {
-            $fields[] = SpatieMediaLibraryFileUpload::make('arquivos')
+            SpatieMediaLibraryFileUpload::make('arquivos')
                 ->multiple()
                 ->maxSize(2048)
                 ->reorderable()
@@ -377,10 +375,8 @@ class AssociadoSchema
                 ->downloadable()
                 ->panelLayout('grid')
                 ->openable()
-                ->columnSpanFull();
-        }
-
-        return $fields;
+                ->columnSpanFull(),
+        ];
     }
 
     /*

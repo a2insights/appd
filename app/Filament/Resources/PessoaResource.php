@@ -5,10 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PessoaResource\Pages;
 use App\Filament\Schemas\PessoaSchema;
 use App\Models\Pessoa;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -23,7 +21,7 @@ class PessoaResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(PessoaSchema::schema());
+            ->schema(PessoaSchema::schema($form));
     }
 
     public static function table(Table $table): Table
@@ -54,6 +52,7 @@ class PessoaResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
