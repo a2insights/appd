@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Cargo;
+use App\Models\Vaga;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cargo_vaga', function (Blueprint $table) {
-            $table->foreignId('cargo_id');
-            $table->foreignId('vaga_id');
+            $table->foreignIdFor(Cargo::class, 'cargo_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Vaga::class, 'vaga_id')->constrained()->cascadeOnDelete();
             $table->unique(['cargo_id', 'vaga_id']);
         });
     }

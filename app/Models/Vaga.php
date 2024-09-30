@@ -41,7 +41,7 @@ class Vaga extends Model
         return $this->belongsToMany(Cargo::class, 'cargo_vaga');
     }
 
-    public function talentos(): HasMany
+    public function candidatos(): HasMany
     {
         return $this->hasMany(Candidato::class);
     }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Talento;
+use App\Models\Vaga;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('candidatos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vaga_id');
-            $table->foreignId('talento_id');
+            $table->foreignIdFor(Vaga::class, 'vaga_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Talento::class, 'talento_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['nova', 'em_andamento', 'selecionado', 'desclassificado', 'finalizado'])->default('nova');
             $table->timestamps();
         });

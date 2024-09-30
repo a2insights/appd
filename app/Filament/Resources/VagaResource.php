@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VagaResource\Pages;
+use App\Filament\Resources\VagaResource\RelationManagers\CandidatosRelationManager;
 use App\Models\Vaga;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
@@ -35,7 +36,6 @@ class VagaResource extends Resource
                     ->maxLength(255)
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('ativa')
-                    ->required()
                     ->label('Ativa')
                     ->columnSpanFull(),
                 // Forms\Components\TextInput::make('requisitos'),
@@ -58,7 +58,6 @@ class VagaResource extends Resource
                     ->locale('pt_BR')
                     // ->minDate(now()->subDay())
                     // ->maxDate(now()->addMonths(10))
-                    ->required()
                     ->columnSpan(1),
                 CheckboxList::make('cargos')
                     ->label('Cargos')
@@ -116,7 +115,7 @@ class VagaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CandidatosRelationManager::class,
         ];
     }
 
