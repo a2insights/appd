@@ -26,7 +26,9 @@ class ReportAssociados extends Page
 
     protected static string $routePath = '/report-associados';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Relatórios';
+
+    protected static ?int $navigationSort = 3;
 
     protected ?string $maxContentWidth = 'full';
 
@@ -37,7 +39,7 @@ class ReportAssociados extends Page
 
     public static function getNavigationLabel(): string
     {
-        return 'Relatório';
+        return 'Associados';
     }
 
     public function getTitle(): string|Htmlable

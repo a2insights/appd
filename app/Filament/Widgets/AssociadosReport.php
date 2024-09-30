@@ -21,6 +21,8 @@ class AssociadosReport extends ChartWidget
 
     protected static ?int $total = 0;
 
+    protected $reportType = null;
+
     protected function getType(): string
     {
         return 'bar';
@@ -108,7 +110,7 @@ class AssociadosReport extends ChartWidget
             ];
         }
 
-        return $this->generateDatasetsAndLabels($xAxis, $group, $filters);
+        return $this->generateDatasetsAndLabels($xAxis, $group, $filters, $this->reportType);
     }
 
     private function getFilter(string $key, $default = null)
@@ -116,7 +118,7 @@ class AssociadosReport extends ChartWidget
         return $this->filters[$key] ?? $default;
     }
 
-    public function generateDatasetsAndLabels(string $xAxis, string $group, ?array $filters = []): array
+    public function generateDatasetsAndLabels(string $xAxis, string $group, ?array $filters = null, ?string $type = null): array
     {
         $chartData = ['labels' => [], 'datasets' => []];
 
@@ -197,6 +199,7 @@ class AssociadosReport extends ChartWidget
         // shuffle($colors);
 
         $select = DB::table('associados')
+            ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
             ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('status', $filters['status']))
             ->when(@$filters['sexo'], fn ($query, $value) => $query->where('sexo', $filters['sexo']))
             ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('declaracao_sexual', $filters['declaracao_sexual']))

@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Associado;
-use App\Models\Beneficio;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('associado_beneficio', function (Blueprint $table) {
+        Schema::create('talentos', function (Blueprint $table) {
+            $table->id();
             $table->foreignIdFor(Associado::class, 'associado_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Beneficio::class, 'beneficio_id')->constrained()->cascadeOnDelete();
-            $table->unique(['associado_id', 'beneficio_id']);
+            $table->timestamps();
         });
     }
 
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('associado_beneficio');
+        Schema::dropIfExists('talentos');
     }
 };

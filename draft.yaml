@@ -77,3 +77,32 @@ models:
     id: id
     titulo: string
     descricao: string nullable
+  Vaga:
+    id: id
+    ativa: boolean default:false
+    titulo: string
+    descricao: string nullable
+    requisitos: json nullable
+    inicia_em: dateTime
+    finaliza_em: dateTime nullable
+    relationships:
+      belongsToMany: Cargo
+  Candidato:
+    id: id
+    vaga_id: bigInteger foreign:vagas.id
+    talento_id: bigInteger foreign:talentos.id
+    status: enum:"nova","em_andamento","selecionado","desclassificado","finalizado" default:"nova"
+    relationships:
+      belongsToMany: Vaga
+  Cargo:
+    id: id
+    nome: string
+    descricao: string nullable
+    relationships:
+      belongsToMany: Talento, Vaga
+  Talento:
+    id: id
+    associado_id: bigInteger
+    relationships:
+      belongsToMany: Cargo
+      belongsTo: Associado

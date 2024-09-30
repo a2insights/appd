@@ -129,23 +129,14 @@ class Associado extends Model implements HasMedia
         'email',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($associado) {
-            $associado->carteirinhas()->delete();
-            $associado->beneficios()->detach();
-            // Don't need to delete media, it will be deleted automatically by spatie/laravel-medialibrary
-            //  $associado->media()->delete();
-        });
-
-        static::deleted(function ($carteirinha) {
-            $disk = config('filament.default_filesystem_disk');
-
-            Storage::disk($disk)->delete($carteirinha->foto);
-        });
-    }
+    /**
+     * Get the dates that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected $dates = [
+        'data_nascimento',
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -155,7 +146,6 @@ class Associado extends Model implements HasMedia
     protected function casts(): array
     {
         return [
-            'id' => 'integer',
             'status' => AssociadoStatus::class,
             'data_nascimento' => 'date',
             'sexo' => Sexo::class,
@@ -175,6 +165,24 @@ class Associado extends Model implements HasMedia
             'aparelhos_utilizado' => Set::class,
             'cid10' => 'array',
         ];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($associado) {
+            $associado->carteirinhas()->delete();
+            $associado->beneficios()->detach();
+            // Don't need to delete media, it will be deleted automatically by spatie/laravel-medialibrary
+            //  $associado->media()->delete();
+        });
+
+        static::deleted(function ($carteirinha) {
+            $disk = config('filament.default_filesystem_disk');
+
+            Storage::disk($disk)->delete($carteirinha->foto);
+        });
     }
 
     public function carteirinhas(): HasMany

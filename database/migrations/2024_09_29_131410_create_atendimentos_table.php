@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Associado;
+use App\Models\Pessoa;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('atendimentos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pessoa_id')->nullable();
-            $table->foreignId('associado_id')->nullable();
+            $table->foreignIdFor(Pessoa::class, 'pessoa_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Associado::class, 'associado_id')->nullable()->constrained()->cascadeOnDelete();
             $table->boolean('em_andamento')->default(true);
             $table->boolean('finalizado_automaticamente')->default(false);
             $table->dateTime('finalizado_em')->nullable();

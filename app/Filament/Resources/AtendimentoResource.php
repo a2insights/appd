@@ -26,6 +26,8 @@ class AtendimentoResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-information-circle';
 
+    protected static ?int $navigationSort = 2;
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
@@ -100,7 +102,12 @@ class AtendimentoResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('associado.nome')
-                    ->searchable(),
+                    ->label('Associado')
+                    ->url(function (Model $record): ?string {
+                        return AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
+                    })
+                    ->searchable()
+                    ->color('primary'),
                 Tables\Columns\TextColumn::make('pessoa.nome')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tipos.titulo')

@@ -82,15 +82,13 @@ class AssociadoSchema
                     ->required()
                     ->columnSpan(2),
                 Forms\Components\DatePicker::make('data_nascimento')
-                    ->native(false)
                     ->displayFormat('d/m/Y')
                     ->format('Y-m-d')
                     ->seconds(false)
-                    ->timezone('America/Fortaleza')
-                    ->required()
                     ->locale('pt_BR')
                     ->minDate(now()->subYears(90))
                     ->maxDate(now()->subMonths(2))
+                    ->required()
                     ->columnSpan(1),
             ])
                 ->columnSpanFull()

@@ -30,8 +30,8 @@ class Atendimento extends Model
      * @var array
      */
     protected $casts = [
-        'em_andamento' => 'boolean',
         'finalizado_automaticamente' => 'boolean',
+        'em_andamento' => 'boolean',
         'finalizado_em' => 'datetime',
     ];
 
