@@ -34,6 +34,8 @@ class AssociadoSchema
 {
     public static function schema(?Form $form = null): array
     {
+        $record = $form->getRecord();
+
         return [
             \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
                 ->lock()
@@ -116,7 +118,7 @@ class AssociadoSchema
                 Forms\Components\TextInput::make('cpf')
                     ->maxLength(255)
                     ->columnSpan(2)
-                    ->unique()
+                    ->unique('associados', 'cpf', $record ?? null)
                     ->stripCharacters(['-', '.'])
                     ->mask('999.999.999-99')
                     ->rules(['cpf'])
