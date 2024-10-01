@@ -14,27 +14,27 @@ class TipoSeeder extends Seeder
     {
         Tipo::create([
             'titulo' => 'Novo Associado',
-            'descricao' => 'Novo Associado',
+            'descricao' => 'Cadastro de Novo Associado',
         ]);
 
         Tipo::create([
             'titulo' => 'Atualização Cadastral',
-            'descricao' => 'Atualização Cadastral',
+            'descricao' => 'Atualiza os dados cadastrais do associado',
         ]);
 
         Tipo::create([
             'titulo' => 'Nova Carteirinha',
-            'descricao' => 'Nova Carteirinha',
+            'descricao' => 'Emissão de Nova Carteirinha',
         ]);
 
         Tipo::create([
             'titulo' => 'Renovação de Carteirinha',
-            'descricao' => 'Renovação de Carteirinha',
+            'descricao' => 'Renovar carteirinha do associado',
         ]);
 
         Tipo::create([
             'titulo' => 'Segunda Via de Carteirinha',
-            'descricao' => 'Segunda Via de Carteirinha',
+            'descricao' => 'Emissão de Segunda Via de Carteirinha',
         ]);
 
         Tipo::create([

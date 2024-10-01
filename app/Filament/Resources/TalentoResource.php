@@ -37,6 +37,7 @@ class TalentoResource extends Resource
                     ->preload()
                     ->searchable(['nome', 'cpf']),
                 SpatieMediaLibraryFileUpload::make('arquivos')
+                    ->label('Arquivos, como currículo, certificados, etc')
                     ->multiple()
                     ->maxSize(2048)
                     ->reorderable()

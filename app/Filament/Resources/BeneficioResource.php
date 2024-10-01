@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BeneficioResource\Pages;
 use App\Models\Beneficio;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 
 class BeneficioResource extends Resource
 {
@@ -18,6 +20,7 @@ class BeneficioResource extends Resource
 
     protected static ?string $navigationParentItem = 'Associados';
 
+   
     public static function form(Form $form): Form
     {
         return $form

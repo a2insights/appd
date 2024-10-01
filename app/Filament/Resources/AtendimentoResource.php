@@ -47,19 +47,21 @@ class AtendimentoResource extends Resource
                     ->label('Tipos de Atendimento')
                     ->required()
                     ->helperText('Selecione os tipos de atendimento')
-                    ->relationship(titleAttribute: 'titulo')
+                    ->relationship(titleAttribute: 'titulo', modifyQueryUsing: fn ($query) => $query->orderBy('sort_order'))
                     ->columns(4)
                     ->gridDirection('row')
                     ->columnSpanFull(),
                 Forms\Components\Select::make('associado_id')
                     ->label('Associado')
                     ->relationship('associado', 'nome')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
                     ->helperText('Selecione o associado')
                     ->preload()
                     ->searchable(),
                 Forms\Components\Select::make('pessoa_id')
                     ->label('Pessoa')
                     ->relationship('pessoa', 'nome')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
                     ->helperText('Selecione a pessoa')
                     ->preload()
                     ->searchable()
@@ -110,12 +112,16 @@ class AtendimentoResource extends Resource
                 Tables\Columns\TextColumn::make('associado.nome')
                     ->label('Associado')
                     ->url(function (Model $record): ?string {
-                        return AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
+                        return ! $record->associado_id ?? AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
                     })
                     ->searchable()
                     ->color('primary'),
                 Tables\Columns\TextColumn::make('pessoa.nome')
-                    ->searchable(),
+                    ->url(function (Model $record): ?string {
+                        return ! $record->pessoa_id ?? PessoaResource::getUrl('edit', ['record' => $record->pessoa_id]);
+                    })
+                    ->searchable()
+                    ->color('primary'),
                 Tables\Columns\TextColumn::make('tipos.titulo')
                     ->badge()
                     ->searchable(),

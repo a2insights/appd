@@ -22,7 +22,7 @@ class ReportAssociados extends Page
 {
     use Dashboard\Concerns\HasFiltersForm;
 
-    protected static string $view = 'filament.resources.associado-resource.pages.report-associados';
+    protected static string $view = 'filament.pages.report';
 
     protected static string $routePath = '/report-associados';
 
