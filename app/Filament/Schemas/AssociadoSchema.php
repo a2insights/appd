@@ -32,7 +32,7 @@ use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class AssociadoSchema
 {
-    public static function schema(?Form $form = null): array
+    public static function schema(?Form $form, $record): array
     {
         return [
             \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
