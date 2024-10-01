@@ -47,7 +47,7 @@ class AtendimentoResource extends Resource
                     ->label('Tipos de Atendimento')
                     ->required()
                     ->helperText('Selecione os tipos de atendimento')
-                    ->relationship(titleAttribute: 'titulo', modifyQueryUsing: fn ($query) => $query->orderBy('sort_order'))
+                    ->relationship(titleAttribute: 'titulo', modifyQueryUsing: fn ($query) => $query->orderBy('sort'))
                     ->columns(4)
                     ->gridDirection('row')
                     ->columnSpanFull(),
