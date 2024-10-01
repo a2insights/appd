@@ -15,7 +15,6 @@
         "discoverydesign/filament-gaze": "^1.1",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
-        "ibrahimbougaoua/filament-sort-order": "^1.1",
         "joaopaulolndev/filament-pdf-viewer": "^1.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
@@ -25,6 +24,7 @@
         "maatwebsite/excel": "^3.1",
         "mansoor/filament-versionable": "^0.0.9",
         "saloonphp/saloon": "^3.0",
+        "spatie/eloquent-sortable": "^4.4",
         "staudenmeir/eloquent-json-relations": "^1.13"
     },
     "require-dev": {

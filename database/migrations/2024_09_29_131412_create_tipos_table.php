@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tipos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('sort_order')->default(0);
+            $table->unsignedInteger('sort')->default(0);
             $table->string('titulo');
             $table->string('descricao')->nullable();
             $table->timestamps();

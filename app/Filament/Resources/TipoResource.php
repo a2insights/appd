@@ -9,8 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use IbrahimBougaoua\FilamentSortOrder\Actions\DownStepAction;
-use IbrahimBougaoua\FilamentSortOrder\Actions\UpStepAction;
 
 class TipoResource extends Resource
 {
@@ -58,12 +56,8 @@ class TipoResource extends Resource
             ->actions([
                 // Tables\Actions\EditAction::make(),
             ])
-            ->actions([
-                DownStepAction::make(),
-                UpStepAction::make(),
-            ])
-            ->defaultSort('sort_order', 'asc')
             ->paginated(false)
+            ->reorderable('sort')
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),

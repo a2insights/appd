@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use IbrahimBougaoua\FilamentSortOrder\Traits\SortOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\EloquentSortable\Sortable;
+use Spatie\EloquentSortable\SortableTrait;
 
-class Tipo extends Model
+class Tipo extends Model implements Sortable
 {
     use HasFactory;
-    use SortOrder;
+    use SortableTrait;
 
     /**
      * The attributes that are mass assignable.
