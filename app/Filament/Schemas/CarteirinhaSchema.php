@@ -18,6 +18,7 @@ class CarteirinhaSchema
             Forms\Components\FileUpload::make('pdf')
                 ->hidden(),
             Forms\Components\FileUpload::make('foto')
+                ->hiddenOn('view')
                 ->default($associado?->foto)
                 ->imagePreviewHeight('200')
                 ->maxSize(1024)
