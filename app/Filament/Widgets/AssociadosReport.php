@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -197,6 +198,11 @@ class AssociadosReport extends ChartWidget
 
         // Shuffle the colors array to randomize the order
         // shuffle($colors);
+        $createdAt = explode(' - ', $filters['created_at'] ?? '');
+        if (count($createdAt) === 2) {
+            $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[0])->format('Y-m-d').' 00:00:00';
+            $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';
+        }
 
         $select = DB::table('associados')
             ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
@@ -213,7 +219,9 @@ class AssociadosReport extends ChartWidget
             ->when(@$filters['aparelhos_utilizado'], fn ($query, $value) => $query->whereIn('aparelhos_utilizado', $filters['aparelhos_utilizado']))
             ->when(@$filters['beneficios'], fn ($query, $value) => $query->whereHas('beneficios', fn ($query) => $query->whereIn('beneficios.nome', $filters['beneficios'])))
             ->when(@$filters['cid10'], fn ($query, $value) => $query->whereHas('cid10', fn ($query) => $query->whereIn('cid10.codigo', $filters['cid10'])))
-            ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('ocupacoes', $filters['ocupacoes']));
+            ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('ocupacoes', $filters['ocupacoes']))
+            ->when($type === 'atendimentos' && @$between, fn ($query) => $query->whereBetween('atendimentos.created_at', $between))
+            ->when(! $type && @$between, fn ($query) => $query->whereBetween('associados.created_at', $between));
 
         self::$total = $select->count();
 

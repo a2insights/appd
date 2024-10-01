@@ -20,6 +20,7 @@ use App\TipoDeficiencia;
 use Facades\App\Services\MunicipioService;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
@@ -31,9 +32,11 @@ use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class AssociadoSchema
 {
-    public static function schema($outResource = false): array
+    public static function schema(?Form $form = null): array
     {
-        $fields = [
+        $record = $form->getRecord();
+
+        return [
             \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
                 ->lock()
                 ->columnSpanFull(),
@@ -115,12 +118,15 @@ class AssociadoSchema
                 Forms\Components\TextInput::make('cpf')
                     ->maxLength(255)
                     ->columnSpan(2)
+                    ->unique('associados', 'cpf', $record ?? null)
                     ->stripCharacters(['-', '.'])
                     ->mask('999.999.999-99')
                     ->rules(['cpf'])
                     ->live()
                     ->afterStateUpdated(function (Forms\Contracts\HasForms $livewire, Forms\Components\TextInput $component) {
-                        $livewire->validateOnly($component->getStatePath());
+                        if ($component->getState('cpf') && strlen($component->getState('cpf')) === 14) {
+                            $livewire->validateOnly($component->getStatePath());
+                        }
                     }),
                 Forms\Components\TextInput::make('rg')
                     ->maxLength(255)
@@ -362,10 +368,7 @@ class AssociadoSchema
             ])
                 ->columnSpanFull()
                 ->columns(10),
-        ];
-
-        if (! $outResource) {
-            $fields[] = SpatieMediaLibraryFileUpload::make('arquivos')
+            SpatieMediaLibraryFileUpload::make('arquivos')
                 ->multiple()
                 ->maxSize(2048)
                 ->reorderable()
@@ -374,10 +377,8 @@ class AssociadoSchema
                 ->downloadable()
                 ->panelLayout('grid')
                 ->openable()
-                ->columnSpanFull();
-        }
-
-        return $fields;
+                ->columnSpanFull(),
+        ];
     }
 
     /*

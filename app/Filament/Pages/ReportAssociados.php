@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AssociadoResource\Pages;
+namespace App\Filament\Pages;
 
 use App\Exports\AssociadosChartExport;
 use App\Filament\Filters\AssociadoFiltersForm;
@@ -22,7 +22,7 @@ class ReportAssociados extends Page
 {
     use Dashboard\Concerns\HasFiltersForm;
 
-    protected static string $view = 'filament.resources.associado-resource.pages.report-associados';
+    protected static string $view = 'filament.pages.report';
 
     protected static string $routePath = '/report-associados';
 
@@ -34,7 +34,7 @@ class ReportAssociados extends Page
 
     public static function getNavigationIcon(): ?string
     {
-        return 'heroicon-o-document-chart-bar';
+        return 'heroicon-c-chart-pie';
     }
 
     public static function getNavigationLabel(): string

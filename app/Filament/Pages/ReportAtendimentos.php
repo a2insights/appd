@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AssociadoResource\Pages;
+namespace App\Filament\Pages;
 
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -16,6 +16,11 @@ class ReportAtendimentos extends ReportAssociados
     public function getTitle(): string|Htmlable
     {
         return 'Relatório de Atendimentos';
+    }
+
+    public static function getNavigationIcon(): ?string
+    {
+        return 'heroicon-c-chart-bar';
     }
 
     /**

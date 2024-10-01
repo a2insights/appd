@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Vaga::class, 'vaga_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Talento::class, 'talento_id')->constrained()->cascadeOnDelete();
-            $table->enum('status', ['nova', 'em_andamento', 'selecionado', 'desclassificado', 'finalizado'])->default('nova');
+            $table->enum('status', ['novo', 'em_andamento', 'selecionado', 'desclassificado', 'finalizado'])->default('novo');
             $table->timestamps();
         });
     }

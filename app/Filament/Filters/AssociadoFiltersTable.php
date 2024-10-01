@@ -27,6 +27,8 @@ class AssociadoFiltersTable
             SelectFilter::make('status')
                 ->options(AssociadoStatus::class)
                 ->multiple(),
+            \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at')
+                ->label('Data de Cadastro'),
             SelectFilter::make('aniversariantes')
                 ->attribute('data_nascimento')
                 ->multiple()
@@ -121,7 +123,6 @@ class AssociadoFiltersTable
 
             //         $query->whereIn('bairro', $data['values']);
             //     }),
-            \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at'),
         ];
     }
 

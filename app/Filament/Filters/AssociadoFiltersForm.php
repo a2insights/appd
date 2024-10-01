@@ -18,6 +18,7 @@ use App\TipoDeficiencia;
 use Facades\App\Services\MunicipioService;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Collection;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class AssociadoFiltersForm
 {
@@ -27,6 +28,10 @@ class AssociadoFiltersForm
             Select::make('status')
                 ->options(AssociadoStatus::class)
                 ->multiple(),
+            DateRangePicker::make('created_at')
+                ->autoApply()
+                ->disableClear(false)
+                ->label('Data'),
             Select::make('sexo')
                 ->options(Sexo::class),
             Select::make('declaracao_sexual')
@@ -35,9 +40,9 @@ class AssociadoFiltersForm
             Select::make('estado_civil')
                 ->options(EstadoCivil::class)
                 ->multiple(),
-            Select::make('naturalidade_uf')
-                ->options(NaturalidadeUf::class)
-                ->multiple(),
+            // Select::make('naturalidade_uf')
+            //     ->options(NaturalidadeUf::class)
+            //     ->multiple(),
             // Select::make('naturalidade_municipio_ibge')
             //     ->options(fn (): array => self::getMunicipios()->pluck('nome', 'id')->all())
             //     ->query(fn (Get $get): array => self::getMunicipiosByUf($get('naturalidade_uf')))

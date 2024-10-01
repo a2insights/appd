@@ -6,9 +6,11 @@ use App\Filament\Resources\TalentoResource\Pages;
 use App\Models\Talento;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,6 +36,17 @@ class TalentoResource extends Resource
                     ->helperText('Selecione o associado, pesquisando pelo nome ou CPF')
                     ->preload()
                     ->searchable(['nome', 'cpf']),
+                SpatieMediaLibraryFileUpload::make('arquivos')
+                    ->label('Arquivos, como currículo, certificados, etc')
+                    ->multiple()
+                    ->maxSize(2048)
+                    ->reorderable()
+                    ->visibility('private')
+                    ->preserveFilenames()
+                    ->downloadable()
+                   // ->panelLayout('grid')
+                    ->openable()
+                    ->columnSpanFull(),
                 CheckboxList::make('cargos')
                     ->label('Competências')
                     ->required()
@@ -67,15 +80,19 @@ class TalentoResource extends Resource
                     ->badge(),
             ])
             ->filters([
-                //
+                SelectFilter::make('cargos')
+                    ->relationship('cargos', 'nome')
+                    ->preload()
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 

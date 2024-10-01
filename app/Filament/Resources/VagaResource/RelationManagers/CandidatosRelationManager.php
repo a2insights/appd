@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\VagaResource\RelationManagers;
 
+use App\CandidatoStatus;
 use App\Filament\Resources\TalentoResource;
 use App\Models\Talento;
 use Filament\Forms;
@@ -43,7 +44,14 @@ class CandidatosRelationManager extends RelationManager
                     )
                     ->searchPrompt('Pesquise talentos pelo nome ou CPF')
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->columnSpanFull(),
+                Forms\Components\ToggleButtons::make('status')
+                    ->inline()
+                    ->options(CandidatoStatus::class)
+                    ->default(CandidatoStatus::NOVO)
+                    ->required()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -59,6 +67,13 @@ class CandidatosRelationManager extends RelationManager
                     })
                     ->searchable()
                     ->color('primary'),
+                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('talento.cargos.nome')
+                    ->label('Competências')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Adicionado em')
+                    ->date('d/m/Y H:i:s'),
             ])
             ->filters([
                 //

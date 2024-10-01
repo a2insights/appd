@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\VagaResource\Pages;
+namespace App\Filament\Resources\PessoaResource\Pages;
 
-use App\Filament\Resources\VagaResource;
+use App\Filament\Resources\PessoaResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateVaga extends CreateRecord
+class CreatePessoa extends CreateRecord
 {
-    protected static string $resource = VagaResource::class;
+    protected static string $resource = PessoaResource::class;
 
     protected static bool $canCreateAnother = false;
 

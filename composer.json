@@ -15,6 +15,7 @@
         "discoverydesign/filament-gaze": "^1.1",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",
+        "ibrahimbougaoua/filament-sort-order": "^1.1",
         "joaopaulolndev/filament-pdf-viewer": "^1.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",

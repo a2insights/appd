@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\TipoResource\Pages;
+namespace App\Filament\Resources\PessoaResource\Pages;
 
-use App\Filament\Resources\TipoResource;
+use App\Filament\Resources\PessoaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditTipo extends EditRecord
+class EditPessoa extends EditRecord
 {
-    protected static string $resource = TipoResource::class;
+    protected static string $resource = PessoaResource::class;
 
     protected function getHeaderActions(): array
     {
