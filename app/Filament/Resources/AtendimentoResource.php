@@ -27,7 +27,7 @@ class AtendimentoResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-information-circle';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function getNavigationBadge(): ?string
     {
