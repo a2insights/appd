@@ -34,8 +34,6 @@ class AssociadoSchema
 {
     public static function schema(?Form $form = null): array
     {
-        $record = $form->getRecord();
-
         return [
             \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
                 ->lock()
