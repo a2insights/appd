@@ -19,4 +19,9 @@ class EditAssociado extends EditRecord
                 ->label('Alterações'),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

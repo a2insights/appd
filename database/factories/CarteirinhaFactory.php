@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Carteirinha;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use App\Models\Associado;
+use App\Models\Carteirinha;
 
 class CarteirinhaFactory extends Factory
 {
@@ -20,9 +22,10 @@ class CarteirinhaFactory extends Factory
     public function definition(): array
     {
         return [
-            //  'foto' => 'avatars/'.$this->faker->image(storage_path('app/public/avatars'), 640, 480, null, false),
-            //  'pdf' => ?,
-            'status' => $this->faker->randomElement(['ativa', 'cancelada', 'vencida']),
+            'associado_id' => Associado::factory(),
+            'foto' => $this->faker->word(),
+            'pdf' => $this->faker->word(),
+            'status' => $this->faker->randomElement(["ativa","cancelada","vencida"]),
             'data_emissao' => $this->faker->date(),
             'data_vencimento' => $this->faker->date(),
         ];

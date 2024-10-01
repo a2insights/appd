@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Models\Associado;
 use App\Models\User;
 use App\Policies\ActivityPolicy;
-use BezhanSalleh\FilamentExceptions\Models\Exception;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use HusamTariq\FilamentDatabaseSchedule\Models\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -23,7 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Relation::morphMap([
+            'associado' => Associado::class,
+        ]);
     }
 
     /**
@@ -31,10 +32,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Relation::morphMap([
-            'associado' => Associado::class,
-        ]);
-
         Gate::policy(Ip::class, \App\Policies\IpPolicy::class);
         Gate::policy(QueueMonitor::class, \App\Policies\QueueMonitorPolicy::class);
         Gate::policy(FilamentWebhookServer::class, \App\Policies\WebhookPolicy::class);
@@ -42,6 +39,5 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, \App\Policies\UserPolicy::class);
         Gate::policy(Schedule::class, \App\Policies\SchedulePolicy::class);
         Gate::policy(Activity::class, ActivityPolicy::class);
-        Gate::policy(Exception::class, \App\Policies\ExceptionPolicy::class);
     }
 }
