@@ -68,10 +68,9 @@ class AssociadoResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('foto')
-                    ->circular()
                     ->visibility('private')
                     ->toggleable(isToggledHiddenByDefault: false)
-                    ->state(fn (Associado $associado) => $associado->foto ?? 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=true&bold=true&color=fff&background=7F9CF5'),
+                    ->state(fn (Associado $associado) => $associado->foto ?? 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=false&bold=true&color=fff&background=7F9CF5'),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->extraAttributes(['autocomplete' => false])
@@ -192,9 +191,10 @@ class AssociadoResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()->hasRole('super_admin')),
+                ]),
             ])
             ->defaultSort('id', 'desc');
     }

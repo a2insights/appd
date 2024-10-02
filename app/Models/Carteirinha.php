@@ -45,7 +45,9 @@ class Carteirinha extends Model
         static::deleted(function ($carteirinha) {
             $disk = config('filament.default_filesystem_disk');
 
-            Storage::disk($disk)->delete($carteirinha->foto);
+            if ($carteirinha->foto) {
+                Storage::disk($disk)->delete($carteirinha->foto);
+            }
         });
 
         static::saved(function ($carteirinha) {

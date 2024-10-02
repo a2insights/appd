@@ -181,7 +181,9 @@ class Associado extends Model implements HasMedia
         static::deleted(function ($carteirinha) {
             $disk = config('filament.default_filesystem_disk');
 
-            Storage::disk($disk)->delete($carteirinha->foto);
+            if ($carteirinha->foto) {
+                Storage::disk($disk)->delete($carteirinha->foto);
+            }
         });
     }
 

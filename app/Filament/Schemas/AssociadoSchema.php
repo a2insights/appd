@@ -371,9 +371,10 @@ class AssociadoSchema
                 ->maxSize(2048)
                 ->reorderable()
                 ->visibility('private')
+                ->collection('associados_arquivos')
                 ->preserveFilenames()
                 ->downloadable()
-                ->panelLayout('grid')
+                // ->panelLayout('grid')
                 ->openable()
                 ->columnSpanFull(),
         ];
