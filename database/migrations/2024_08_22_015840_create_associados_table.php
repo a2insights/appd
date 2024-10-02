@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['ativo', 'inativo', 'falecido'])->default('ativo');
             $table->date('data_nascimento');
             $table->string('nome_social')->nullable();
-            $table->enum('sexo', ['masculino', 'feminino']);
+            $table->enum('sexo', ['masculino', 'feminino'])->nullable();
             $table->enum('declaracao_sexual', ['heterossexualidade', 'homossexualidade', 'bissexualidade', 'transsexualidade', 'pansexualidade', 'assexualidade', 'intergenero'])->nullable();
             $table->string('cpf')->nullable();
             $table->string('rg')->nullable();
@@ -28,9 +28,9 @@ return new class extends Migration
             $table->string('certidao_nascimento')->nullable();
             $table->enum('naturalidade_uf', ['ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi', 'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to'])->nullable();
             $table->integer('naturalidade_municipio_ibge')->nullable();
-            $table->string('mae');
+            $table->string('mae')->nullable();
             $table->string('pai')->nullable();
-            $table->enum('religiao', ['mormons', 'protestante', 'espiritismo', 'umbanda', 'budismo', 'candomble', 'judaismo', 'tradicoes_esotericas', 'islamismo', 'crencas_indigenas', 'catolico', 'ateu', 'outras']);
+            $table->enum('religiao', ['mormons', 'protestante', 'espiritismo', 'umbanda', 'budismo', 'candomble', 'judaismo', 'tradicoes_esotericas', 'islamismo', 'crencas_indigenas', 'catolico', 'ateu', 'outras'])->nullable();
             $table->set('ocupacoes', ['estudante', 'empresario', 'funcionario_publico', 'bancario', 'militar', 'autonomo', 'aposentado', 'pensionista', 'funcionario_privado', 'dono_de_casa', 'profissional_liberal', 'trabalhador'])->nullable();
             $table->enum('escolaridade', ['sem_escolaridade', 'ensino_fundamental_incompleto', 'ensino_fundamental', 'ensino_medio_incompleto', 'ensino_medio', 'ensino_superior_incompleto', 'ensino_superior', 'mestrado', 'doutorado']);
             $table->enum('raca', ['branca', 'negra', 'amarela', 'parda', 'indigena', 'ignorado']);

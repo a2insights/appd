@@ -39,11 +39,17 @@ class CarteirinhaResource extends Resource
                     Tables\Columns\ImageColumn::make('foto')
                         ->visibility('private')
                         ->height('auto')
-                        ->width('90px'),
+                        ->width('90px')
+                        ->grow(false),
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('associado.nome')
+                            ->url(function (Model $record): ?string {
+                                return AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
+                            })
+                            ->color('primary')
                             ->searchable(),
                         Tables\Columns\TextColumn::make('associado.cpf')
+                            ->formatStateUsing(fn (string $state, $record) => getDocumento($record->associado))
                             ->searchable(),
                         Tables\Columns\TextColumn::make('status'),
                         Tables\Columns\TextColumn::make('data_emissao')
@@ -64,7 +70,7 @@ class CarteirinhaResource extends Resource
             ])
             ->contentGrid([
                 'md' => 2,
-                'xl' => 4,
+                'xl' => 3,
             ])
             ->filters([
                 SelectFilter::make('associados')

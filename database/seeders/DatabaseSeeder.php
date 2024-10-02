@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             Cid10Seeder::class,
             BeneficioSeeder::class,
             TipoSeeder::class,
-            AssociadoSeeder::class,
+            // AssociadoSeeder::class,
             CargoSeeder::class,
         ]);
     }
