@@ -27,24 +27,23 @@ class CarteirinhaSchema
                 ->visibility('private')
                 ->imageCropAspectRatio('3:4')
                 ->panelLayout('integrated')
-            // ->imageEditorAspectRatios([
-            //     '1:1',
-            //     null,
-            // ])
+                // ->imageEditorAspectRatios([
+                //     '1:1',
+                //     null,
+                // ])
                 ->imageEditorMode(2)
-            // ->loadingIndicatorPosition('left')
-            // ->panelAspectRatio('1:1')
-            // ->panelLayout('integrated')
-            // TODO: Not working. Create an PR to fix this in filament
+                // ->loadingIndicatorPosition('left')
+                // ->panelAspectRatio('1:1')
+                // ->panelLayout('integrated')
+                // TODO: Not working. Create an PR to fix this in filament
                 ->removeUploadedFileButtonPosition('right')
-            // ->uploadButtonPosition('left')
-            // ->uploadProgressIndicatorPosition('left')
+                // ->uploadButtonPosition('left')
+                // ->uploadProgressIndicatorPosition('left')
                 ->required()
                 ->directory('carteirinhas')
                 ->downloadable()
                 ->maxSize(1024)
                 ->image()
-                ->removeUploadedFileButtonPosition('right')
                 ->acceptedFileTypes(['image/jpeg', 'image/png'])
                 ->openable()
                 ->columnSpanFull(),

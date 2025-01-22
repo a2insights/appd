@@ -15,7 +15,7 @@ enum CausaDeficiencia: string implements HasLabel
     case ACIDENTE_MEDICO = 'acidente_medico';
     case ACIDENTE_MOTOR_DE_BARCO = 'acidente_motor_de_barco';
     case ADQUIRIDA = 'adquirida';
-    case ADQUIRIDA_ANEMIA_FALCIFORME = 'adquirida_anemia_falciforme';
+    case ANEMIA_FALCIFORME = 'anemia_falciforme';
     case ANEURISMA = 'aneurisma';
     case ARMA_BRANCA = 'arma_branca';
     case ARMA_DE_FOGO = 'arma_de_fogo';
@@ -81,7 +81,7 @@ enum CausaDeficiencia: string implements HasLabel
             self::ACIDENTE_MEDICO => 'Acidente Médico',
             self::ACIDENTE_MOTOR_DE_BARCO => 'Acidente Motor de Barco',
             self::ADQUIRIDA => 'Adquirida',
-            self::ADQUIRIDA_ANEMIA_FALCIFORME => 'Adquirida Anemia Falciforme',
+            self::ANEMIA_FALCIFORME => 'Adquirida Anemia Falciforme',
             self::ANEURISMA => 'Aneurisma',
             self::ARMA_BRANCA => 'Arma Branca',
             self::ARMA_DE_FOGO => 'Arma de Fogo',

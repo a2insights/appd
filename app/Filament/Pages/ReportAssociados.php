@@ -60,6 +60,8 @@ class ReportAssociados extends Page
             'raca' => 'Raça',
             'causa_deficiencia' => 'Causa da Deficiência',
             'tipo_deficiencia' => 'Tipo de Deficiência',
+            'ocupacoes' => 'Ocupações',
+            'aparelhos_utilizado' => 'Aparelhos Utilizados',
         ];
 
         return $form
@@ -105,7 +107,7 @@ class ReportAssociados extends Page
                                 $dataURI = str_replace('data:image/png;base64,', '', $dataURI);
                                 $fileContents = base64_decode($dataURI);
 
-                                $filePath = 'charts/'.Str::random(40).'.png';
+                                $filePath = 'charts/' . Str::random(40) . '.png';
 
                                 Storage::disk(config('livewire.temporary_file.disk'))
                                     ->put($filePath, $fileContents);
@@ -120,7 +122,7 @@ class ReportAssociados extends Page
                                 $group = $state['group'];
 
                                 $chartData = (new AssociadosReport)->generateDatasetsAndLabels($xAxis, $group);
-                                $fileName = Str::slug('associados-'.$xAxis.'-'.$group).Str::random(5).'.xlsx';
+                                $fileName = Str::slug('associados-' . $xAxis . '-' . $group) . Str::random(5) . '.xlsx';
 
                                 $simplifiedData = [];
 
