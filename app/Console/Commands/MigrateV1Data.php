@@ -4,7 +4,10 @@ namespace App\Console\Commands;
 
 use App\Models\Associado;
 use App\Models\Beneficio;
+use App\Models\Carteirinha;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class MigrateV1Data extends Command
@@ -24,7 +27,7 @@ class MigrateV1Data extends Command
     protected $description = 'Migrate data from the v1 version of the app to the v2 version.';
 
     /**
-     * @var array
+     * @var Collection
      */
     protected $beneficios = [];
 
@@ -40,14 +43,23 @@ class MigrateV1Data extends Command
         // religião,escolaridade,raca,certidao_de_nascimento,naturalidade,mae,pai,data_cadastro
         // cpf,rg,estado,cidade,bairro,cep,rua,numero,perimetro
 
-        $this->beneficios = Beneficio::all()->pluck('id', 'nome')->toArray();
+        $this->beneficios = Beneficio::all();
 
-        $csv = array_map('str_getcsv', file(base_path('app/Console/Commands/associados_v1_data.csv')));
+        $associadosCsv = array_map('str_getcsv', file(base_path('app/Console/Commands/associados.csv')));
+        $carteirinhasCsv = array_map('str_getcsv', file(base_path('app/Console/Commands/carteirinhas.csv')));
+        $arquivosCsv = array_map('str_getcsv', file(base_path('app/Console/Commands/arquivos.csv')));
 
-        unset($csv[0]);
+        unset($associadosCsv[0]);
+        unset($carteirinhasCsv[0]);
+        unset($arquivosCsv[0]);
 
-        $data = collect($csv)->map(function ($row) {
+        $associados = collect($associadosCsv)->map(function ($row) {
+            $row = array_map(function ($value) {
+                return $value === 'NULL' ? null : $value;
+            }, $row);
+
             return [
+                'codigo' => $row[0],
                 'foto' => $row[1],
                 'status' => $this->mapStatus($row[2]), // required
                 'nome' => Str::upper($row[3]), // required
@@ -60,11 +72,11 @@ class MigrateV1Data extends Command
                 'causa_deficiencia' => $this->mapCausaDeficiencia($row[10]), // required
                 'crm' => $row[11],
                 'cid10' => $this->mapCids($row[12]), // required
-                // beneficios is relation
+                'beneficios' => $row[13],
                 'aparelhos_utilizado' => $this->mapAparelhosUtilizado($row[14]),
                 'ocupacoes' => $this->mapOcupacoes($row[15]),
                 'data_nascimento' => $row[16], // required
-                'sexo' => ['Masculino' => 'masculino', 'Feminino' => 'feminino'][$row[17]],
+                'sexo' => ['Masculino' => 'masculino', 'Feminino' => 'feminino', '' => null][$row[17]],
                 'declaracao_sexual' => $this->mapDeclaracaoSexual($row[18]),
                 'orgao_expedidor' => $this->mapOrgaoExpedidor($row[19]),
                 'orgao_expedidor_uf' => $this->mapOrgaoExpedidorUf($row[20]),
@@ -77,8 +89,8 @@ class MigrateV1Data extends Command
                 // 'naturalidade_municipio_ibge' => ?,
                 'mae' => Str::upper($row[27]),
                 'pai' => Str::upper($row[28]),
-                'created_at' => $row[29],
-                'updated_at' => $row[29],
+                'created_at' => $row[29] ?? @$row[39],
+                'updated_at' => @$row[39],
                 'cpf' => preg_replace('/\D/', '', $row[30]),
                 'rg' => $row[31],
                 'estado' => $row[32],
@@ -90,10 +102,113 @@ class MigrateV1Data extends Command
                 'perimetro' => $row[38],
             ];
         })
+            ->where('created_at', '!=', null)
+            ->where('tipo_deficiencia', '!=', null)
+            ->where('cep', '!=', null)
+            ->where('cep', '!=', '')
             ->values()
             ->all();
 
-        Associado::insert($data);
+        $carteirinhas = collect($carteirinhasCsv)->map(function ($row) {
+            return [
+                'associado_id' => $row[1],
+                'status' => $row[3],
+                'data_emissao' => $row[5],
+                'data_vencimento' => $row[4],
+                'created_at' => $row[6],
+                'updated_at' => $row[7],
+            ];
+        });
+
+        $arquivos = collect($arquivosCsv)->map(function ($row) {
+            return [
+                'associado_id' => $row[0],
+                'path' => $row[3],
+                'model_type' => 'associado',
+                'uuid' => Str::uuid(),
+                'collection_name' => 'arquivos',
+                'name' => $row[1],
+                'file_name' => @$row[2] . '.' . explode('/', $row[4])[1],
+                'mime_type' => $row[4],
+                'disk' => 's3',
+                'conversions_disk' => 's3',
+                'size' => $row[3],
+                'manipulations' => [],
+                'created_at' => $row[5],
+                'updated_at' => $row[6],
+            ];
+        });
+
+        $n = 0;
+        $startAfter = 0;
+
+        $associados = array_slice($associados, $startAfter);
+
+        foreach ($associados as $a) {
+            $n++;
+            $conting = $n + $startAfter;
+            $this->info("Migrating associado {$conting} of " . count($associados));
+            $associado = new Associado;
+            $data = $a;
+            unset($data['codigo']);
+            unset($data['beneficios']);
+            $associado = $associado->forceFill($data);
+            $associado->save();
+
+            $beneficios = explode(',', $associado['beneficios']);
+            $beneficios = $this->beneficios->whereIn('nome', $beneficios)->pluck('id')->toArray();
+
+            $associado->beneficios()->attach($beneficios);
+
+            /// continue;
+            //////////////
+
+            $carteirinhasToCreate = $carteirinhas->whereIn('associado_id', $a['codigo'])->all();
+
+            foreach ($carteirinhasToCreate as $c) {
+                $c['foto'] = $associado->foto;
+                $c['associado_id'] = $associado->id;
+                dump($c);
+
+                if (! Carbon::parse($c['data_vencimento'])->gt(Carbon::now())) {
+                    $c['status'] = 'vencida';
+                }
+
+                $filename = basename($associado->foto);
+                $targetPath = 'carteirinhas/' . uniqid() . '_' . $filename;
+
+                Storage::disk(config('filament.default_filesystem_disk'))
+                    ->copy($associado->foto, $targetPath);
+
+                $c['foto'] = $targetPath;
+
+                $carteirinha = Carteirinha::create($c);
+
+                $carteirinha->forceFill([
+                    'created_at' => $c['created_at'],
+                    'updated_at' => $c['updated_at'],
+                ]);
+                $carteirinha->updateQuietly([
+                    'created_at' => $c['created_at'],
+                    'updated_at' => $c['updated_at'],
+                ]);
+            }
+
+            $arquivosToCreate = $arquivos->whereIn('associado_id', $a['codigo'])->all();
+
+            foreach ($arquivosToCreate as $a) {
+                $file = Storage::disk(config('filament.default_filesystem_disk'))->get($a['path']);
+
+                $media = $associado->addMediaFromStream($file)
+                    ->usingFileName($a['file_name'])
+                    ->toMediaCollection('associados_arquivos', config('filament.default_filesystem_disk'));
+
+                $media->updateQuietly([
+                    'created_at' => $a['created_at'],
+                    'updated_at' => $a['updated_at'],
+                ]);
+            }
+        }
     }
 
     private function mapStatus($status)
@@ -133,8 +248,8 @@ class MigrateV1Data extends Command
             'Acidente' => 'acidente',
             'Acidente com arma' => 'acidente_com_arma_de_fogo', // Updated from 'acidente com arma' to 'acidente_com_arma_de_fogo'
             'Acidente de Moto' => 'acidente_de_moto',
-            'Acidente de Trabalho' => 'acidente_trabalho',
-            'Acidente de trabalho' => 'acidente_trabalho',
+            'Acidente de Trabalho' => 'acidente_de_trabalho',
+            'Acidente de trabalho' => 'acidente_de_trabalho',
             'Acidente de transito' => 'acidente_de_transito',
             'Acidente domestico' => 'acidente_domestico',
             'Acidente Medico' => 'acidente_medico',
@@ -269,13 +384,13 @@ class MigrateV1Data extends Command
     {
         $cids = explode(',', $cids);
 
-        return json_encode($cids);
+        return $cids;
     }
 
     private function mapAparelhosUtilizado($aparelhos)
     {
         $map = [
-            'Cadeira de Rodas' => 'cadeira_de_rodas',
+            'Cadeira de rodas' => 'cadeira_de_rodas',
             'Andador' => 'andador',
             'Muleta' => 'muleta',
             'Bengala' => 'bengala',
@@ -302,12 +417,20 @@ class MigrateV1Data extends Command
             'Bolsa de Colostomia' => 'bolsa_de_colostomia',
         ];
 
-        return collect(explode(',', $aparelhos))
+        if (empty($aparelhos)) {
+            return null;
+        }
+
+        if (is_string($aparelhos)) {
+            $aparelhos = explode(',', $aparelhos);
+        }
+
+        return collect($aparelhos)
             ->map(function ($aparelho) use ($map) {
-                return $map[$aparelho] ?? null;
+                return $map[trim($aparelho)] ?? null;
             })
             ->filter()
-            ->join(',');
+            ->all();
     }
 
     private function mapOcupacoes($ocupacoes)
@@ -317,12 +440,24 @@ class MigrateV1Data extends Command
             'Estudante' => 'estudante',
         ];
 
-        return collect(explode(',', $ocupacoes))
+        if (empty($ocupacoes)) {
+            return [];
+        }
+
+        if (is_string($ocupacoes)) {
+            $ocupacoes = explode(',', $ocupacoes);
+        }
+
+        if (in_array('Cadeira de Rodas', $ocupacoes)) {
+            dd($ocupacoes);
+        }
+
+        return collect($ocupacoes)
             ->map(function ($ocupacao) use ($map) {
                 return $map[$ocupacao] ?? null;
             })
             ->filter()
-            ->join(',');
+            ->all(',');
     }
 
     private function mapDeclaracaoSexual($declaracao)
