@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use A2Insights\FilamentSaas\User\Filament\Components\Phone;
 use A2Insights\FilamentSaas\User\Filament\Components\Username;
+use App\Filament\Widgets\AppdInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -11,6 +12,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Platform;
+use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -75,8 +77,8 @@ class AdminPanelServiceProvider extends PanelProvider
                 \A2Insights\FilamentSaas\Settings\SettingsPlugin::make(),
             ])
             ->widgets([
-                // Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
+                AppdInfoWidget::class,
+                Widgets\AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
