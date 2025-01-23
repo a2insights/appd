@@ -6,25 +6,17 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('settings_terms.service', $this->termsOfService());
-        $this->migrator->add('settings_terms.privacy_policy', $this->privacyPolicy());
+        $this->migrator->add('terms_settings.service', $this->termsOfService());
+        $this->migrator->add('terms_settings.privacy_policy', $this->privacyPolicy());
     }
 
     private function termsOfService(): string
     {
-        return <<<'MARKDOWN'
-        # Terms of Service
-
-        Edit this content in the dashboard feature of your application.
-        MARKDOWN;
+        return file_get_contents(resource_path('markdown/terms.md'));
     }
 
     private function privacyPolicy(): string
     {
-        return <<<'MARKDOWN'
-        # Privacy Policy
-
-        Edit this content in the dashboard feature of your application.
-        MARKDOWN;
+        return file_get_contents(resource_path('markdown/policy.md'));
     }
 };

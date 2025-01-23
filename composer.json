@@ -1,5 +1,5 @@
 {
-    "name": "a2insights/octo",
+    "name": "a2insights/filament-saas-template",
     "type": "project",
     "description": "The web network.",
     "keywords": [
@@ -8,8 +8,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "a2insights/octo-core": "dev-main",
-        "awcodes/filament-quick-create": "^3.4",
+        "a2insights/filament-saas": "dev-main",
+        "a21ns1g4ts/filament-short-url": "dev-main",
         "barryvdh/laravel-debugbar": "^3.13",
         "barryvdh/laravel-dompdf": "^3.0",
         "discoverydesign/filament-gaze": "^1.1",
@@ -17,7 +17,6 @@
         "flowframe/laravel-trend": "^0.2.0",
         "joaopaulolndev/filament-pdf-viewer": "^1.0",
         "laravel/framework": "^11.0",
-        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "laravellegends/pt-br-validator": "^11.0",
         "league/flysystem-aws-s3-v3": "^3.0",
@@ -31,12 +30,14 @@
         "doctrine/dbal": "^3.6",
         "fakerphp/faker": "^1.23",
         "jasonmccreary/laravel-test-assertions": "^2.4",
+        "larastan/larastan": "^2.0",
         "laravel-shift/blueprint": "^2.10",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "pestphp/pest": "^2.35",
+        "pestphp/pest": "^3.4",
+        "pestphp/pest-plugin-laravel": "^3.0",
         "spatie/laravel-ignition": "^2.4"
     },
     "autoload": {

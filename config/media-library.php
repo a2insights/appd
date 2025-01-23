@@ -96,7 +96,8 @@ return [
      * When urls to files get generated, this class will be called. Use the default
      * if your files are stored locally above the site root or on s3.
      */
-    'url_generator' => Spatie\MediaLibrary\Support\UrlGenerator\DefaultUrlGenerator::class,
+    // 'url_generator' => Spatie\MediaLibrary\Support\UrlGenerator\DefaultUrlGenerator::class,
+    'url_generator' => \A2Insights\FilamentSaas\Tenant\TenantUrlGenerator::class,
 
     /*
      * Moves media on updating to keep path consistent. Enable it only with a custom
@@ -141,7 +142,7 @@ return [
             '-m 6', // for the slowest compression method in order to get the best compression.
             '-pass 10', // for maximizing the amount of analysis pass.
             '-mt', // multithreading for some speed improvements.
-            '-q 90', //quality factor that brings the least noticeable changes.
+            '-q 90', // quality factor that brings the least noticeable changes.
         ],
         Spatie\ImageOptimizer\Optimizers\Avifenc::class => [
             '-a cq-level=23', // constant quality level, lower values mean better quality and greater file size (0-63).
@@ -270,7 +271,7 @@ return [
      * You can specify a prefix for that is used for storing all media.
      * If you set this to `/my-subdir`, all your media will be stored in a `/my-subdir` directory.
      */
-    'prefix' => env('MEDIA_PREFIX', 'arquivos'),
+    'prefix' => env('MEDIA_PREFIX', 'media'),
 
     /*
      * When forcing lazy loading, media will be loaded even if you don't eager load media and you have

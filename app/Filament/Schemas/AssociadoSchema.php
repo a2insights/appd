@@ -162,7 +162,7 @@ class AssociadoSchema
                     ->columnSpan(2),
                 Forms\Components\Select::make('naturalidade_municipio_ibge')
                     ->required()
-                    ->options(fn(Get $get): array => self::getMunicipiosByUf($get('naturalidade_uf')))
+                    ->options(fn (Get $get): array => self::getMunicipiosByUf($get('naturalidade_uf')))
                     ->searchable()
                     ->columnSpan(3),
             ])
@@ -209,7 +209,7 @@ class AssociadoSchema
                 Forms\Components\Select::make('cid10')
                     ->relationship(titleAttribute: 'codigo')
                     ->multiple()
-                    ->getOptionLabelFromRecordUsing(fn(Cid10 $record) => "{$record->codigo} - {$record->descricao}")
+                    ->getOptionLabelFromRecordUsing(fn (Cid10 $record) => "{$record->codigo} - {$record->descricao}")
                     ->required()
                     ->columnSpan(2),
                 Forms\Components\Select::make('beneficios')
@@ -391,14 +391,14 @@ class AssociadoSchema
         }
 
         return MunicipioService::all()
-            ->filter(fn($item) => $item->uf === $uf)
-            ->mapWithKeys(fn($item) => [$item->codigoIbge => $item->nome])
+            ->filter(fn ($item) => $item->uf === $uf)
+            ->mapWithKeys(fn ($item) => [$item->codigoIbge => $item->nome])
             ->all();
     }
 
     private static function getCepAddress(?string $cep)
     {
-        return Http::get('https://brasilapi.com.br/api/cep/v1/' . $cep)->json();
+        return Http::get('https://brasilapi.com.br/api/cep/v1/'.$cep)->json();
     }
 
     /*

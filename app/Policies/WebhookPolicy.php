@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use A2Insights\FilamentSaas\Features\Features;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Octo\Features\Features;
 
 class WebhookPolicy
 {
@@ -15,11 +15,9 @@ class WebhookPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user, Features $feature)
     {
-        $features = app(Features::class);
-
-        return $user->hasRole('super_admin') || $features->webhook;
+        return true;
     }
 
     /**
@@ -29,9 +27,7 @@ class WebhookPolicy
      */
     public function view(User $user)
     {
-        $features = app(Features::class);
-
-        return $user->hasRole('super_admin') || $features->webhook;
+        return true;
     }
 
     /**
@@ -41,8 +37,6 @@ class WebhookPolicy
      */
     public function create(User $user)
     {
-        $features = app(Features::class);
-
-        return $user->hasRole('super_admin') || $features->webhook;
+        return true;
     }
 }

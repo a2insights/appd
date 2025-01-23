@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Aco;
 use App\Models\Atendimento;
 use App\Models\Historico;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class HistoricoFactory extends Factory
 {

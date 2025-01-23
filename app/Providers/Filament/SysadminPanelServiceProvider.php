@@ -2,15 +2,15 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages;
-use App\Filament\Widgets\AppdInfoWidget;
+use A2Insights\FilamentSaas\User\Filament\Components\Phone;
+use A2Insights\FilamentSaas\User\Filament\Components\Username;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Widgets;
+use Filament\Support\Enums\Platform;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -18,76 +18,63 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Octo\User\Filament\Components\Phone;
-use Octo\User\Filament\Components\Username;
 
-class AdminPanelProvider extends PanelProvider
+class SysadminPanelServiceProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path(config('octo.admin_path'))
+            ->id('sysadmin')
+            ->homeUrl('/')
+            ->path('sysadmin')
             ->authGuard('web')
             ->login()
-            ->registration()
             ->passwordReset()
             ->emailVerification()
-            ->profile()
-            ->colors([
-                'primary' => Color::Amber,
-            ])
+            ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-                Pages\ReportAssociados::class,
-                Pages\ReportAtendimentos::class,
-            ])
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->unsavedChangesAlerts()
             ->resources([
                 config('filament-logger.activity_resource'),
             ])
-            ->navigationGroups([
-                'Banco de Talentos',
-                'Relatórios',
+            ->pages([
+                Pages\Dashboard::class,
             ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([
+                \Kenepa\Banner\BannerPlugin::make()->persistsBannersInDatabase(),
                 \Awcodes\FilamentQuickCreate\QuickCreatePlugin::make()
-                    ->label('Novo')
-                    ->alwaysShowModal()
                     ->includes([
-                        \App\Filament\Resources\AtendimentoResource::class,
-                        \App\Filament\Resources\TalentoResource::class,
-                        \App\Filament\Resources\VagaResource::class,
+                        \A2Insights\FilamentSaas\User\Filament\UserResource::class,
                     ]),
                 \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \CmsMulti\FilamentClearCache\FilamentClearCachePlugin::make(),
                 \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
-                \Jeffgreco13\FilamentBreezy\BreezyCore::make()->myProfile(
-                    shouldRegisterUserMenu: true, // Sets the 'account' link in the panel User Menu (default = true)
-                    shouldRegisterNavigation: false, // Adds a main navigation item for the My Profile page (default = false)
-                    hasAvatars: true, // Enables the avatar upload form component (default = false)
-                    slug: 'my-profile' // Sets the slug for the profile page (default = 'my-profile')
-                )->enableTwoFactorAuthentication(
-                    force: false, // force the user to enable 2FA before they can use the application (default = false)
-                    // action: CustomTwoFactorPage::class // optionally, use a custom 2FA page
-                )
-                // TODO: Disable becouse we cant disable from features settings
-                // ->enableSanctumTokens(
-                //     permissions: ['create', 'update', 'view', 'delete'] // optional, customize the permissions (default = ["create", "view", "update", "delete"])
-                // )
+                \Jeffgreco13\FilamentBreezy\BreezyCore::make()
+                    ->myProfile(
+                        shouldRegisterUserMenu: true, // Sets the 'account' link in the panel User Menu (default = true)
+                        shouldRegisterNavigation: false, // Adds a main navigation item for the My Profile page (default = false)
+                        hasAvatars: true, // Enables the avatar upload form component (default = false)
+                        slug: 'my-profile' // Sets the slug for the profile page (default = 'my-profile')
+                    )->enableTwoFactorAuthentication(
+                        force: false, // force the user to enable 2FA before they can use the application (default = false)
+                        // action: CustomTwoFactorPage::class // optionally, use a custom 2FA page
+                    )
+                    // TODO: Disable becouse we cant disable from features settings
+                    // ->enableSanctumTokens(
+                    //     permissions: ['create', 'update', 'view', 'delete'] // optional, customize the permissions (default = ["create", "view", "update", "delete"])
+                    // )
                     ->myProfileComponents([Phone::class, Username::class]),
-                \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage(fn () => auth()->user() ? auth()->user()?->hasRole('super_admin') : false),
+                \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage(fn () => auth()->user() ? auth()->user()->hasRole('super_admin') : false),
                 \Marjose123\FilamentWebhookServer\WebhookPlugin::make(),
                 \HusamTariq\FilamentDatabaseSchedule\FilamentDatabaseSchedulePlugin::make(),
                 \SolutionForest\FilamentFirewall\FilamentFirewallPanel::make(),
                 \pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin::make(),
-                // TODO: Navigation inconfigurable
-                // \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
+                \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
                 \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::make()
                     ->label('Job')
                     ->pluralLabel('Jobs')
@@ -98,16 +85,15 @@ class AdminPanelProvider extends PanelProvider
                     ->navigationCountBadge(true)
                     ->enablePruning(true)
                     ->pruningRetention(7),
-                // ->resource(\App\Filament\Resources\CustomJobMonitorResource::class),
-                \Octo\User\UserPlugin::make(),
-                \Octo\Features\FeaturesPlugin::make(),
-                \Octo\Settings\SettingsPlugin::make(),
-                \Octo\System\SystemPlugin::make(),
+                \A2Insights\FilamentSaas\User\UserPlugin::make(),
+                \A2Insights\FilamentSaas\Features\FeaturesPlugin::make(),
+                \A2Insights\FilamentSaas\Settings\SettingsPlugin::make(),
+                \A2Insights\FilamentSaas\System\SystemPlugin::make(),
+                \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                AppdInfoWidget::class,
-                Widgets\AccountWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -119,13 +105,18 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                \Octo\Settings\Http\Middleware\Locale::class,
                 \Hasnayeen\Themes\Http\Middleware\SetTheme::class,
+                \A2Insights\FilamentSaas\Settings\Http\Middleware\Locale::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
                 \Cog\Laravel\Ban\Http\Middleware\ForbidBannedUser::class,
-                'verified',
-            ]);
+            ])
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->globalSearchFieldSuffix(fn (): ?string => match (Platform::detect()) {
+                Platform::Windows, Platform::Linux => 'CTRL+K',
+                Platform::Mac => '⌘K',
+                default => null,
+            });
     }
 }
