@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\CarteirinhaStatus;
+use AshAllenDesign\ShortURL\Models\ShortURL;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ class Carteirinha extends Model
      */
     protected $fillable = [
         'associado_id',
+        'short_url_id',
         'foto',
         'pdf',
         'status',
@@ -75,5 +77,10 @@ class Carteirinha extends Model
     public function associado(): BelongsTo
     {
         return $this->belongsTo(Associado::class);
+    }
+
+    public function shortUrl(): BelongsTo
+    {
+        return $this->belongsTo(ShortURL::class);
     }
 }
