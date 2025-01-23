@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('carteirinhas', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->nullable();
             $table->foreignIdFor(Associado::class, 'associado_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(ShortURL::class, 'short_url_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(ShortURL::class, 'short_url_id')->nullable()->constrained()->cascadeOnDelete();
             $table->enum('status', ['ativa', 'cancelada', 'vencida']);
             $table->string('foto')->nullable();
             $table->string('pdf')->nullable();

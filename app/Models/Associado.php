@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Overtrue\LaravelVersionable\VersionStrategy;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -200,5 +201,34 @@ class Associado extends Model implements HasMedia
     public function cid10(): \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
     {
         return $this->belongsToJson(Cid10::class, 'cid10', 'codigo');
+    }
+
+    public function getDocumento()
+    {
+        return $this->rg
+            ? 'RG: '.$this->rg
+            : ($this->cpf
+                ? 'CPF: '.$this->cpf
+                : ($this->certidao_de_nascimento
+                    ? 'Ct/Nasc: '.$this->certidao_de_nascimento
+                    : null));
+    }
+
+    public function abbreviateName()
+    {
+        $name = $this->nome;
+
+        $splitName = explode(' ', $name);
+
+        if (count($splitName) >= 3 && Str::length($name) > 24) {
+            for ($i = 1; $i < count($splitName) - 1; $i++) {
+                $splitName[$i] =
+                    $i === count($splitName) - 2 ? $splitName[$i] : Str::substr($splitName[$i], 0, 1).'.';
+            }
+
+            return implode(' ', $splitName);
+        }
+
+        return $name;
     }
 }
