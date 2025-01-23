@@ -224,17 +224,20 @@ class Associado extends Model implements HasMedia
 
         $splitName = explode(' ', $name);
 
-        if (count($splitName) >= 3 && Str::length($name) > 24) {
-            for ($i = 1; $i < count($splitName) - 1; $i++) {
+        if (Str::length($name) > 60) {
+            // Abrevia os nomes intermediários, começando pelos últimos
+            for ($i = count($splitName) - 2; $i > 0; $i--) {
                 if (! in_array(strtolower($splitName[$i]), $prepositions)) {
-                    $splitName[$i] =
-                        $i === count($splitName) - 2 ? $splitName[$i] : Str::substr($splitName[$i], 0, 1).'.';
+                    $splitName[$i] = Str::substr($splitName[$i], 0, 1).'.';
+                }
+
+                // Verifica se já está dentro do limite
+                if (Str::length(implode(' ', $splitName)) <= 55) {
+                    break;
                 }
             }
-
-            return implode(' ', $splitName);
         }
 
-        return $name;
+        return implode(' ', $splitName);
     }
 }
