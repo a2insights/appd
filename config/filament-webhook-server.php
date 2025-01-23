@@ -6,7 +6,6 @@ return [
      */
     'models' => [
         \App\Models\User::class,
-        \App\Models\Company::class,
         \Cog\Laravel\Ban\Models\Ban::class,
         \AshAllenDesign\ShortURL\Models\ShortURL::class,
     ],
