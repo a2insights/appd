@@ -218,12 +218,18 @@ class Associado extends Model implements HasMedia
     {
         $name = $this->nome;
 
+        $prepositions = [
+            'de', 'da', 'do', 'das', 'dos',
+        ];
+
         $splitName = explode(' ', $name);
 
         if (count($splitName) >= 3 && Str::length($name) > 24) {
             for ($i = 1; $i < count($splitName) - 1; $i++) {
-                $splitName[$i] =
-                    $i === count($splitName) - 2 ? $splitName[$i] : Str::substr($splitName[$i], 0, 1).'.';
+                if (! in_array(strtolower($splitName[$i]), $prepositions)) {
+                    $splitName[$i] =
+                        $i === count($splitName) - 2 ? $splitName[$i] : Str::substr($splitName[$i], 0, 1).'.';
+                }
             }
 
             return implode(' ', $splitName);
