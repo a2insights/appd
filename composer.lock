@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "012c212f6dfa329a79f0fb9ef3e56126",
+    "content-hash": "44499f4190e4e192d4a2fb89b818f06a",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -94,12 +94,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/a2insights/filament-saas.git",
-                "reference": "22dfbe0de7cee7c3bcdce8c519e5dec3fd270dac"
+                "reference": "b93e907b10aeeba7cda681222e28311a911c50a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/a2insights/filament-saas/zipball/22dfbe0de7cee7c3bcdce8c519e5dec3fd270dac",
-                "reference": "22dfbe0de7cee7c3bcdce8c519e5dec3fd270dac",
+                "url": "https://api.github.com/repos/a2insights/filament-saas/zipball/b93e907b10aeeba7cda681222e28311a911c50a8",
+                "reference": "b93e907b10aeeba7cda681222e28311a911c50a8",
                 "shasum": ""
             },
             "require": {
@@ -137,6 +137,7 @@
                 "laravel/sanctum": "^4.0",
                 "league/flysystem-aws-s3-v3": "^3.0",
                 "livewire/livewire": "^3.5",
+                "lorisleiva/laravel-actions": "^2.8",
                 "malzariey/filament-daterangepicker-filter": "^2.2",
                 "marjose123/filament-webhook-server": "^2.1",
                 "opcodesio/log-viewer": "^3.10",
@@ -224,7 +225,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-13T04:37:07+00:00"
+            "time": "2025-01-23T11:40:39+00:00"
         },
         {
             "name": "akaunting/laravel-firewall",
