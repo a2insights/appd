@@ -1,13 +1,14 @@
 <?php
 
-use Marjose123\FilamentWebhookServer\Pages\Webhooks;
-
 return [
     /*
      *  Models that you want to be part of the webhooks options
      */
     'models' => [
-        // \App\Models\User::class,
+        \App\Models\User::class,
+        \App\Models\Company::class,
+        \Cog\Laravel\Ban\Models\Ban::class,
+        \AshAllenDesign\ShortURL\Models\ShortURL::class,
     ],
     /*
      */
@@ -16,7 +17,7 @@ return [
         'keep_history' => true,
     ],
     'pages' => [
-        \Octo\Webhook\Filament\Pages\Webhooks::class,
-        \Octo\Webhook\Filament\Pages\WebhookHistory::class,
+        \A2Insights\FilamentSaas\Webhook\Filament\Pages\Webhooks::class,
+        \A2Insights\FilamentSaas\Webhook\Filament\Pages\WebhookHistory::class,
     ],
 ];

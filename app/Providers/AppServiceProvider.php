@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Models\Associado;
 use App\Models\User;
-use App\Policies\ActivityPolicy;
+use BezhanSalleh\FilamentExceptions\Models\Exception;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use HusamTariq\FilamentDatabaseSchedule\Models\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -32,12 +32,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::policy(Ip::class, \App\Policies\IpPolicy::class);
-        Gate::policy(QueueMonitor::class, \App\Policies\QueueMonitorPolicy::class);
-        Gate::policy(FilamentWebhookServer::class, \App\Policies\WebhookPolicy::class);
+        // Filament Activity
+        Gate::policy(Activity::class, \App\Policies\ActivityPolicy::class);
+
+        // Filament Shield
         Gate::policy(Role::class, \App\Policies\RolePolicy::class);
+
+        // Filament Saas
         Gate::policy(User::class, \App\Policies\UserPolicy::class);
+
+        // Filament Database Schedule
+        Gate::policy(FilamentWebhookServer::class, \App\Policies\WebhookPolicy::class);
+
+        // Filament Exception
+        Gate::policy(Exception::class, \App\Policies\ExceptionPolicy::class);
+
+        // Filament Firewall
+        Gate::policy(Ip::class, \App\Policies\IpPolicy::class);
+
+        // Filament Jobs Monitor
+        Gate::policy(QueueMonitor::class, \App\Policies\QueueMonitorPolicy::class);
+
+        // Filament Database Schedule
         Gate::policy(Schedule::class, \App\Policies\SchedulePolicy::class);
-        Gate::policy(Activity::class, ActivityPolicy::class);
     }
 }

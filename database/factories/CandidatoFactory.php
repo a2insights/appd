@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Candidato;
 use App\Models\Talento;
 use App\Models\Vaga;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CandidatoFactory extends Factory
 {
@@ -25,7 +24,7 @@ class CandidatoFactory extends Factory
         return [
             'vaga_id' => Vaga::factory(),
             'talento_id' => Talento::factory(),
-            'status' => $this->faker->randomElement(["nova","em_andamento","selecionado","desclassificado","finalizado"]),
+            'status' => $this->faker->randomElement(['nova', 'em_andamento', 'selecionado', 'desclassificado', 'finalizado']),
         ];
     }
 }

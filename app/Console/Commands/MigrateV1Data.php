@@ -128,7 +128,7 @@ class MigrateV1Data extends Command
                 'uuid' => Str::uuid(),
                 'collection_name' => 'arquivos',
                 'name' => $row[1],
-                'file_name' => @$row[2] . '.' . explode('/', $row[4])[1],
+                'file_name' => @$row[2].'.'.explode('/', $row[4])[1],
                 'mime_type' => $row[4],
                 'disk' => 's3',
                 'conversions_disk' => 's3',
@@ -147,7 +147,7 @@ class MigrateV1Data extends Command
         foreach ($associados as $a) {
             $n++;
             $conting = $n + $startAfter;
-            $this->info("Migrating associado {$conting} of " . count($associados));
+            $this->info("Migrating associado {$conting} of ".count($associados));
             $associado = new Associado;
             $data = $a;
             unset($data['codigo']);
@@ -160,8 +160,8 @@ class MigrateV1Data extends Command
 
             $associado->beneficios()->attach($beneficios);
 
-            /// continue;
-            //////////////
+            // / continue;
+            // ////////////
 
             $carteirinhasToCreate = $carteirinhas->whereIn('associado_id', $a['codigo'])->all();
 
@@ -175,7 +175,7 @@ class MigrateV1Data extends Command
                 }
 
                 $filename = basename($associado->foto);
-                $targetPath = 'carteirinhas/' . uniqid() . '_' . $filename;
+                $targetPath = 'carteirinhas/'.uniqid().'_'.$filename;
 
                 Storage::disk(config('filament.default_filesystem_disk'))
                     ->copy($associado->foto, $targetPath);

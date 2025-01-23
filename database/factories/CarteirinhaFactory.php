@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Associado;
 use App\Models\Carteirinha;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CarteirinhaFactory extends Factory
 {
@@ -25,7 +24,7 @@ class CarteirinhaFactory extends Factory
             'associado_id' => Associado::factory(),
             'foto' => $this->faker->word(),
             'pdf' => $this->faker->word(),
-            'status' => $this->faker->randomElement(["ativa","cancelada","vencida"]),
+            'status' => $this->faker->randomElement(['ativa', 'cancelada', 'vencida']),
             'data_emissao' => $this->faker->date(),
             'data_vencimento' => $this->faker->date(),
         ];
