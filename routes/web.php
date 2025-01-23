@@ -19,8 +19,11 @@ Route::get('associados/carteirinhas/validacao/{uuid}', [App\Http\Controllers\Car
 
 // Route::get('/', function () {
 //     $carteirinha = App\Models\Carteirinha::find(32);
-//     $pdf = Pdf::loadView('carteirinha', ['carteirinha' => $carteirinha]);
-//     $pdf->setPaper([0, 0, 338, 213]);
+//     // $pdf = Pdf::loadView('carteirinha', ['carteirinha' => $carteirinha]);
+//     // $pdf->setPaper([0, 0, 338, 213]);
 
-//     return $pdf->stream();
+//     // return $pdf->stream();
+//     // getQrCodeSvgDataUriImage
+
+//     echo '<img src="'.$carteirinha->getQrCodeSvgDataUriImage().'" />';
 // });

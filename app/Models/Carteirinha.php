@@ -133,7 +133,7 @@ class Carteirinha extends Model
 
         return (new Writer(
             new ImageRenderer(
-                new RendererStyle(50, 1, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(45, 55, 72))),
+                new RendererStyle(150, 1, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(45, 55, 72))),
                 new SvgImageBackEnd
             )
         ))->writeString($url);
