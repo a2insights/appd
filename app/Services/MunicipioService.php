@@ -44,11 +44,11 @@ class MunicipioService
             try {
                 $result = $callback($repository);
                 if ($expectSingle && ! is_null($result)) {
-                    return cache()->remember($cacheKey, now()->addDay(), fn () => $result);
+                    return cache()->remember($cacheKey, now()->addDays(30), fn () => $result);
                 }
 
                 if (! $expectSingle && $result->isNotEmpty()) {
-                    return cache()->remember($cacheKey, now()->addDay(), fn () => $result);
+                    return cache()->remember($cacheKey, now()->addDays(10), fn () => $result);
                 }
             } catch (Throwable $e) {
                 Log::warning("Error fetching data from {$name} repository: ".$e->getMessage());
