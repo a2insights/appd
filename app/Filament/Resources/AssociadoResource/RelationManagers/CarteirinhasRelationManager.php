@@ -69,15 +69,15 @@ class CarteirinhasRelationManager extends RelationManager
                             ->carteirinhas()
                             ->whereStatus(CarteirinhaStatus::ATIVA)
                             ->count();
-                        // if ($carterinhas > 0) {
-                        //     Notification::make()
-                        //         ->inline()
-                        //         ->danger()
-                        //         ->title('Existe uma carteirinha em ativa.')
-                        //         ->body('Não é possível criar uma nova carteirinha enquanto houver uma ativa.')
-                        //         ->send();
-                        //     $action->halt();
-                        // }
+                        if ($carterinhas > 0) {
+                            Notification::make()
+                                ->inline()
+                                ->danger()
+                                ->title('Existe uma carteirinha em ativa.')
+                                ->body('Não é possível criar uma nova carteirinha enquanto houver uma ativa. Você deve cancelar a carteirinha ativa antes de criar uma nova.')
+                                ->send();
+                            $action->halt();
+                        }
                     })
                     ->createAnother(false)
                     // ->mutateFormDataUsing(fn (ComponentContainer $form, $model) => $form->fill([
