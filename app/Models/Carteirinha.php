@@ -5,6 +5,7 @@ namespace App\Models;
 use App\CarteirinhaStatus;
 use AshAllenDesign\ShortURL\Classes\Builder;
 use AshAllenDesign\ShortURL\Models\ShortURL;
+use Attribute;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -15,6 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -104,6 +106,31 @@ class Carteirinha extends Model
         });
     }
 
+    protected function fotoUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (! $this->foto) {
+                return null;
+            }
+
+            $disk = config('filament.default_filesystem_disk');
+            $fotoPath = $this->foto;
+
+            if ($disk === 's3') {
+                $s3Disk = Storage::disk('s3');
+                if ($s3Disk->exists($fotoPath)) {
+                    return Cache::remember("foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
+                        $disk = Storage::disk($disk);
+
+                        return $disk->temporaryUrl($this->foto, now()->addDays(7));
+                    });
+                }
+            }
+
+            return Storage::disk($disk)->url($fotoPath);
+        });
+    }
+
     public function getQrCodeSvgUrl()
     {
         $disk = config('filesystems.default');
@@ -137,21 +164,6 @@ class Carteirinha extends Model
                 new SvgImageBackEnd
             )
         ))->writeString($url);
-    }
-
-    public function getFotoUrl()
-    {
-        $disk = config('filesystems.default');
-        $fotoPath = $this->foto;
-
-        if ($disk === 's3') {
-            $s3Disk = Storage::disk('s3');
-            if ($s3Disk->exists($fotoPath)) {
-                return $s3Disk->temporaryUrl($fotoPath, now()->addMinutes(5));
-            }
-        }
-
-        return Storage::disk(config('filament.default_filesystem_disk'))->url($fotoPath);
     }
 
     public function associado(): BelongsTo

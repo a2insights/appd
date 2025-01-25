@@ -6,8 +6,6 @@
 
     $documento = $associado->getDocumento();
 
-    $fotoUrl = $carteirinha->getFotoUrl();
-
     $nome = $associado->abbreviateName();
 @endphp
 
@@ -31,6 +29,6 @@
         </div>
     @endif
     <div style="position: absolute; right: 18px;top: 127px;width: 75px;height: 100px; ">
-        <img alt="foto" style="width: 75px; height: 100px;" src="{{ $fotoUrl }}">
+        <img alt="foto" style="width: 75px; height: 100px;" src="{{ $carteirinha->foto_url }}">
     </div>
 </body>

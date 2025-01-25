@@ -67,10 +67,8 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('foto')
-                    ->visibility('private')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->state(fn (Associado $associado) => $associado->foto ?? 'https://ui-avatars.com/api/?name='.Str::slug($associado->nome, '+').'&size=64&rounded=false&bold=true&color=fff&background=7F9CF5'),
+                Tables\Columns\ImageColumn::make('foto_url')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->extraAttributes(['autocomplete' => false])

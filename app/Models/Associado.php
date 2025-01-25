@@ -17,10 +17,12 @@ use App\Raca;
 use App\Religiao;
 use App\Sexo;
 use App\TipoDeficiencia;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Overtrue\LaravelVersionable\VersionStrategy;
@@ -185,6 +187,31 @@ class Associado extends Model implements HasMedia
             if ($carteirinha->foto) {
                 Storage::disk($disk)->delete($carteirinha->foto);
             }
+        });
+    }
+
+    protected function fotoUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (! $this->foto) {
+                return null;
+            }
+
+            $disk = config('filament.default_filesystem_disk');
+            $fotoPath = $this->foto;
+
+            if ($disk === 's3') {
+                $s3Disk = Storage::disk('s3');
+                if ($s3Disk->exists($fotoPath)) {
+                    return Cache::remember("foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
+                        $disk = Storage::disk($disk);
+
+                        return $disk->temporaryUrl($this->foto, now()->addDays(7));
+                    });
+                }
+            }
+
+            return Storage::disk($disk)->url($fotoPath);
         });
     }
 
