@@ -89,13 +89,13 @@ class Carteirinha extends Model
                 Storage::disk($disk)->delete($pdfPath);
             }
 
-            $qrcodePath = 'qrcodes/'.$carteirinha->uuid.'.svg';
+            $qrcodePath = 'carteirinhas/qrcodes/'.$carteirinha->uuid.'.svg';
             Storage::disk($disk)->put($qrcodePath, $carteirinha->getQrCodeSvg());
 
             $pdf = Pdf::loadView('carteirinha', ['carteirinha' => $carteirinha]);
             $pdf->setPaper([0, 0, 338, 213]);
 
-            $path = 'carteirinhas/'.uniqid().'.pdf';
+            $path = 'carteirinhas/pdfs/'.uniqid().'.pdf';
 
             Storage::disk($disk)->put($path, $pdf->output());
 

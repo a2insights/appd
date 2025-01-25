@@ -1,6 +1,5 @@
 <?php
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,13 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('associados/carteirinhas/validacao/{uuid}', [App\Http\Controllers\CarteirinhaController::class, 'validacao'])
     ->name('associados.carteirinhas.validacao');
 
-// Route::get('/', function () {
-//     $carteirinha = App\Models\Carteirinha::find(32);
-//     // $pdf = Pdf::loadView('carteirinha', ['carteirinha' => $carteirinha]);
-//     // $pdf->setPaper([0, 0, 338, 213]);
-
-//     // return $pdf->stream();
-//     // getQrCodeSvgDataUriImage
-
-//     echo '<img src="'.$carteirinha->getQrCodeSvgDataUriImage().'" />';
-// });
+Route::get('/', function () {
+    return redirect('/admin');
+});

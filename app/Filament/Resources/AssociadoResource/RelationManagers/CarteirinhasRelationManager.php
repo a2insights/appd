@@ -92,7 +92,7 @@ class CarteirinhasRelationManager extends RelationManager
 
                         if ($associado->foto === $data['foto']) {
                             $filename = basename($data['foto']);
-                            $targetPath = 'carteirinhas/'.uniqid().'_'.$filename;
+                            $targetPath = 'carteirinhas/fotos/'.uniqid().'_'.$filename;
 
                             Storage::disk(config('filament.default_filesystem_disk'))
                                 ->copy($associado->foto, $targetPath);
