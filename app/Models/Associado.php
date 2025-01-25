@@ -203,7 +203,7 @@ class Associado extends Model implements HasMedia
             if ($disk === 's3') {
                 $s3Disk = Storage::disk('s3');
                 if ($s3Disk->exists($fotoPath)) {
-                    return Cache::remember("foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
+                    return Cache::remember("associado_foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
                         $disk = Storage::disk($disk);
 
                         return $disk->temporaryUrl($this->foto, now()->addDays(7));
@@ -212,7 +212,9 @@ class Associado extends Model implements HasMedia
             }
 
             return Storage::disk($disk)->url($fotoPath);
-        });
+        })
+            ->withoutObjectCaching()
+            ->shouldCache();
     }
 
     public function carteirinhas(): HasMany

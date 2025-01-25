@@ -119,8 +119,10 @@ class Carteirinha extends Model
             if ($disk === 's3') {
                 $s3Disk = Storage::disk('s3');
                 if ($s3Disk->exists($fotoPath)) {
-                    return Cache::remember("foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
+                    return Cache::remember("carteirinha_foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
                         $disk = Storage::disk($disk);
+
+                        dd($disk->temporaryUrl($this->foto, now()->addDays(7)));
 
                         return $disk->temporaryUrl($this->foto, now()->addDays(7));
                     });
@@ -128,7 +130,9 @@ class Carteirinha extends Model
             }
 
             return Storage::disk($disk)->url($fotoPath);
-        });
+        })
+            ->withoutObjectCaching()
+            ->shouldCache();
     }
 
     public function getQrCodeSvgUrl()
