@@ -11,7 +11,7 @@
         "a2insights/filament-saas": "dev-main",
         "a21ns1g4ts/filament-short-url": "dev-main",
         "barryvdh/laravel-debugbar": "^3.13",
-        "barryvdh/laravel-dompdf": "^3.0",
+        "barryvdh/laravel-dompdf": "^3.1",
         "discoverydesign/filament-gaze": "^1.1",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
         "flowframe/laravel-trend": "^0.2.0",

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Overtrue\LaravelVersionable\VersionStrategy;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -200,5 +201,43 @@ class Associado extends Model implements HasMedia
     public function cid10(): \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
     {
         return $this->belongsToJson(Cid10::class, 'cid10', 'codigo');
+    }
+
+    public function getDocumento()
+    {
+        return $this->rg
+            ? 'RG: '.$this->rg
+            : ($this->cpf
+                ? 'CPF: '.$this->cpf
+                : ($this->certidao_de_nascimento
+                    ? 'Ct/Nasc: '.$this->certidao_de_nascimento
+                    : null));
+    }
+
+    public function abbreviateName()
+    {
+        $name = $this->nome;
+
+        $prepositions = [
+            'de', 'da', 'do', 'das', 'dos',
+        ];
+
+        $splitName = explode(' ', $name);
+
+        if (Str::length($name) > 60) {
+            // Abrevia os nomes intermediários, começando pelos últimos
+            for ($i = count($splitName) - 2; $i > 0; $i--) {
+                if (! in_array(strtolower($splitName[$i]), $prepositions)) {
+                    $splitName[$i] = Str::substr($splitName[$i], 0, 1).'.';
+                }
+
+                // Verifica se já está dentro do limite
+                if (Str::length(implode(' ', $splitName)) <= 55) {
+                    break;
+                }
+            }
+        }
+
+        return implode(' ', $splitName);
     }
 }

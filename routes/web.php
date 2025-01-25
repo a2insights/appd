@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,3 +12,10 @@
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('associados/carteirinhas/validacao/{uuid}', [App\Http\Controllers\CarteirinhaController::class, 'validacao'])
+    ->name('associados.carteirinhas.validacao');
+
+Route::get('/', function () {
+    return redirect('/admin');
+});

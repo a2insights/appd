@@ -89,7 +89,7 @@ class MigrateV1Data extends Command
                 // 'naturalidade_municipio_ibge' => ?,
                 'mae' => Str::upper($row[27]),
                 'pai' => Str::upper($row[28]),
-                'created_at' => $row[29] ?? @$row[39],
+                'created_at' => $row[29] ?? '2000-01-01 00:00:00',
                 'updated_at' => @$row[39],
                 'cpf' => preg_replace('/\D/', '', $row[30]),
                 'rg' => $row[31],
@@ -160,22 +160,18 @@ class MigrateV1Data extends Command
 
             $associado->beneficios()->attach($beneficios);
 
-            // / continue;
-            // ////////////
-
             $carteirinhasToCreate = $carteirinhas->whereIn('associado_id', $a['codigo'])->all();
 
             foreach ($carteirinhasToCreate as $c) {
                 $c['foto'] = $associado->foto;
                 $c['associado_id'] = $associado->id;
-                dump($c);
 
                 if (! Carbon::parse($c['data_vencimento'])->gt(Carbon::now())) {
                     $c['status'] = 'vencida';
                 }
 
                 $filename = basename($associado->foto);
-                $targetPath = 'carteirinhas/'.uniqid().'_'.$filename;
+                $targetPath = 'carteirinhas/fotos/'.uniqid().'_'.$filename;
 
                 Storage::disk(config('filament.default_filesystem_disk'))
                     ->copy($associado->foto, $targetPath);
@@ -441,15 +437,11 @@ class MigrateV1Data extends Command
         ];
 
         if (empty($ocupacoes)) {
-            return [];
+            return null;
         }
 
         if (is_string($ocupacoes)) {
             $ocupacoes = explode(',', $ocupacoes);
-        }
-
-        if (in_array('Cadeira de Rodas', $ocupacoes)) {
-            dd($ocupacoes);
         }
 
         return collect($ocupacoes)

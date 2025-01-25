@@ -74,7 +74,7 @@ class CarteirinhasRelationManager extends RelationManager
                                 ->inline()
                                 ->danger()
                                 ->title('Existe uma carteirinha em ativa.')
-                                ->body('Não é possível criar uma nova carteirinha enquanto houver uma ativa.')
+                                ->body('Não é possível criar uma nova carteirinha enquanto houver uma ativa. Você deve cancelar a carteirinha ativa antes de criar uma nova.')
                                 ->send();
                             $action->halt();
                         }
@@ -92,7 +92,7 @@ class CarteirinhasRelationManager extends RelationManager
 
                         if ($associado->foto === $data['foto']) {
                             $filename = basename($data['foto']);
-                            $targetPath = 'carteirinhas/'.uniqid().'_'.$filename;
+                            $targetPath = 'carteirinhas/fotos/'.uniqid().'_'.$filename;
 
                             Storage::disk(config('filament.default_filesystem_disk'))
                                 ->copy($associado->foto, $targetPath);
@@ -102,7 +102,9 @@ class CarteirinhasRelationManager extends RelationManager
 
                         $data['associado_id'] = $associado->id;
 
-                        return $model::create($data);
+                        $carteirinha = $model::create($data);
+
+                        return $carteirinha;
                     }),
             ])
             ->actions([

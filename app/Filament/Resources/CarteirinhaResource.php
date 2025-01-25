@@ -26,7 +26,7 @@ class CarteirinhaResource extends Resource
     {
         return $form
             ->extraAttributes(['autocomplete' => false], true)
-            ->disabled(true)
+            // ->disabled(true)
             ->schema(CarteirinhaSchema::schema($form));
     }
 
@@ -46,10 +46,11 @@ class CarteirinhaResource extends Resource
                             ->url(function (Model $record): ?string {
                                 return AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
                             })
+                            ->formatStateUsing(fn (string $state, $record) => $record->associado->abbreviateName())
                             ->color('primary')
                             ->searchable(),
                         Tables\Columns\TextColumn::make('associado.cpf')
-                            ->formatStateUsing(fn (string $state, $record) => getDocumento($record->associado))
+                            ->formatStateUsing(fn (string $state, $record) => $record->associado->getDocumento())
                             ->searchable(),
                         Tables\Columns\TextColumn::make('status'),
                         Tables\Columns\TextColumn::make('data_emissao')
@@ -87,7 +88,7 @@ class CarteirinhaResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make()
                     ->icon(false)
                     ->iconSize(0)
