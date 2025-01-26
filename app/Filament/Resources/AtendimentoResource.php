@@ -29,10 +29,10 @@ class AtendimentoResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     return static::getModel()::count();
+    // }
 
     public static function getNavigationBadgeColor(): ?string
     {
