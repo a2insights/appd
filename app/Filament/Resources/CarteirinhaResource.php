@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\CarteirinhaStatus;
 use App\Filament\Resources\CarteirinhaResource\Pages;
 use App\Filament\Schemas\CarteirinhaSchema;
 use App\Models\Carteirinha;
@@ -13,6 +14,7 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class CarteirinhaResource extends Resource
 {
@@ -36,10 +38,10 @@ class CarteirinhaResource extends Resource
             ->recordTitleAttribute('data_emissao')
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    // Tables\Columns\ImageColumn::make('foto_url')
-                    //     ->height('auto')
-                    //     ->width('90px')
-                    //     ->grow(false),
+                    Tables\Columns\ImageColumn::make('foto_url')
+                        ->height('auto')
+                        ->width('90px')
+                        ->grow(false),
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('associado.nome')
                             ->url(function (Model $record): ?string {
@@ -55,28 +57,26 @@ class CarteirinhaResource extends Resource
                         Tables\Columns\TextColumn::make('data_emissao')
                             ->date('d/m/Y')
                             ->color('success')
+                            ->formatStateUsing(fn (string $state, $record) => 'Data de emissão: '.Carbon::parse($state)->format('d/m/Y'))
                             ->weight(FontWeight::Bold),
                         Tables\Columns\TextColumn::make('data_vencimento')
                             ->date('d/m/Y')
                             ->color('danger')
-                            ->weight(FontWeight::Bold),
-                        Tables\Columns\TextColumn::make('created_at')
-                            ->label('Data da emissão')
-                            ->date('d/m/Y')
-                            ->color('gray')
+                            ->formatStateUsing(fn (string $state, $record) => 'Data de vencimento: '.Carbon::parse($state)->format('d/m/Y'))
                             ->weight(FontWeight::Bold),
                     ]),
                 ]),
             ])
             ->contentGrid([
-                'md' => 2,
+                'md' => 3,
                 'xl' => 3,
             ])
             ->filters([
                 SelectFilter::make('associados')
                     ->relationship('associado', 'nome')
-                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
-                    ->multiple(),
+                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - {$record->getDocumento()}")
+                    ->multiple()
+                    ->columnSpan(3),
                 \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('data_emissao')
                     ->label('Data de Emissão'),
                 \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('data_vencimento')
@@ -86,11 +86,17 @@ class CarteirinhaResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make()
-                    ->icon(false)
-                    ->iconSize(0)
-                    ->hiddenLabel(),
+                    ->disabled(fn ($record) => $record->status === CarteirinhaStatus::VENCIDA || $record->status === CarteirinhaStatus::CANCELADA)
+                    ->label('Visualizar'),
+                Tables\Actions\Action::make('cancel')
+                    ->label('Cancelar')
+                    ->disabled(fn ($record) => $record->status === CarteirinhaStatus::CANCELADA || $record->status === CarteirinhaStatus::VENCIDA)
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->action(fn ($record) => $record->update(['status' => CarteirinhaStatus::CANCELADA]))
+                    ->requiresConfirmation(),
                 // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -98,6 +104,7 @@ class CarteirinhaResource extends Resource
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
             ])
+            ->paginationPageOptions([6, 9, 15, 18, 21, 24])
             ->defaultSort('id', 'desc');
     }
 

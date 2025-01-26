@@ -235,10 +235,10 @@ class Associado extends Model implements HasMedia
 
     public function getDocumento()
     {
-        return $this->rg
-            ? 'RG: '.$this->rg
-            : ($this->cpf
-                ? 'CPF: '.$this->cpf
+        return $this->cpf
+            ? 'CPF: '.$this->cpf
+            : ($this->rg
+                ? 'RG: '.$this->rg
                 : ($this->certidao_de_nascimento
                     ? 'Ct/Nasc: '.$this->certidao_de_nascimento
                     : null));

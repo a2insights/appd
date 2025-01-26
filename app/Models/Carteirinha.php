@@ -5,7 +5,6 @@ namespace App\Models;
 use App\CarteirinhaStatus;
 use AshAllenDesign\ShortURL\Classes\Builder;
 use AshAllenDesign\ShortURL\Models\ShortURL;
-use Attribute;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -13,6 +12,7 @@ use BaconQrCode\Renderer\RendererStyle\Fill;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -82,6 +82,10 @@ class Carteirinha extends Model
         });
 
         static::saved(function ($carteirinha) {
+            if (! $carteirinha->wasRecentlyCreated) {
+                return;
+            }
+
             $disk = config('filament.default_filesystem_disk');
 
             $pdfPath = is_array($carteirinha->pdf ?? null)
@@ -121,8 +125,6 @@ class Carteirinha extends Model
                 if ($s3Disk->exists($fotoPath)) {
                     return Cache::remember("carteirinha_foto_url_{$this->id}", now()->addDays(7), function () use ($disk) {
                         $disk = Storage::disk($disk);
-
-                        dd($disk->temporaryUrl($this->foto, now()->addDays(7)));
 
                         return $disk->temporaryUrl($this->foto, now()->addDays(7));
                     });

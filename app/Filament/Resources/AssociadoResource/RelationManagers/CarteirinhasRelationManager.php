@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class CarteirinhasRelationManager extends RelationManager
@@ -32,32 +33,35 @@ class CarteirinhasRelationManager extends RelationManager
             ->recordTitleAttribute('data_emissao')
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    Tables\Columns\ImageColumn::make('foto')
-                        ->visibility('private')
+                    Tables\Columns\ImageColumn::make('foto_url')
                         ->height('auto')
+                        ->grow(false)
                         ->width('90px'),
                     Tables\Columns\Layout\Stack::make([
-                        Tables\Columns\TextColumn::make('status')
-                            ->sortable(),
+                        Tables\Columns\TextColumn::make('associado.nome')
+                            ->formatStateUsing(fn (string $state, $record) => $record->associado->abbreviateName())
+                            ->color('primary')
+                            ->searchable(),
+                        Tables\Columns\TextColumn::make('associado.cpf')
+                            ->formatStateUsing(fn (string $state, $record) => $record->associado->getDocumento())
+                            ->searchable(),
+                        Tables\Columns\TextColumn::make('status'),
                         Tables\Columns\TextColumn::make('data_emissao')
                             ->date('d/m/Y')
                             ->color('success')
+                            ->formatStateUsing(fn (string $state, $record) => 'Data de emissão: '.Carbon::parse($state)->format('d/m/Y'))
                             ->weight(FontWeight::Bold),
                         Tables\Columns\TextColumn::make('data_vencimento')
                             ->date('d/m/Y')
                             ->color('danger')
-                            ->weight(FontWeight::Bold),
-                        Tables\Columns\TextColumn::make('created_at')
-                            ->label('Data da emissão')
-                            ->date('d/m/Y H:i:s')
-                            ->color('gray')
+                            ->formatStateUsing(fn (string $state, $record) => 'Data de vencimento: '.Carbon::parse($state)->format('d/m/Y'))
                             ->weight(FontWeight::Bold),
                     ]),
                 ]),
             ])
             ->contentGrid([
-                'md' => 3,
-                'xl' => 5,
+                'md' => 2,
+                'xl' => 3,
             ])
             ->filters([
                 //
@@ -110,9 +114,15 @@ class CarteirinhasRelationManager extends RelationManager
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make()
-                    ->icon(false)
-                    ->iconSize(0)
-                    ->hiddenLabel(),
+                    ->disabled(fn ($record) => $record->status === CarteirinhaStatus::VENCIDA || $record->status === CarteirinhaStatus::CANCELADA)
+                    ->label('Visualizar'),
+                Tables\Actions\Action::make('cancel')
+                    ->label('Cancelar')
+                    ->disabled(fn ($record) => $record->status === CarteirinhaStatus::CANCELADA || $record->status === CarteirinhaStatus::VENCIDA)
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->action(fn ($record) => $record->update(['status' => CarteirinhaStatus::CANCELADA]))
+                    ->requiresConfirmation(),
                 // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -120,6 +130,7 @@ class CarteirinhasRelationManager extends RelationManager
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
             ])
+            ->paginationPageOptions([3, 6, 9])
             ->defaultSort('id', 'desc');
     }
 }

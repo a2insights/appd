@@ -64,6 +64,7 @@ class AssociadoResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
+                    ->label('Código')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
                     ->searchable(),
@@ -90,12 +91,15 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cpf')
+                    ->label('CPF')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('titulo_eleitor')
+                    ->label('Título de eleitor')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('rg')
+                    ->label('RG')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('orgao_expedidor')
@@ -147,7 +151,7 @@ class AssociadoResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('causa_deficiencia')
                     ->label('Causa')
-                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('aparelhos_utilizado')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -190,6 +194,7 @@ class AssociadoResource extends Resource
             ])
             ->filters(AssociadoFiltersTable::filters(), layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
+                Tables\Actions\ViewAction::make()->modalWidth('full'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
