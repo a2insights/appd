@@ -6,18 +6,21 @@ use A2Insights\FilamentSaas\User\Settings;
 use Cog\Contracts\Ban\Bannable as BannableContract;
 use Cog\Laravel\Ban\Traits\Bannable;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use TaylorNetwork\UsernameGenerator\FindSimilarUsernames;
+use Wallo\FilamentCompanies\SetsProfilePhotoFromUrl;
 
-class User extends Authenticatable implements BannableContract, FilamentUser, MustVerifyEmail
+class User extends Authenticatable implements BannableContract, FilamentUser, HasAvatar, MustVerifyEmail
 {
     use Bannable,
         FindSimilarUsernames,
@@ -25,6 +28,7 @@ class User extends Authenticatable implements BannableContract, FilamentUser, Mu
         HasFactory,
         HasRoles,
         Notifiable,
+        SetsProfilePhotoFromUrl,
         SoftDeletes,
         TwoFactorAuthenticatable;
 
@@ -73,5 +77,17 @@ class User extends Authenticatable implements BannableContract, FilamentUser, Mu
         }
 
         return true;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if ($this->avatar_url && config('filament.default_filesystem_disk') === 's3') {
+            return Storage::disk('avatars')->temporaryUrl(
+                $this->avatar_url,
+                now()->addMinutes(60),
+            );
+        }
+
+        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
     }
 }
