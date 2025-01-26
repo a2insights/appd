@@ -90,7 +90,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cpf')
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('rg')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -134,7 +134,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('cid10')
                     ->label('Deficiência')
-                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                    // ->formatStateUsing(fn (Associado $associado, string $state) => $associado->cid10()->get()->where('id', $state)->map(fn (Cid10 $cid10) => $cid10->codigo)->join(', '))
                    // ->tooltip(fn (Associado $associado) => $associado->cid10()->get()->map(fn (Cid10 $cid10) => "{$cid10->codigo} - {$cid10->descricao}")->join(', '))
                     ->badge(),
@@ -175,10 +175,12 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Data de cadastro')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Última atualização')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
