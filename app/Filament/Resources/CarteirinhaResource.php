@@ -36,8 +36,7 @@ class CarteirinhaResource extends Resource
             ->recordTitleAttribute('data_emissao')
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    // Tables\Columns\ImageColumn::make('foto')
-                    //     ->visibility('private')
+                    // Tables\Columns\ImageColumn::make('foto_url')
                     //     ->height('auto')
                     //     ->width('90px')
                     //     ->grow(false),
