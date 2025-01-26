@@ -36,11 +36,11 @@ class CarteirinhaResource extends Resource
             ->recordTitleAttribute('data_emissao')
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    Tables\Columns\ImageColumn::make('foto')
-                        ->visibility('private')
-                        ->height('auto')
-                        ->width('90px')
-                        ->grow(false),
+                    // Tables\Columns\ImageColumn::make('foto')
+                    //     ->visibility('private')
+                    //     ->height('auto')
+                    //     ->width('90px')
+                    //     ->grow(false),
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('associado.nome')
                             ->url(function (Model $record): ?string {
@@ -77,7 +77,6 @@ class CarteirinhaResource extends Resource
                 SelectFilter::make('associados')
                     ->relationship('associado', 'nome')
                     ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
-                    ->preload()
                     ->multiple(),
                 \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('data_emissao')
                     ->label('Data de Emissão'),
