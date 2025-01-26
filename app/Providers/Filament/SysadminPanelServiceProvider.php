@@ -70,7 +70,11 @@ class SysadminPanelServiceProvider extends PanelProvider
                     // ->enableSanctumTokens(
                     //     permissions: ['create', 'update', 'view', 'delete'] // optional, customize the permissions (default = ["create", "view", "update", "delete"])
                     // )
-                    ->myProfileComponents([Phone::class, Username::class]),
+                    ->myProfileComponents([Phone::class, Username::class])
+                    ->avatarUploadComponent(fn ($fileUpload) => $fileUpload
+                        ->visibility('private')
+                        ->directory('avatars')
+                        ->disk('avatars')),
                 \Hasnayeen\Themes\ThemesPlugin::make()->canViewThemesPage(fn () => auth()->user() ? auth()->user()->hasRole('super_admin') : false),
                 \Marjose123\FilamentWebhookServer\WebhookPlugin::make(),
                 \HusamTariq\FilamentDatabaseSchedule\FilamentDatabaseSchedulePlugin::make(),
