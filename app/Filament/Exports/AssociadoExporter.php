@@ -34,6 +34,7 @@ class AssociadoExporter extends Exporter
             ExportColumn::make('sexo')->state(fn ($record) => $record->sexo?->getLabel())->enabledByDefault(true),
             ExportColumn::make('declaracao_sexual')->state(fn ($record) => $record->declaracao_sexual?->getLabel())->enabledByDefault(false),
             ExportColumn::make('cpf')->enabledByDefault(false),
+            ExportColumn::make('titulo_eleitor')->enabledByDefault(false),
             ExportColumn::make('rg')->enabledByDefault(false),
             ExportColumn::make('orgao_expedidor')->state(fn ($record) => $record->orgao_expedidor?->getLabel())->enabledByDefault(false),
             ExportColumn::make('orgao_expedidor_uf')->state(fn ($record) => $record->orgao_expedidor_uf?->getLabel())->enabledByDefault(false),

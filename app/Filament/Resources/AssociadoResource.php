@@ -92,6 +92,9 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('cpf')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
+                Tables\Columns\TextColumn::make('titulo_eleitor')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('rg')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),

@@ -126,19 +126,24 @@ class AssociadoSchema
                             $livewire->validateOnly($component->getStatePath());
                         }
                     }),
+                Forms\Components\TextInput::make('titulo_eleitor')
+                    ->maxLength(255)
+                    ->columnSpan(3),
                 Forms\Components\TextInput::make('rg')
                     ->maxLength(255)
                     ->columnSpan(2),
                 Forms\Components\Select::make('orgao_expedidor')
+                    ->label('Órgão Expedidor')
                     ->options(OrgaoExpedidor::class)
                     ->default(OrgaoExpedidor::PC)
                     ->searchable()
-                    ->columnSpan(4),
+                    ->columnSpan(2),
                 Forms\Components\Select::make('orgao_expedidor_uf')
+                    ->label('UF')
                     ->options(OrgaoExpedidorUf::class)
                     ->searchable()
                     ->default(OrgaoExpedidorUf::PA)
-                    ->columnSpan(2),
+                    ->columnSpan(1),
             ])
                 ->columnSpanFull()
                 ->columns(10),

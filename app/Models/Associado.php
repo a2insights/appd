@@ -101,6 +101,7 @@ class Associado extends Model implements HasMedia
         'sexo',
         'declaracao_sexual',
         'cpf',
+        'titulo_eleitor',
         'rg',
         'orgao_expedidor',
         'orgao_expedidor_uf',
