@@ -82,7 +82,7 @@ class Carteirinha extends Model
         });
 
         static::saved(function ($carteirinha) {
-            if (! $carteirinha->wasRecentlyCreated) {
+            if ($carteirinha->pdf) {
                 return;
             }
 
@@ -141,7 +141,7 @@ class Carteirinha extends Model
     {
         $disk = config('filesystems.default');
 
-        $qrcodePath = 'qrcodes/'.$this->uuid.'.svg';
+        $qrcodePath = 'carteirinhas/qrcodes/'.$this->uuid.'.svg';
 
         if ($disk === 's3') {
             $s3Disk = Storage::disk('s3');
