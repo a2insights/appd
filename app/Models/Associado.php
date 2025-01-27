@@ -254,7 +254,7 @@ class Associado extends Model implements HasMedia
 
         $splitName = explode(' ', $name);
 
-        if (Str::length($name) > 60) {
+        if (Str::length($name) > 100) {
             // Abrevia os nomes intermediários, começando pelos últimos
             for ($i = count($splitName) - 2; $i > 0; $i--) {
                 if (! in_array(strtolower($splitName[$i]), $prepositions)) {
