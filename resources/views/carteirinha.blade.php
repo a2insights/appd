@@ -21,7 +21,7 @@
             {{-- <p style="margin: 0; text-align: center;font-size: 10px;">
                 <small><strong>QR Code</strong></small>
             </p> --}}
-            <img style="width: 65px; height: 65px;" src="{{ $carteirinha->getQrCodeSvgUrl() }}">
+            {{-- <img style="width: 65px; height: 65px;" src="{{ $carteirinha->getQrCodeSvgUrl() }}"> --}}
             {{-- <p
                 style="margin: 0; text-align: center; font-size: 8px; max-width: 100%; word-wrap: break-word; overflow-wrap: break-word;">
                 {{ $carteirinha->shortUrl->default_short_url }}
