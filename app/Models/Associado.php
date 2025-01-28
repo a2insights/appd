@@ -78,6 +78,11 @@ class Associado extends Model implements HasMedia
 
     protected $versionStrategy = VersionStrategy::SNAPSHOT;
 
+    public static function noVersioning(): void
+    {
+        static::$versioning = false;
+    }
+
     /**
      * The attributes that be default.
      *
@@ -179,7 +184,11 @@ class Associado extends Model implements HasMedia
             $associado->carteirinhas()->delete();
             $associado->beneficios()->detach();
             // Don't need to delete media, it will be deleted automatically by spatie/laravel-medialibrary
-            //  $associado->media()->delete();
+            // $associado->media()->delete();
+        });
+
+        static::created(function (Associado $associado) {
+            $associado->firstVersion()->delete();
         });
 
         static::deleted(function ($carteirinha) {
