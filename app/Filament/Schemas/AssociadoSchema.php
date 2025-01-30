@@ -279,13 +279,13 @@ class AssociadoSchema
                     ->columnSpan(2),
                 Forms\Components\TextInput::make('rua')
                     ->required()
-                    ->disabled()
+                    ->disabled(fn (Get $get) => ! $get('cidade') || $get('rua'))
                     ->dehydrated()
                     ->maxLength(255)
                     ->columnSpan(4),
                 Forms\Components\TextInput::make('bairro')
                     ->required()
-                    ->disabled()
+                    ->disabled(fn (Get $get) => ! $get('cidade') || $get('bairro'))
                     ->dehydrated()
                     ->maxLength(255)
                     ->columnSpan(3),
