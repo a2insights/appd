@@ -54,16 +54,14 @@ class AtendimentoResource extends Resource
                 Forms\Components\Select::make('associado_id')
                     ->label('Associado')
                     ->relationship('associado', 'nome')
-                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
+                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - {$record->getDocumento()}")
                     ->helperText('Selecione o associado')
-                    ->preload()
                     ->searchable(),
                 Forms\Components\Select::make('pessoa_id')
                     ->label('Pessoa')
                     ->relationship('pessoa', 'nome')
                     ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
                     ->helperText('Selecione a pessoa')
-                    ->preload()
                     ->searchable()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('nome')
