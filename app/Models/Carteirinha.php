@@ -63,23 +63,23 @@ class Carteirinha extends Model
             }
         });
 
-        // static::creating(function ($carteirinha) {
-        //     $uuid = Str::uuid();
-        //     $carteirinha->uuid = $uuid;
+        static::creating(function ($carteirinha) {
+            $uuid = Str::uuid();
+            $carteirinha->uuid = $uuid;
 
-        //     $shortURLObject = app(Builder::class)
-        //         ->destinationUrl(route('associados.carteirinhas.validacao', $uuid))
-        //         ->trackIPAddress()
-        //         ->trackVisits()
-        //         ->trackBrowserVersion()
-        //         ->trackOperatingSystem()
-        //         ->trackOperatingSystemVersion()
-        //         ->trackDeviceType()
-        //         ->trackRefererURL()
-        //         ->make();
+            $shortURLObject = app(Builder::class)
+                ->destinationUrl(route('associados.carteirinhas.validacao', $uuid))
+                ->trackIPAddress()
+                ->trackVisits()
+                ->trackBrowserVersion()
+                ->trackOperatingSystem()
+                ->trackOperatingSystemVersion()
+                ->trackDeviceType()
+                ->trackRefererURL()
+                ->make();
 
-        //     $carteirinha->short_url_id = $shortURLObject->id;
-        // });
+            $carteirinha->short_url_id = $shortURLObject->id;
+        });
 
         static::saved(function ($carteirinha) {
             if ($carteirinha->pdf) {
@@ -95,8 +95,8 @@ class Carteirinha extends Model
                 Storage::disk($disk)->delete($pdfPath);
             }
 
-            // $qrcodePath = 'carteirinhas/qrcodes/'.$carteirinha->uuid.'.svg';
-            // Storage::disk($disk)->put($qrcodePath, $carteirinha->getQrCodeSvg());
+            $qrcodePath = 'carteirinhas/qrcodes/'.$carteirinha->uuid.'.svg';
+            Storage::disk($disk)->put($qrcodePath, $carteirinha->getQrCodeSvg());
 
             $pdf = Pdf::loadView('carteirinha', ['carteirinha' => $carteirinha]);
             $pdf->setPaper([0, 0, 338, 213]);
