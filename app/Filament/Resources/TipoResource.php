@@ -18,20 +18,17 @@ class TipoResource extends Resource
 
     protected static ?string $navigationParentItem = 'Atendimentos';
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('titulo')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('descricao')
-                    ->maxLength(255),
+                Forms\Components\Group::make([
+                    Forms\Components\TextInput::make('titulo')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('descricao')
+                        ->maxLength(255),
+                ]),
             ]);
     }
 
@@ -54,7 +51,7 @@ class TipoResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->paginated(false)
             ->reorderable('sort')
@@ -76,8 +73,8 @@ class TipoResource extends Resource
     {
         return [
             'index' => Pages\ListTipos::route('/'),
-            // 'create' => Pages\CreateTipo::route('/create'),
-            // 'edit' => Pages\EditTipo::route('/{record}/edit'),
+            'create' => Pages\CreateTipo::route('/create'),
+            'edit' => Pages\EditTipo::route('/{record}/edit'),
         ];
     }
 }
