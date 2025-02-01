@@ -15,8 +15,9 @@
         <div class="flex flex-col items-center justify-center max-w-3xl mx-auto text-center">
             <img src="{{ url('img/logo.svg') }}" alt="Logo APPD" class="w-12 h-12 mb-4 rounded-full">
             <h1 class="text-lg font-bold">
-                Verificação de Carteirinha <br>
                 <span class="text-sm font-normal">Associação Paraense das Pessoas com Deficiência (APPD)</span>
+                <br>
+                Verificação de Carteirinha
             </h1>
         </div>
     </header>
