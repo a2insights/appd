@@ -13,7 +13,7 @@
     <!-- Header -->
     <header class="absolute top-0 left-0 w-full p-4 text-white bg-blue-500 shadow-md">
         <div class="flex flex-col items-center justify-center max-w-3xl mx-auto text-center">
-            <img src="{{ url('img/logo.svg') }}" alt="Logo APPD" class="w-12 h-12 mb-4 rounded-full">
+            <img src="{{ url('img/logo.svg') }}" alt="Logo APPD" class="w-12 h-12 rounded-full">
             <h1 class="text-lg font-bold">
                 <span class="text-sm font-normal">Associação Paraense das Pessoas com Deficiência (APPD)</span>
                 <br>
