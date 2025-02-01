@@ -25,7 +25,7 @@
     <!-- Main Content -->
     @if ($carteirinha)
         <div class="w-full max-w-md p-6 mt-16 bg-white rounded-lg shadow-md">
-            <div class="flex items-center justify-center mb-4">
+            <div class="flex items-center justify-center">
                 <img src="{{ $carteirinha->foto_url ?? 'https://via.placeholder.com/150' }}" alt="Foto do associado"
                     class="object-cover w-24 h-24 rounded-full shadow-lg">
             </div>
