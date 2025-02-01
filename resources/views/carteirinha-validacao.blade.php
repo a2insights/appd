@@ -27,7 +27,7 @@
         <div class="w-full max-w-md p-6 mt-16 bg-white rounded-lg shadow-md">
             <div class="flex items-center justify-center">
                 <img src="{{ $carteirinha->foto_url ?? 'https://via.placeholder.com/150' }}" alt="Foto do associado"
-                    class="object-cover w-24 h-24 rounded-full shadow-lg">
+                    class="w-24 h-24 shadow-lg">
             </div>
             <div class="text-center">
                 <h1 class="text-xl font-semibold text-gray-800">
