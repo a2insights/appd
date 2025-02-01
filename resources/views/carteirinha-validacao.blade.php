@@ -50,7 +50,7 @@
 
                 <div class="ml-6">
                     <img src="{{ $carteirinha->foto_url ?? 'https://via.placeholder.com/150' }}" alt="Foto do associado"
-                        class="w-24 h-24 rounded-lg shadow-lg">
+                        class="w-24 rounded-lg shadow-lg">
                 </div>
             </div>
         </div>
