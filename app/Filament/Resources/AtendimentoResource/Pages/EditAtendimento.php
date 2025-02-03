@@ -55,6 +55,14 @@ class EditAtendimento extends EditRecord
         ];
     }
 
+    protected function afterSave(): void
+    {
+        $this->syncDeclaracao([
+            'titulo' => 'Declaração de Atendimento',
+            'descricao' => $this->getDescription(),
+        ], $this->record);
+    }
+
     protected function getDescription(): string
     {
         $nome = $this->record->associado->nome ?? $this->record->pessoa->nome ?? 'Nome não informado';
@@ -67,14 +75,6 @@ class EditAtendimento extends EditRecord
         $text .= "Agradecemos pela atenção e colocamo-nos à disposição para eventuais esclarecimentos.\n\n";
 
         return $text;
-    }
-
-    protected function afterSave(): void
-    {
-        $this->syncDeclaracao([
-            'titulo' => 'Declaração de Atendimento',
-            'descricao' => $this->getDescription(),
-        ], $this->record);
     }
 
     protected function syncDeclaracao(array $data, Atendimento $record): void
