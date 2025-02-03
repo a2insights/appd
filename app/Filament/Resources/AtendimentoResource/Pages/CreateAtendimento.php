@@ -7,6 +7,7 @@ use App\Models\Atendimento;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CreateAtendimento extends CreateRecord
 {
@@ -30,6 +31,8 @@ class CreateAtendimento extends CreateRecord
             'titulo' => 'Declaração de Atendimento',
             'descricao' => $this->getDescription(),
         ], $this->record);
+
+        redirect($this->getResource()::getUrl('edit', ['record' => $this->record]));
     }
 
     protected function getDescription(): string
@@ -48,7 +51,7 @@ class CreateAtendimento extends CreateRecord
 
     protected function syncDeclaracao(array $data, Atendimento $record): void
     {
-        $path = 'atendimentos/pdfs/'.$record->id.'.pdf';
+        $path = 'atendimentos/pdfs/atendimento-'.Str::slug($record->getNome()).'-'.$record->id.'.pdf';
 
         $declaracao = [
             'titulo' => $data['titulo'],

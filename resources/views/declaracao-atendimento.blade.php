@@ -137,7 +137,7 @@
             <p>
                 _______________________________________________________<br><br>
                 <strong>
-                    {{ $atendimento?->associado?->abbreviateName() ?? $atendimento?->pessoa->nome }}<br>
+                    {{ $atendimento?->getNome() }}<br>
                 </strong>
             </p>
         </div>

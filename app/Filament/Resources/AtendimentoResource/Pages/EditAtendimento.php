@@ -13,6 +13,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EditAtendimento extends EditRecord
 {
@@ -79,7 +80,7 @@ class EditAtendimento extends EditRecord
 
     protected function syncDeclaracao(array $data, Atendimento $record): void
     {
-        $path = 'atendimentos/pdfs/'.$record->id.'.pdf';
+        $path = 'atendimentos/pdfs/atendimento-'.Str::slug($record->getNome()).'-'.$record->id.'.pdf';
 
         $declaracao = [
             'titulo' => $data['titulo'],

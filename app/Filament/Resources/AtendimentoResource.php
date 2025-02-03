@@ -107,12 +107,12 @@ class AtendimentoResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nome')
                     ->label('Nome')
-                    ->state(fn (Model $record) => $record->associado->nome ?? $record->pessoa->nome)
+                    ->state(fn (Model $record) => $record->getNome())
                     ->searchable(true, fn ($query, $search) => $query->whereHas('associado', fn ($query) => $query->where('nome', 'like', "%{$search}%"))
                         ->orWhereHas('pessoa', fn ($query) => $query->where('nome', 'like', "%{$search}%"))),
                 Tables\Columns\TextColumn::make('rg_cpf')
                     ->label('RG/CPF')
-                    ->state(fn (Model $record) => self::formatDocument($record->associado->rg ?? $record->pessoa->cpf))
+                    ->state(fn (Model $record) => self::formatDocument($record?->associado?->rg ?? $record?->pessoa?->cpf))
                     ->searchable(true, fn ($query, $search) => $query
                         ->whereHas('associado', fn ($query) => $query->where('rg', 'like', "%{$search}%"))
                         ->orWhereHas('pessoa', fn ($query) => $query->where('cpf', 'like', "%{$search}%"))

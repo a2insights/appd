@@ -48,4 +48,9 @@ class Atendimento extends Model
     {
         return $this->belongsTo(Associado::class);
     }
+
+    public function getNome(): string
+    {
+        return $this->associado->nome ?? $this->pessoa->nome ?? 'Nome não informado';
+    }
 }
