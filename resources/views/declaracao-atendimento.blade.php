@@ -64,7 +64,7 @@
             text-align: center;
             font-size: 24px;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 55px;
         }
 
         .content .description {
