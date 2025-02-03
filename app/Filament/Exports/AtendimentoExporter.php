@@ -18,13 +18,11 @@ class AtendimentoExporter extends Exporter
     {
         return [
             ExportColumn::make('id'),
-            ExportColumn::make('associado.id')
-                ->label('Associado ID'),
-            ExportColumn::make('associado.nome')
-                ->label('Associado Nome'),
-            ExportColumn::make('associado.status')->state(fn ($record) => $record->associado->status->getLabel())
-                ->label('Associado Status'),
-            ExportColumn::make('tipos.titulo'),
+            ExportColumn::make('nome')
+                ->formatStateUsing(fn ($record) => $record->getNome())
+                ->label('Nome'),
+            ExportColumn::make('tipos.titulo')
+                ->label('Atendimento'),
             ExportColumn::make('created_at')
                 ->label('Data do Atendimento')
                 ->formatStateUsing(fn ($record) => $record->created_at->format('d/m/Y H:i:s')),
