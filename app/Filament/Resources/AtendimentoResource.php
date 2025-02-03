@@ -46,17 +46,17 @@ class AtendimentoResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('associado_id')
                     ->label('Associado')
-                    ->relationship('associado', 'nome', fn ($query, $search) => $query->whereRaw('rg LIKE ? OR cpf LIKE ? OR nome LIKE ?', [
+                    ->relationship('associado', 'nome', fn ($query, $search) => $search ? $query->whereRaw('rg LIKE ? OR cpf LIKE ? OR nome LIKE ?', [
                         "%{$search}%", "%{$search}%", "%{$search}%",
-                    ]))
+                    ]) : null)
                     ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - {$record->getDocumento()}")
                     ->helperText('Selecione o associado')
                     ->searchable(),
                 Forms\Components\Select::make('pessoa_id')
                     ->label('Pessoa')
-                    ->relationship('pessoa', 'nome', fn ($query, $search) => $query->whereRaw('cpf LIKE ? OR nome LIKE ?', [
+                    ->relationship('pessoa', 'nome', fn ($query, $search) => $search ? $query->whereRaw('cpf LIKE ? OR nome LIKE ?', [
                         "%{$search}%", "%{$search}%",
-                    ]))
+                    ]) : null)
                     ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - CPF: ".self::formatDocument($record->cpf))
                     ->helperText('Selecione a pessoa')
                     ->searchable()
