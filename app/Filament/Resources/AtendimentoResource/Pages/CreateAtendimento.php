@@ -11,11 +11,6 @@ class CreateAtendimento extends CreateRecord
 
     protected static bool $canCreateAnother = false;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
-    }
-
     public function getBreadcrumb(): string
     {
         return 'Novo Atendimento';

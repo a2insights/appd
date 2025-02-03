@@ -22,6 +22,7 @@ class Atendimento extends Model
         'pessoa_id',
         'associado_id',
         'finalizado_em',
+        'declaracao',
     ];
 
     /**
@@ -30,9 +31,7 @@ class Atendimento extends Model
      * @var array
      */
     protected $casts = [
-        'finalizado_automaticamente' => 'boolean',
-        'em_andamento' => 'boolean',
-        'finalizado_em' => 'datetime',
+        'declaracao' => 'array',
     ];
 
     public function tipos(): BelongsToMany

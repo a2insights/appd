@@ -3,23 +3,16 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AtendimentoResource\Pages;
-use App\Filament\Schemas\AssociadoSchema;
-use App\Models\Associado;
 use App\Models\Atendimento;
-use App\Models\Tipo;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class AtendimentoResource extends Resource
 {
@@ -94,12 +87,13 @@ class AtendimentoResource extends Resource
                             ->modalSubmitActionLabel('Criar')
                             ->modalWidth('lg');
                     }),
-                Wizard::make(fn (array $state, ?Model $record) => self::steps($state, $record, $form))
-                    ->columnSpanFull()
-                    ->nextAction(
-                        fn (Action $action) => $action->label('Editar Associado'),
-                    )
-                    ->hidden(),
+
+                \Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField::make('declaracao')
+                    ->visibility('private')
+                    ->hidden(fn (Model $record) => ! $record->declaracao)
+                    ->label('Declaração de Atendimento')
+                    ->minHeight('80svh')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -171,63 +165,5 @@ class AtendimentoResource extends Resource
             'create' => Pages\CreateAtendimento::route('/create'),
             'edit' => Pages\EditAtendimento::route('/{record}/edit'),
         ];
-    }
-
-    public static function steps(array $state, ?Model $record, $form): array
-    {
-        return [];
-
-        // TODO: Implementar lógica para exibir os steps
-        if (! $record) {
-            return [];
-        }
-
-        $steps = [];
-
-        $tipos = $record->tipos->map(fn (Tipo $tipo) => Str::slug($tipo->titulo));
-        if ($tipos->contains('atualizacao-cadastral')) {
-            $steps[] = self::selecionarAssociado();
-            $steps[] = self::editarAssociado($form);
-        }
-
-        $steps[] = self::finalizarAtendimento();
-
-        return $steps;
-    }
-
-    private static function finalizarAtendimento()
-    {
-        return Wizard\Step::make('Finalizar Atendimento')
-            ->description('Finalize o atendimento')
-            ->schema([
-            ]);
-    }
-
-    private static function selecionarAssociado()
-    {
-        return Wizard\Step::make('Associado')
-            ->description('Selecione o associado')
-            ->schema([
-                Forms\Components\Select::make('associado_id')
-                    ->label('Associado')
-                    ->relationship('associado', 'nome')
-                    ->preload()
-                    ->afterStateUpdated(function ($state, $record, Get $get, Set $set) {
-                        $associado = Associado::find($state);
-                        $set('nome', $associado->nome);
-
-                        return $state;
-                    })
-                    ->searchable()
-                    ->required()
-                    ->columnSpanFull(),
-            ]);
-    }
-
-    private static function editarAssociado($form)
-    {
-        return Wizard\Step::make('Editar Associado')
-            ->description('Atualize os dados do associado')
-            ->schema(AssociadoSchema::schema(true));
     }
 }

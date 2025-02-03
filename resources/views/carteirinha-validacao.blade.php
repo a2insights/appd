@@ -11,7 +11,7 @@
 
 <body class="flex items-center justify-center min-h-screen bg-gray-100">
     <!-- Header -->
-    <header class="absolute top-0 left-0 w-full p-4 text-white bg-blue-500 shadow-md">
+    <header class="absolute top-0 left-0 w-full p-4">
         <div class="flex flex-col items-center justify-center max-w-3xl mx-auto text-center">
             <img src="{{ url('img/logo.svg') }}" alt="Logo APPD" class="w-12 h-12 rounded-full">
             <h1 class="text-lg font-bold">
@@ -24,28 +24,41 @@
 
     <!-- Main Content -->
     @if ($carteirinha)
-        <div class="w-full max-w-md p-6 mt-16 bg-white rounded-lg shadow-md">
+        <div class="relative w-full max-w-lg p-6 mt-16 bg-white rounded-lg shadow-md">
+            <!-- Overlay -->
+            @if ($carteirinha->status->value === 'cancelada')
+                <div class="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-50 rounded-lg">
+                    <span class="text-2xl font-bold text-white">CANCELADA</span>
+                </div>
+            @endif
+            @if ($carteirinha->status->value === 'vencida')
+                <div class="absolute inset-0 flex items-center justify-center bg-yellow-500 bg-opacity-50 rounded-lg">
+                    <span class="text-2xl font-bold text-white">VENCIDA</span>
+                </div>
+            @endif
+
             <div class="flex items-start">
                 <div class="flex-1">
-                    <h1 class="text-xl font-semibold text-gray-800">
+                    <h1 class="mb-4 text-xl font-semibold text-gray-800">
                         {{ $carteirinha->associado->nome ?? 'Nome não disponível' }}
                     </h1>
-                    <p class="mt-2 text-sm text-gray-600">
+                    @php
+                        $statusClasses = match ($carteirinha->status->value) {
+                            'ativa' => 'text-green-700',
+                            'vencida' => 'text-yellow-700',
+                            'cancelada' => 'text-red-700',
+                            default => 'text-gray-700',
+                        };
+                    @endphp
+                    <p class="text-sm mt-1 text-gray-600 {{ $statusClasses }}">
+                        <strong>Status:</strong> {{ $carteirinha->status }}
+                    </p>
+                    <p class="mt-1 text-sm text-gray-600">
                         <strong>Validade:</strong> {{ $carteirinha->data_vencimento->format('d/m/Y') }}
                     </p>
-                    <div class="mt-4">
-                        @php
-                            $statusClasses = match ($carteirinha->status ?? 'cancelada') {
-                                'ativa' => 'bg-green-100 text-green-700',
-                                'vencida' => 'bg-yellow-100 text-yellow-700',
-                                'cancelada' => 'bg-red-100 text-red-700',
-                                default => 'bg-gray-100 text-gray-700',
-                            };
-                        @endphp
-                        <span class="block text-sm font-medium rounded-lg p-2 {{ $statusClasses }}">
-                            <strong>Status:</strong> {{ $carteirinha->status ?? 'Status não disponível' }}
-                        </span>
-                    </div>
+                    <p class="mt-1 text-sm text-gray-600">
+                        <strong>Deficiência:</strong> {{ $carteirinha->associado->tipo_deficiencia }}
+                    </p>
                 </div>
 
                 <div class="ml-6">
