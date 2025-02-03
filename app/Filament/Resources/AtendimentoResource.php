@@ -90,7 +90,7 @@ class AtendimentoResource extends Resource
 
                 \Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField::make('declaracao')
                     ->visibility('private')
-                    ->hidden(fn (Model $record) => ! $record->declaracao)
+                    ->hidden(fn (Model $record) => ! $record?->declaracao)
                     ->label('Declaração de Atendimento')
                     ->minHeight('80svh')
                     ->columnSpanFull(),
