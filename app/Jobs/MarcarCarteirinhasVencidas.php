@@ -25,7 +25,12 @@ class MarcarCarteirinhasVencidas implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('Marcando carteirinhas vencidas...', ['date' => now()]);
+        $countToUpdate = Carteirinha::where('data_vencimento', '<', now())
+            ->where('status', '!=', 'cancelada')
+            ->where('status', '!=', 'vencida')
+            ->count();
+
+        Log::info('Marcando carteirinhas vencidas...', ['date' => now(), 'count' => $countToUpdate]);
 
         Carteirinha::where('data_vencimento', '<', now())
             ->where('status', '!=', 'cancelada')
