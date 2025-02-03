@@ -101,22 +101,27 @@ class AtendimentoResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('associado.nome')
-                    ->label('Associado')
-                    ->url(function (Model $record): ?string {
-                        return $record->associado_id ? AssociadoResource::getUrl('edit', ['record' => $record->associado_id]) : '#';
-                    })
-                    ->searchable()
-                    ->color('primary'),
-                Tables\Columns\TextColumn::make('pessoa.nome')
-                    ->url(function (Model $record): ?string {
-                        return $record->pessoa_id ? PessoaResource::getUrl('edit', ['record' => $record->pessoa_id]) : '#';
-                    })
-                    ->searchable()
-                    ->color('primary'),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nome')
+                    ->label('Nome')
+                    ->state(fn (Model $record) => $record->associado->nome ?? $record->pessoa->nome)
+                    ->searchable(true, fn ($query, $search) => $query->whereHas('associado', fn ($query) => $query->where('nome', 'like', "%{$search}%"))
+                        ->orWhereHas('pessoa', fn ($query) => $query->where('nome', 'like', "%{$search}%"))),
+                Tables\Columns\TextColumn::make('rg_cpf')
+                    ->label('RG/CPF')
+                    ->state(fn (Model $record) => self::formatDocument($record->associado->rg ?? $record->pessoa->cpf))
+                    ->searchable(true, fn ($query, $search) => $query
+                        ->whereHas('associado', fn ($query) => $query->where('rg', 'like', "%{$search}%"))
+                        ->orWhereHas('pessoa', fn ($query) => $query->where('cpf', 'like', "%{$search}%"))
+                        ->orWhereHas('associado', fn ($query) => $query->where('cpf', 'like', "%{$search}%"))
+                    ),
                 Tables\Columns\TextColumn::make('tipos.titulo')
                     ->badge()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 // Tables\Columns\IconColumn::make('em_andamento')
                 //     ->boolean(),
                 // Tables\Columns\IconColumn::make('finalizado_automaticamente')
@@ -125,8 +130,9 @@ class AtendimentoResource extends Resource
                 //     ->dateTime()
                 //     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Data do Atendimento')
+                    ->label('Atendimento')
                     ->dateTime('d/m/Y H:i')
+                    ->formatStateUsing(fn (string $state, Model $record) => $record->created_at->diffInDays() < 1 ? $record->created_at->diffForHumans() : $state)
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('updated_at')
                 //     ->dateTime()
@@ -168,5 +174,16 @@ class AtendimentoResource extends Resource
             'create' => Pages\CreateAtendimento::route('/create'),
             'edit' => Pages\EditAtendimento::route('/{record}/edit'),
         ];
+    }
+
+    public static function formatDocument($document)
+    {
+        if (strlen($document) === 11) {
+            return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $document);
+        } elseif (strlen($document) === 9) {
+            return preg_replace('/(\d{2})(\d{3})(\d{3})/', '$1.$2.$3', $document);
+        }
+
+        return $document;
     }
 }
