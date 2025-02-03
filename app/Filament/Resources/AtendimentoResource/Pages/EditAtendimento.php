@@ -70,9 +70,9 @@ class EditAtendimento extends EditRecord
         $dataNascimento = $this->record->associado->data_nascimento->format('Y-m-d');
         $cpf = $this->record->associado->cpf;
         $rg = $this->record->associado->rg;
-        $tipoDeficiencia = $this->record->associado->tipo_deficiencia->value;
+        $tipoDeficiencia = Str::title($this->record->associado->tipo_deficiencia->value);
 
-        $dataAtendimento = $this->record->created_at->format('Y/m/d');
+        $dataAtendimento = $this->record->created_at->format('d/m/Y');
         $horario = $this->record->created_at->format('H:m');
 
         $servicosPrestados = $this->record->tipos->pluck('titulo');

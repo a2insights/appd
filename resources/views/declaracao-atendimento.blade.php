@@ -76,6 +76,8 @@
             margin-right: 40px;
         }
 
+        .confidentiality {}
+
         .footer {
             background-color: #f8f8f8;
             border-top: 2px solid #000;
@@ -125,7 +127,7 @@
         <div class="yellow"></div>
         <div class="black"></div>
     </div>
-    <h4 class="code">Nº<b> #{{ $atendimento->id }}</b></h4>
+    <h4 class="code">#<b>{{ $atendimento->id }}</b></h4>
     <div class="content">
         <h2>
             {{ $atendimento->declaracao['titulo'] }}
@@ -133,6 +135,15 @@
         <div class="description">
             {!! @$atendimento->declaracao['descricao'] !!}
         </div>
+
+        <div class="confidentiality">
+            <p style="font-size: 12px; margin-top: 20px; text-align: justify; margin-left: 40px; margin-right: 40px;">
+                <strong>Confidencialidade:</strong> Os dados contidos nesta ficha são sigilosos e destinados
+                exclusivamente ao registro e acompanhamento dos atendimentos individuais realizados pela APPD, em
+                conformidade com as diretrizes do Sistema Único de Assistência Social (SUAS).
+            </p>
+        </div>
+
         <div class="signature">
             <p>
                 _______________________________________________________<br><br>
