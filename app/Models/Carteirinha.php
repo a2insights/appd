@@ -162,7 +162,7 @@ class Carteirinha extends Model
 
     public function getQrCodeSvg()
     {
-        $url = route('associados.carteirinhas.validacao', $this->uuid);
+        $url = $this->shortUrl->default_short_url;
 
         return (new Writer(
             new ImageRenderer(
