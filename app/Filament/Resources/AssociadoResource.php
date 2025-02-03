@@ -92,14 +92,16 @@ class AssociadoResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cpf')
                     ->label('CPF')
+                    ->state(fn (Model $record) => self::formatDocument($record->cpf))
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('rg')
+                    ->label('RG')
+                    ->state(fn (Model $record) => self::formatDocument($record->rg))
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('titulo_eleitor')
                     ->label('Título de eleitor')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('rg')
-                    ->label('RG')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('orgao_expedidor')
@@ -237,5 +239,16 @@ class AssociadoResource extends Resource
     private static function getMunicipios(): Collection
     {
         return MunicipioService::all();
+    }
+
+    public static function formatDocument($document)
+    {
+        if (strlen($document) === 11) {
+            return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $document);
+        } elseif (strlen($document) === 9) {
+            return preg_replace('/(\d{2})(\d{3})(\d{3})/', '$1.$2.$3', $document);
+        }
+
+        return $document;
     }
 }

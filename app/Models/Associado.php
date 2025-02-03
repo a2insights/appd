@@ -244,13 +244,26 @@ class Associado extends Model implements HasMedia
 
     public function getDocumento()
     {
-        return $this->rg
+        $document = $this->rg
             ? 'RG: '.$this->rg
             : ($this->cpf
                 ? 'CPF: '.$this->cpf
                 : ($this->certidao_de_nascimento
                     ? 'Ct/Nasc: '.$this->certidao_de_nascimento
                     : null));
+
+        return self::formatDocument($document);
+    }
+
+    public static function formatDocument($document)
+    {
+        if (strlen($document) === 11) {
+            return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $document);
+        } elseif (strlen($document) === 9) {
+            return preg_replace('/(\d{2})(\d{3})(\d{3})/', '$1.$2.$3', $document);
+        }
+
+        return $document;
     }
 
     public function abbreviateName()
