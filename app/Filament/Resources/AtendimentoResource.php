@@ -104,13 +104,13 @@ class AtendimentoResource extends Resource
                 Tables\Columns\TextColumn::make('associado.nome')
                     ->label('Associado')
                     ->url(function (Model $record): ?string {
-                        return ! $record->associado_id ?? AssociadoResource::getUrl('edit', ['record' => $record->associado_id]);
+                        return $record->associado_id ? AssociadoResource::getUrl('edit', ['record' => $record->associado_id]) : '#';
                     })
                     ->searchable()
                     ->color('primary'),
                 Tables\Columns\TextColumn::make('pessoa.nome')
                     ->url(function (Model $record): ?string {
-                        return ! $record->pessoa_id ?? PessoaResource::getUrl('edit', ['record' => $record->pessoa_id]);
+                        return $record->pessoa_id ? PessoaResource::getUrl('edit', ['record' => $record->pessoa_id]) : '#';
                     })
                     ->searchable()
                     ->color('primary'),
@@ -142,7 +142,9 @@ class AtendimentoResource extends Resource
                     ->label('Data do Atendimento'),
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
