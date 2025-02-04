@@ -46,39 +46,41 @@ class CreateAtendimento extends CreateRecord
         $dataAtendimento = $this->record->created_at->format('d/m/Y');
         $horario = $this->record->created_at->format('H:m');
 
-        $servicosPrestados = $this->record->tipos->pluck('titulo');
+        $servicosPrestados = $this->record->tipos->pluck('titulo')->all();
 
         $text = '<b>IDENTIFICAÇÃO DO USUÁRIO:</b><br>';
-        $text .= "<b>Nome Completo:</b> {$nome}<br>";
+        $text .= '<b>Nome Completo:</b> '.htmlspecialchars($nome).'<br>';
+
         if ($dataNascimento) {
-            $text .= "<b>Data de Nascimento:</b> {$dataNascimento}<br>";
+            $text .= '<b>Data de Nascimento:</b> '.htmlspecialchars($dataNascimento).'<br>';
         }
 
-        $text .= ($cpf ? "<b>CPF:</b> {$cpf}" : '').($rg ? " | <b>RG:</b> {$rg}" : '');
-        $text .= ! empty($text) ? '<br>' : '';
+        $identificationInfo = [];
+        if ($cpf) {
+            $identificationInfo[] = '<b>CPF:</b> '.htmlspecialchars($cpf);
+        }
+        if ($rg) {
+            $identificationInfo[] = '<b>RG:</b> '.htmlspecialchars($rg);
+        }
+
+        if (! empty($identificationInfo)) {
+            $text .= implode(' | ', $identificationInfo).'<br>';
+        }
 
         if ($tipoDeficiencia) {
-            $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}";
+            $text .= '<b>Tipo de Deficiência:</b> '.htmlspecialchars($tipoDeficiencia).'<br>';
         }
 
-        $text .= '<br><br><b>DADOS DO ATENDIMENTO:</b><br>';
-        $text .= "<b>Data do Atendimento:</b> {$dataAtendimento}<br>";
-        $text .= "<b>Horário:</b> {$horario}<br>";
+        $text .= '<br><b>DADOS DO ATENDIMENTO:</b><br>';
+        $text .= '<b>Data do Atendimento:</b> '.htmlspecialchars($dataAtendimento).'<br>';
+        $text .= '<b>Horário:</b> '.htmlspecialchars($horario).'<br>';
 
         $text .= '<br><b>SERVIÇOS PRESTADOS:</b><br>';
-
-        $text .= '<ol>';
-
-        foreach ($servicosPrestados as $servico) {
-            $text .= sprintf(
-                '<li>
-                   %s
-                </li>',
-                htmlspecialchars($servico)
-            );
-        }
-
-        $text .= '</ol>';
+        $servicosList = array_map(
+            fn ($servico) => sprintf('<li>%s</li>', htmlspecialchars($servico)),
+            $servicosPrestados
+        );
+        $text .= '<ol>'.implode('', $servicosList).'</ol>';
 
         return $text;
     }
