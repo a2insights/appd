@@ -87,10 +87,10 @@ class EditAtendimento extends EditRecord
         $text .= ! empty($text) ? '<br>' : '';
 
         if ($tipoDeficiencia) {
-            $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}<br><br>";
+            $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}";
         }
 
-        $text .= '<b>DADOS DO ATENDIMENTO:</b><br>';
+        $text .= '<br><br><b>DADOS DO ATENDIMENTO:</b><br>';
         $text .= "<b>Data do Atendimento:</b> {$dataAtendimento}<br>";
         $text .= "<b>Horário:</b> {$horario}<br>";
 
