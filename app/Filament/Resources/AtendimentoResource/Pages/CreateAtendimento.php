@@ -32,7 +32,7 @@ class CreateAtendimento extends CreateRecord
             'descricao' => $this->getDescription(),
         ], $this->record);
 
-        redirect($this->getResource()::getUrl('edit', ['record' => $this->record]));
+        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record]));
     }
 
     protected function getDescription(): string
@@ -42,6 +42,8 @@ class CreateAtendimento extends CreateRecord
         $cpf = $this->record?->associado?->cpf ?? $this->record?->pessoa?->cpf;
         $rg = $this->record?->associado?->rg ?? '';
         $tipoDeficiencia = @Str::title($this->record->associado->tipo_deficiencia->value);
+
+        $cpf = self::formatDocument($cpf);
 
         $dataAtendimento = $this->record->created_at->format('d/m/Y');
         $horario = $this->record->created_at->format('H:m');
@@ -105,5 +107,16 @@ class CreateAtendimento extends CreateRecord
         $disk = config('filament.default_filesystem_disk');
 
         Storage::disk($disk)->put($path, $pdf->output());
+    }
+
+    public static function formatDocument($document)
+    {
+        if (strlen($document) === 11) {
+            return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $document);
+        } elseif (strlen($document) === 9) {
+            return preg_replace('/(\d{2})(\d{3})(\d{3})/', '$1.$2.$3', $document);
+        }
+
+        return $document;
     }
 }
