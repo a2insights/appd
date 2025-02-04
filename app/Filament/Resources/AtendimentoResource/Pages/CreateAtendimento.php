@@ -28,7 +28,7 @@ class CreateAtendimento extends CreateRecord
     protected function afterCreate(): void
     {
         $this->syncDeclaracao([
-            'titulo' => 'Declaração de Atendimento',
+            'titulo' => 'FICHA DE ATENDIMENTO ASSISTENCIAL',
             'descricao' => $this->getDescription(),
         ], $this->record);
 
