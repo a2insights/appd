@@ -67,7 +67,7 @@ class EditAtendimento extends EditRecord
     protected function getDescription(): string
     {
         $nome = $this->record?->associado?->nome ?? $this->record?->pessoa?->nome;
-        $dataNascimento = $this->record->associado?->data_nascimento?->format('Y-m-d');
+        $dataNascimento = $this->record->associado?->data_nascimento?->format('d/m/Y');
         $cpf = $this->record->associado->cpf ?? '';
         $rg = $this->record->associado->rg ?? '';
         $tipoDeficiencia = @Str::title($this->record->associado->tipo_deficiencia->value);
