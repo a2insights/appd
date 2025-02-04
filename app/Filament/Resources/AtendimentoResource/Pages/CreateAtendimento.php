@@ -61,7 +61,7 @@ class CreateAtendimento extends CreateRecord
             $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}";
         }
 
-        $text .= '<br><br><b>DADOS DO ATENDIMENTO:</b><br>';
+        $text .= '<br><b>DADOS DO ATENDIMENTO:</b><br>';
         $text .= "<b>Data do Atendimento:</b> {$dataAtendimento}<br>";
         $text .= "<b>Horário:</b> {$horario}<br>";
 
