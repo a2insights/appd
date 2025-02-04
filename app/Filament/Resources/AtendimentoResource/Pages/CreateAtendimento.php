@@ -37,11 +37,11 @@ class CreateAtendimento extends CreateRecord
 
     protected function getDescription(): string
     {
-        $nome = $this->record->associado->nome ?? $this->record->pessoa->nome;
-        $dataNascimento = $this->record->associado->data_nascimento->format('Y-m-d');
-        $cpf = $this->record->associado->cpf;
-        $rg = $this->record->associado->rg;
-        $tipoDeficiencia = Str::title($this->record->associado->tipo_deficiencia->value);
+        $nome = $this->record?->associado?->nome ?? $this->record?->pessoa?->nome;
+        $dataNascimento = $this->record->associado?->data_nascimento?->format('Y-m-d');
+        $cpf = $this->record->associado->cpf ?? '';
+        $rg = $this->record->associado->rg ?? '';
+        $tipoDeficiencia = @Str::title($this->record->associado->tipo_deficiencia->value);
 
         $dataAtendimento = $this->record->created_at->format('d/m/Y');
         $horario = $this->record->created_at->format('H:m');
@@ -50,7 +50,9 @@ class CreateAtendimento extends CreateRecord
 
         $text = '<b>IDENTIFICAÇÃO DO USUÁRIO:</b><br>';
         $text .= "<b>Nome Completo:</b> {$nome}<br>";
-        $text .= "<b>Data de Nascimento:</b> {$dataNascimento}<br>";
+        if ($dataNascimento) {
+            $text .= "<b>Data de Nascimento:</b> {$dataNascimento}<br>";
+        }
         $text .= "<b>CPF:</b> {$cpf} | <b>RG:</b> {$rg}<br>";
         $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}<br><br>";
 
