@@ -68,8 +68,8 @@ class EditAtendimento extends EditRecord
     {
         $nome = $this->record?->associado?->nome ?? $this->record?->pessoa?->nome;
         $dataNascimento = $this->record->associado?->data_nascimento?->format('d/m/Y');
-        $cpf = $this->record->associado->cpf ?? '';
-        $rg = $this->record->associado->rg ?? '';
+        $cpf = $this->record?->associado?->cpf ?? $this->pessoa?->cpf;
+        $rg = $this->record?->associado?->rg ?? '';
         $tipoDeficiencia = @Str::title($this->record->associado->tipo_deficiencia->value);
 
         $dataAtendimento = $this->record->created_at->format('d/m/Y');
