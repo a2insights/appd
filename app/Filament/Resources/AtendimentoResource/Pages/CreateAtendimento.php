@@ -37,14 +37,41 @@ class CreateAtendimento extends CreateRecord
 
     protected function getDescription(): string
     {
-        $nome = $this->record->associado->nome ?? $this->record->pessoa->nome ?? 'Nome não informado';
+        $nome = $this->record->associado->nome ?? $this->record->pessoa->nome;
+        $dataNascimento = $this->record->associado->data_nascimento->format('Y-m-d');
+        $cpf = $this->record->associado->cpf;
+        $rg = $this->record->associado->rg;
+        $tipoDeficiencia = Str::title($this->record->associado->tipo_deficiencia->value);
 
-        $text = "Declaramos, para os devidos fins, que <b>{$nome}</b> recebeu atendimento em nossa instituição com referência aos seguintes serviços ou atividades realizadas:\n\n";
+        $dataAtendimento = $this->record->created_at->format('d/m/Y');
+        $horario = $this->record->created_at->format('H:m');
 
-        $tiposAtendimento = $this->record->tipos->implode('titulo', ', ');
+        $servicosPrestados = $this->record->tipos->pluck('titulo');
 
-        $text .= "Atendimentos referentes a: <b>{$tiposAtendimento}</b> <br>\n";
-        $text .= "Agradecemos pela atenção e colocamo-nos à disposição para eventuais esclarecimentos.\n\n";
+        $text = '<b>IDENTIFICAÇÃO DO USUÁRIO:</b><br>';
+        $text .= "<b>Nome Completo:</b> {$nome}<br>";
+        $text .= "<b>Data de Nascimento:</b> {$dataNascimento}<br>";
+        $text .= "<b>CPF:</b> {$cpf} | <b>RG:</b> {$rg}<br>";
+        $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}<br><br>";
+
+        $text .= '<b>DADOS DO ATENDIMENTO:</b><br>';
+        $text .= "<b>Data do Atendimento:</b> {$dataAtendimento}<br>";
+        $text .= "<b>Horário:</b> {$horario}<br>";
+
+        $text .= '<br><b>SERVIÇOS PRESTADOS:</b><br>';
+
+        $text .= '<ol>';
+
+        foreach ($servicosPrestados as $servico) {
+            $text .= sprintf(
+                '<li>
+                   %s
+                </li>',
+                htmlspecialchars($servico)
+            );
+        }
+
+        $text .= '</ol>';
 
         return $text;
     }
