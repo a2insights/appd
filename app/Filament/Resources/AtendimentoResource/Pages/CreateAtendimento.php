@@ -53,8 +53,13 @@ class CreateAtendimento extends CreateRecord
         if ($dataNascimento) {
             $text .= "<b>Data de Nascimento:</b> {$dataNascimento}<br>";
         }
-        $text .= "<b>CPF:</b> {$cpf} | <b>RG:</b> {$rg}<br>";
-        $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}<br><br>";
+
+        $text .= ($cpf ? "<b>CPF:</b> {$cpf}" : '').($rg ? " | <b>RG:</b> {$rg}" : '');
+        $text .= ! empty($text) ? '<br>' : '';
+
+        if ($tipoDeficiencia) {
+            $text .= "<b>Tipo de Deficiência:</b> {$tipoDeficiencia}<br><br>";
+        }
 
         $text .= '<b>DADOS DO ATENDIMENTO:</b><br>';
         $text .= "<b>Data do Atendimento:</b> {$dataAtendimento}<br>";
