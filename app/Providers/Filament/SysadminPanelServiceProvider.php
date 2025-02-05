@@ -31,7 +31,7 @@ class SysadminPanelServiceProvider extends PanelProvider
             ->path('sysadmin')
             ->authGuard('web')
             ->login()
-            ->passwordReset()
+            // ->passwordReset()
             ->emailVerification()
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

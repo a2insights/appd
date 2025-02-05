@@ -33,7 +33,7 @@ class AdminPanelServiceProvider extends PanelProvider
             ->default()
             ->login(Login::class)
             ->registration(false)
-            ->passwordReset()
+            // ->passwordReset()
             ->emailVerification()
             ->profile()
             ->sidebarCollapsibleOnDesktop()
