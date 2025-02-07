@@ -48,6 +48,7 @@ class AdminPanelServiceProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([
+                \Kenepa\Banner\BannerPlugin::make()->persistsBannersInDatabase(),
                 \Awcodes\FilamentQuickCreate\QuickCreatePlugin::make()
                     ->includes([
                         \A2Insights\FilamentSaas\User\Filament\UserResource::class,
