@@ -34,6 +34,10 @@ class AssociadoFiltersTable
                 ->query(function ($query, array $data) {
                     $date = $data['carteirinhas']['data_emissao'];
                     $date = explode('-', $date);
+                    if (! isset($date[0]) || ! isset($date[1])) {
+                        return;
+                    }
+
                     $start = trim($date[0]);
                     $end = trim($date[1]);
 
