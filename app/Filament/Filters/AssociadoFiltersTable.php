@@ -17,6 +17,7 @@ use App\Sexo;
 use App\TipoDeficiencia;
 use Facades\App\Services\MunicipioService;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class AssociadoFiltersTable
@@ -29,6 +30,23 @@ class AssociadoFiltersTable
                 ->multiple(),
             \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('created_at')
                 ->label('Data de Cadastro'),
+            \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('carteirinhas.data_emissao')
+                ->query(function ($query, array $data) {
+                    $date = $data['carteirinhas']['data_emissao'];
+                    $date = explode('-', $date);
+                    $start = trim($date[0]);
+                    $end = trim($date[1]);
+
+                    $start = Carbon::createFromFormat('d/m/Y', $start);
+                    $end = Carbon::createFromFormat('d/m/Y', $end);
+
+                    $data['values'] = [$start, $end];
+
+                    $query->whereHas('carteirinhas', function ($query) use ($data) {
+                        $query->whereBetween('data_emissao', $data['values']);
+                    });
+                })
+                ->label('Data de Renovação'),
             SelectFilter::make('aniversariantes')
                 ->attribute('data_nascimento')
                 ->multiple()
