@@ -48,7 +48,8 @@ class AssociadoFiltersTable
 
                     $query->whereHas('carteirinhas', function ($query) use ($data) {
                         $query->whereBetween('data_emissao', $data['values']);
-                    });
+                    })
+                        ->has('carteirinhas', '>', 1); // Garante que tenha mais de uma carteirinha
                 })
                 ->label('Data de Renovação'),
             SelectFilter::make('aniversariantes')
