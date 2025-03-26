@@ -9,8 +9,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('theme')->after('settings')->nullable()->default('default');
-            $table->string('theme_color')->after('theme')->nullable();
+            $table->string('theme')->nullable()->default('default')->after('settings');
+            $table->string('theme_color')->nullable()->after('theme');
         });
     }
 
