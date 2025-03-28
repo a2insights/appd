@@ -5,6 +5,7 @@ namespace App\Filament\Exports;
 use App\Models\Associado;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
@@ -65,6 +66,10 @@ class AssociadoExporter extends Exporter
             ExportColumn::make('telefone_whatsapp')->enabledByDefault(false),
             ExportColumn::make('telefone_fixo')->enabledByDefault(false),
             ExportColumn::make('email')->enabledByDefault(false),
+            ExportColumn::make('idade')
+                ->label('Idade')
+                ->formatStateUsing(fn ($record) => Carbon::parse($record->data_nascimento)->age)
+                ->enabledByDefault(true),
             ExportColumn::make('created_at')
                 ->label('Data de Associação')
                 ->formatStateUsing(fn ($record) => $record->created_at->format('d/m/Y H:i:s'))->enabledByDefault(true),
