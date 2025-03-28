@@ -69,7 +69,7 @@ class AssociadoExporter extends Exporter
                 ->label('Data de Associação')
                 ->formatStateUsing(fn ($record) => $record->created_at->format('d/m/Y H:i:s'))->enabledByDefault(true),
             ExportColumn::make('last_renewal_at')
-                ->formatStateUsing(fn ($record) => $record->carteirinhas()->latest()->first()->data_emissao->format('d/m/Y'))
+                ->formatStateUsing(fn ($record) => $record->carteirinhas()->latest()->first()?->data_emissao?->format('d/m/Y'))
                 ->label('Última Renovação')
                 ->enabledByDefault(true),
             ExportColumn::make('updated_at')
