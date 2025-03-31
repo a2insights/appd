@@ -52,7 +52,7 @@
 <table class="header-table">
     <tr>
         <td class="company-header">
-            <h4 class="company-name">{{ 'empresa' }}</h4>
+            <h4 class="company-name">{{ $encaminhamento->vaga->empresa->nome }}</h4>
             <h4>Recursos Humanos</h4>
         </td>
         <td class="notice-box">
