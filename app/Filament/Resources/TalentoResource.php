@@ -34,8 +34,8 @@ class TalentoResource extends Resource
                     ->relationship('associado', 'nome')
                     ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
                     ->helperText('Selecione o associado, pesquisando pelo nome ou CPF')
-                    ->preload()
-                    ->searchable(['nome', 'cpf']),
+                    // ->preload()
+                    ->searchable(['nome', 'cpf', 'rg']),
                 SpatieMediaLibraryFileUpload::make('arquivos')
                     ->label('Arquivos, como currículo, certificados, etc')
                     ->multiple()
