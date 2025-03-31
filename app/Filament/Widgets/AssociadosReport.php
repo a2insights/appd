@@ -6,7 +6,6 @@ use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class AssociadosReport extends ChartWidget
 {
@@ -59,22 +58,6 @@ class AssociadosReport extends ChartWidget
                     'display' => true,
                     'align' => 'center',
                 ],
-                // TODO: Refreshe after change filters
-                'title' => [
-                    'display' => true,
-                    // 'text' => 'População de associados',
-                    // 'text' => Str::title($xAxis.' dos associados'.' por '.Str::title($group)),
-                ],
-                // 'subtitle' => [
-                //     'display' => true,
-                //     'text' => 'Exibindo '.self::$total.' associados',
-                //     'font' => [
-                //         'size' => 16,
-                //     ],
-                //     'padding' => [
-                //         'bottom' => 10,
-                //     ],
-                // ],
             ],
             'options' => [
                 'barThickness' => 20,
@@ -91,8 +74,6 @@ class AssociadosReport extends ChartWidget
                         'stacked' => false,
                         'title' => [
                             'display' => true,
-                            // TODO: Refreshe after change filters
-                            // 'text' => Str::title($xAxis),
                         ],
                     ],
                 ],
@@ -127,9 +108,10 @@ class AssociadosReport extends ChartWidget
     {
         $chartData = ['labels' => [], 'datasets' => []];
 
+        // Get unique labels for xAxis
         $labels = DB::table('associados')
-            ->select($xAxis)
-            ->groupBy($xAxis)
+            ->select("associados.$xAxis")  // Explicit table reference
+            ->groupBy("associados.$xAxis")  // Explicit table reference
             ->pluck($xAxis)
             ->toArray();
 
@@ -200,47 +182,53 @@ class AssociadosReport extends ChartWidget
             'rgba(255, 250, 205, 0.7)', // Lemon Chiffon
         ];
 
-        // Shuffle the colors array to randomize the order
-        // shuffle($colors);
+        // Date range processing
+        $between = [];
         $createdAt = explode(' - ', $filters['created_at'] ?? '');
         if (count($createdAt) === 2) {
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[0])->format('Y-m-d').' 00:00:00';
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';
         }
 
+        // Base query with explicit table references
         $select = DB::table('associados')
             ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
             ->when($type === 'encaminhamentos', fn ($query) => $query->join('talentos', 'associados.id', '=', 'talentos.associado_id')->join('encaminhamentos', 'talentos.id', '=', 'encaminhamentos.talento_id'))
             ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('associados.status', $filters['status']))
-            ->when(@$filters['sexo'], fn ($query, $value) => $query->where('sexo', $filters['sexo']))
-            ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('declaracao_sexual', $filters['declaracao_sexual']))
-            ->when(@$filters['estado_civil'], fn ($query, $value) => $query->whereIn('estado_civil', $filters['estado_civil']))
-            ->when(@$filters['naturalidade_uf'], fn ($query, $value) => $query->whereIn('naturalidade_uf', $filters['naturalidade_uf']))
-            ->when(@$filters['religiao'], fn ($query, $value) => $query->whereIn('religiao', $filters['religiao']))
-            ->when(@$filters['tipo_deficiencia'], fn ($query, $value) => $query->whereIn('tipo_deficiencia', $filters['tipo_deficiencia']))
-            ->when(@$filters['causa_deficiencia'], fn ($query, $value) => $query->whereIn('causa_deficiencia', $filters['causa_deficiencia']))
-            ->when(@$filters['escolaridade'], fn ($query, $value) => $query->whereIn('escolaridade', $filters['escolaridade']))
-            ->when(@$filters['raca'], fn ($query, $value) => $query->whereIn('raca', $filters['raca']))
-            ->when(@$filters['aparelhos_utilizado'], fn ($query, $value) => $query->whereIn('aparelhos_utilizado', $filters['aparelhos_utilizado']))
+            ->when(@$filters['sexo'], fn ($query, $value) => $query->where('associados.sexo', $filters['sexo']))
+            ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('associados.declaracao_sexual', $filters['declaracao_sexual']))
+            ->when(@$filters['estado_civil'], fn ($query, $value) => $query->whereIn('associados.estado_civil', $filters['estado_civil']))
+            ->when(@$filters['naturalidade_uf'], fn ($query, $value) => $query->whereIn('associados.naturalidade_uf', $filters['naturalidade_uf']))
+            ->when(@$filters['religiao'], fn ($query, $value) => $query->whereIn('associados.religiao', $filters['religiao']))
+            ->when(@$filters['tipo_deficiencia'], fn ($query, $value) => $query->whereIn('associados.tipo_deficiencia', $filters['tipo_deficiencia']))
+            ->when(@$filters['causa_deficiencia'], fn ($query, $value) => $query->whereIn('associados.causa_deficiencia', $filters['causa_deficiencia']))
+            ->when(@$filters['escolaridade'], fn ($query, $value) => $query->whereIn('associados.escolaridade', $filters['escolaridade']))
+            ->when(@$filters['raca'], fn ($query, $value) => $query->whereIn('associados.raca', $filters['raca']))
+            ->when(@$filters['aparelhos_utilizado'], fn ($query, $value) => $query->whereIn('associados.aparelhos_utilizado', $filters['aparelhos_utilizado']))
             ->when(@$filters['beneficios'], fn ($query, $value) => $query->whereHas('beneficios', fn ($query) => $query->whereIn('beneficios.nome', $filters['beneficios'])))
-            // ->when(@$filters['cid10'], fn ($query, $value) => $query->whereHas('cid10', fn ($query) => $query->whereIn('cid10.codigo', $filters['cid10'])))
-            ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('ocupacoes', $filters['ocupacoes']))
+            ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('associados.ocupacoes', $filters['ocupacoes']))
             ->when($type === 'atendimentos' && @$between, fn ($query) => $query->whereBetween('atendimentos.created_at', $between))
             ->when($type === 'encaminhamentos' && @$between, fn ($query) => $query->whereBetween('encaminhamentos.created_at', $between))
             ->when(! $type && @$between, fn ($query) => $query->whereBetween('associados.created_at', $between));
 
-        self::$total = $select->count();
+        self::$total = $select->count('associados.id');  // Explicit count on primary key
 
+        // Group data with explicit table references
         $groupData = $select
-            ->select($group, $xAxis, DB::raw('COUNT(*) as total'))
-            ->groupBy($group, $xAxis)
+            ->select(
+                "associados.$group as group_column",
+                "associados.$xAxis as x_axis_column",
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy("associados.$group", "associados.$xAxis")
             ->get();
 
         $groupTotals = [];
         $colorIndex = 0;
 
         foreach ($groupData as $row) {
-            $groupName = $row->$group;
+            $groupName = $row->group_column ?? 'Sem Informação';
+            $xAxisValue = $row->x_axis_column;
             $total = $row->total;
 
             if (! isset($groupTotals[$groupName])) {
@@ -253,16 +241,13 @@ class AssociadosReport extends ChartWidget
                     'backgroundColor' => $colors[$colorIndex],
                     'borderColor' => $colors[$colorIndex],
                 ];
-
                 $colorIndex++;
             }
 
-            $groupTotals[$groupName]['data'][$row->$xAxis] = $total;
+            $groupTotals[$groupName]['data'][$xAxisValue] = $total;
         }
 
-        foreach ($labels as $label) {
-            $chartData['labels'][] = $label;
-        }
+        $chartData['labels'] = $labels;
 
         foreach ($groupTotals as $groupName => $data) {
             $chartData['datasets'][] = [
