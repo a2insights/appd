@@ -2,19 +2,19 @@
 
 namespace Database\Factories;
 
-use App\Models\Candidato;
+use App\Models\Encaminhamento;
 use App\Models\Talento;
 use App\Models\Vaga;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class CandidatoFactory extends Factory
+class EncaminhamentoFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Candidato::class;
+    protected $model = Encaminhamento::class;
 
     /**
      * Define the model's default state.

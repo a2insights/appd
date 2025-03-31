@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VagaResource\Pages;
-use App\Filament\Resources\VagaResource\RelationManagers\CandidatosRelationManager;
+use App\Filament\Resources\VagaResource\RelationManagers\EncaminhamentosRelationManager;
 use App\Models\Vaga;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
@@ -118,7 +118,7 @@ class VagaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            CandidatosRelationManager::class,
+            EncaminhamentosRelationManager::class,
         ];
     }
 

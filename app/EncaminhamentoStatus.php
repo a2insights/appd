@@ -6,7 +6,7 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum CandidatoStatus: string implements HasColor, HasIcon, HasLabel
+enum EncaminhamentoStatus: string implements HasColor, HasIcon, HasLabel
 {
     case NOVO = 'novo';
     case EM_ANDAMENTO = 'em_andamento';

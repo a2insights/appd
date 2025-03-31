@@ -55,6 +55,10 @@ class AssociadosReport extends ChartWidget
                     'position' => 'bottom',
                     'align' => 'center',
                 ],
+                'dataLabels' => [
+                    'display' => true,
+                    'align' => 'center',
+                ],
                 // TODO: Refreshe after change filters
                 'title' => [
                     'display' => true,

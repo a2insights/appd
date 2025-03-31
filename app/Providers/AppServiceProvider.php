@@ -6,6 +6,8 @@ use App\Models\Associado;
 use App\Models\User;
 use BezhanSalleh\FilamentExceptions\Models\Exception;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use HusamTariq\FilamentDatabaseSchedule\Models\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
@@ -55,5 +57,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Filament Database Schedule
         Gate::policy(Schedule::class, \App\Policies\SchedulePolicy::class);
+
+        FilamentAsset::register([
+            Js::make('chart-js-plugins', 'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels')->module(),
+        ]);
     }
 }
