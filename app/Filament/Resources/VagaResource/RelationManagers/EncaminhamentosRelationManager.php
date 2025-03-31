@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\VagaResource\RelationManagers;
 
-use App\CandidatoStatus;
+use App\EncaminhamentoStatus;
 use App\Filament\Resources\TalentoResource;
 use App\Models\Talento;
 use Filament\Forms;
@@ -12,9 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
-class CandidatosRelationManager extends RelationManager
+class EncaminhamentosRelationManager extends RelationManager
 {
-    protected static string $relationship = 'candidatos';
+    protected static string $relationship = 'encaminhamentos';
 
     public function form(Form $form): Form
     {
@@ -48,8 +48,8 @@ class CandidatosRelationManager extends RelationManager
                     ->columnSpanFull(),
                 Forms\Components\ToggleButtons::make('status')
                     ->inline()
-                    ->options(CandidatoStatus::class)
-                    ->default(CandidatoStatus::NOVO)
+                    ->options(EncaminhamentoStatus::class)
+                    ->default(EncaminhamentoStatus::EM_ANDAMENTO)
                     ->required()
                     ->columnSpanFull(),
             ]);
@@ -80,7 +80,7 @@ class CandidatosRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->label('Adicionar Candidato')
+                    ->label('Adicionar Encaminhamento')
                     ->createAnother(false),
             ])
             ->actions([

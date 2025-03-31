@@ -22,11 +22,11 @@ class Cargo extends Model
 
     public function talentos(): BelongsToMany
     {
-        return $this->belongsToMany(Talento::class, 'Cargo_talento');
+        return $this->belongsToMany(Talento::class, 'cargo_talento');
     }
 
     public function vagas(): BelongsToMany
     {
-        return $this->belongsToMany(Vaga::class, 'Cargo_vaga');
+        return $this->belongsToMany(Vaga::class, 'cargo_vaga');
     }
 }

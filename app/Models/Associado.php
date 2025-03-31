@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -230,6 +232,23 @@ class Associado extends Model implements HasMedia
     public function carteirinhas(): HasMany
     {
         return $this->hasMany(Carteirinha::class);
+    }
+
+    public function talento(): HasOne
+    {
+        return $this->hasOne(Talento::class);
+    }
+
+    public function encaminhamentos(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Encaminhamento::class,
+            Talento::class,
+            'modelo_id',
+            'talento_id',
+            'id',
+            'id'
+        );
     }
 
     public function beneficios(): BelongsToMany

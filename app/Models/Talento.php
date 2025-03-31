@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -31,5 +32,10 @@ class Talento extends Model implements HasMedia
     public function associado(): BelongsTo
     {
         return $this->belongsTo(Associado::class);
+    }
+
+    public function encaminhamentos(): HasMany
+    {
+        return $this->hasMany(Encaminhamento::class);
     }
 }

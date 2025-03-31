@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VagaResource\Pages;
-use App\Filament\Resources\VagaResource\RelationManagers\CandidatosRelationManager;
+use App\Filament\Resources\VagaResource\RelationManagers\EncaminhamentosRelationManager;
 use App\Models\Vaga;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
@@ -36,10 +36,27 @@ class VagaResource extends Resource
                     ->cols(20)
                     ->maxLength(255)
                     ->columnSpanFull(),
+                Forms\Components\Select::make('empresa_id')
+                    ->label('Empresa')
+                    ->required()
+                    ->relationship('empresa', 'nome')
+                    ->preload()
+                    ->searchable()
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('ativa')
                     ->label('Ativa')
+                    ->default(true)
                     ->columnSpanFull(),
                 // Forms\Components\TextInput::make('requisitos'),
+                CheckboxList::make('cargos')
+                    ->label('Cargos')
+                    ->required()
+                    ->relationship(titleAttribute: 'nome')
+                    ->columns(4)
+                    ->gridDirection('row')
+                    ->searchable()
+                    ->noSearchResultsMessage('Não foram encontradas competências')
+                    ->columnSpanFull(),
                 Forms\Components\DateTimePicker::make('inicia_em')
                     ->label('Inicia em')
                     ->displayFormat('d/m/Y H:i')
@@ -47,8 +64,8 @@ class VagaResource extends Resource
                     ->seconds(false)
                     ->locale('pt_BR')
                     ->default(now())
-                    // ->minDate(now()->subDay())
-                    // ->maxDate(now()->addMonths(10))
+                // ->minDate(now()->subDay())
+                // ->maxDate(now()->addMonths(10))
                     ->required()
                     ->columnSpan(1),
                 Forms\Components\DateTimePicker::make('finaliza_em')
@@ -60,15 +77,6 @@ class VagaResource extends Resource
                     // ->minDate(now()->subDay())
                     // ->maxDate(now()->addMonths(10))
                     ->columnSpan(1),
-                CheckboxList::make('cargos')
-                    ->label('Cargos')
-                    ->required()
-                    ->relationship(titleAttribute: 'nome')
-                    ->columns(4)
-                    ->gridDirection('row')
-                    ->searchable()
-                    ->noSearchResultsMessage('Não foram encontradas competências')
-                    ->columnSpanFull(),
             ]);
     }
 
@@ -118,7 +126,7 @@ class VagaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            CandidatosRelationManager::class,
+            EncaminhamentosRelationManager::class,
         ];
     }
 

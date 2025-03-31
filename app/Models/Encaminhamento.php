@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\CandidatoStatus;
+use App\EncaminhamentoStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Candidato extends Model
+class Encaminhamento extends Model
 {
     use HasFactory;
 
@@ -20,6 +20,7 @@ class Candidato extends Model
         'vaga_id',
         'talento_id',
         'status',
+        'encaminhamento',
     ];
 
     /**
@@ -28,7 +29,8 @@ class Candidato extends Model
      * @var array
      */
     protected $casts = [
-        'status' => CandidatoStatus::class,
+        'status' => EncaminhamentoStatus::class,
+        'encaminhamento' => 'array',
     ];
 
     public function vaga(): BelongsTo
