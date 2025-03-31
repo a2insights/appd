@@ -211,7 +211,7 @@ class AssociadosReport extends ChartWidget
         $select = DB::table('associados')
             ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
             ->when($type === 'encaminhamentos', fn ($query) => $query->join('talentos', 'associados.id', '=', 'talentos.associado_id')->join('encaminhamentos', 'talentos.id', '=', 'encaminhamentos.talento_id'))
-            ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('status', $filters['status']))
+            ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('associados.status', $filters['status']))
             ->when(@$filters['sexo'], fn ($query, $value) => $query->where('sexo', $filters['sexo']))
             ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('declaracao_sexual', $filters['declaracao_sexual']))
             ->when(@$filters['estado_civil'], fn ($query, $value) => $query->whereIn('estado_civil', $filters['estado_civil']))
