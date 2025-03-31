@@ -32,7 +32,7 @@ class TalentoResource extends Resource
                     ->label('Associado')
                     ->required()
                     ->relationship('associado', 'nome')
-                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - cpf: {$record->cpf}")
+                    ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->nome} - {$record->getDocumento()}")
                     ->helperText('Selecione o associado, pesquisando pelo nome ou CPF')
                     // ->preload()
                     ->searchable(['nome', 'cpf', 'rg']),
