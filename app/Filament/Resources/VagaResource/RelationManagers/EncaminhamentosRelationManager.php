@@ -49,7 +49,7 @@ class EncaminhamentosRelationManager extends RelationManager
                 Forms\Components\ToggleButtons::make('status')
                     ->inline()
                     ->options(EncaminhamentoStatus::class)
-                    ->default(EncaminhamentoStatus::NOVO)
+                    ->default(EncaminhamentoStatus::EM_ANDAMENTO)
                     ->required()
                     ->columnSpanFull(),
             ]);

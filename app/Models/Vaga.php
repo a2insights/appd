@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -17,6 +18,7 @@ class Vaga extends Model
      * @var array
      */
     protected $fillable = [
+        'empresa_id',
         'ativa',
         'titulo',
         'descricao',
@@ -44,5 +46,10 @@ class Vaga extends Model
     public function encaminhamentos(): HasMany
     {
         return $this->hasMany(Encaminhamento::class);
+    }
+
+    public function empresa(): BelongsTo
+    {
+        return $this->belongsTo(Empresa::class);
     }
 }

@@ -2,25 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CargoResource\Pages;
-use App\Models\Cargo;
+use App\Filament\Resources\EmpresaResource\Pages;
+use App\Models\Empresa;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class CargoResource extends Resource
+class EmpresaResource extends Resource
 {
-    protected static ?string $model = Cargo::class;
+    protected static ?string $model = Empresa::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bookmark';
+    protected static ?string $navigationIcon = 'heroicon-c-building-office-2';
 
     protected static ?string $navigationGroup = 'Banco de Talentos';
 
     protected static ?int $navigationSort = 4;
-
-    // protected static ?string $navigationParentItem = 'Vagas';
 
     public static function form(Form $form): Form
     {
@@ -29,8 +27,17 @@ class CargoResource extends Resource
                 Forms\Components\TextInput::make('nome')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('descricao')
-                    ->required()
+                Forms\Components\Textarea::make('observacoes')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('telefone')
+                    ->stripCharacters(['-', '.'])
+                    ->tel()
+                    ->placeholder('(DDD) + NÚMERO')
+                    ->mask('(99) 99999-9999'),
+                Forms\Components\TextInput::make('cnpj')
                     ->maxLength(255),
             ]);
     }
@@ -41,8 +48,11 @@ class CargoResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nome')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('descricao')
-                    ->wrap()
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('telefone')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('cnpj')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -58,8 +68,6 @@ class CargoResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -78,9 +86,9 @@ class CargoResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCargos::route('/'),
-            'create' => Pages\CreateCargo::route('/create'),
-            'edit' => Pages\EditCargo::route('/{record}/edit'),
+            'index' => Pages\ListEmpresas::route('/'),
+            'create' => Pages\CreateEmpresa::route('/create'),
+            'edit' => Pages\EditEmpresa::route('/{record}/edit'),
         ];
     }
 }

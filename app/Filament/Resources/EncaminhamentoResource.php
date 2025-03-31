@@ -16,7 +16,7 @@ class EncaminhamentoResource extends Resource
 {
     protected static ?string $model = Encaminhamento::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-user-plus';
 
     protected static ?string $navigationGroup = 'Banco de Talentos';
 
@@ -28,6 +28,13 @@ class EncaminhamentoResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\ToggleButtons::make('status')
+                    ->inline()
+                    ->options(EncaminhamentoStatus::class)
+                    ->default(EncaminhamentoStatus::EM_ANDAMENTO)
+                    ->required()
+                    ->columnSpan(2),
+
                 Forms\Components\Select::make('vaga_id')
                     ->label('Vaga')
                     ->required()
@@ -45,12 +52,6 @@ class EncaminhamentoResource extends Resource
                     ->getOptionLabelFromRecordUsing(fn (Model $record): ?string => "{$record->associado->nome} - {$record->associado->getDocumento()}")
                     ->preload()
                     ->searchable(),
-                Forms\Components\ToggleButtons::make('status')
-                    ->inline()
-                    ->options(EncaminhamentoStatus::class)
-                    ->default(EncaminhamentoStatus::NOVO)
-                    ->required()
-                    ->columnSpan(2),
 
                 \Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField::make('encaminhamento')
                     ->visibility('private')
