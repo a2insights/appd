@@ -210,6 +210,7 @@ class AssociadosReport extends ChartWidget
 
         $select = DB::table('associados')
             ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
+            ->when($type === 'encaminhamentos', fn ($query) => $query->join('talentos', 'associados.id', '=', 'talentos.associado_id')->join('encaminhamentos', 'talentos.id', '=', 'encaminhamentos.talento_id'))
             ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('status', $filters['status']))
             ->when(@$filters['sexo'], fn ($query, $value) => $query->where('sexo', $filters['sexo']))
             ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('declaracao_sexual', $filters['declaracao_sexual']))
@@ -222,9 +223,10 @@ class AssociadosReport extends ChartWidget
             ->when(@$filters['raca'], fn ($query, $value) => $query->whereIn('raca', $filters['raca']))
             ->when(@$filters['aparelhos_utilizado'], fn ($query, $value) => $query->whereIn('aparelhos_utilizado', $filters['aparelhos_utilizado']))
             ->when(@$filters['beneficios'], fn ($query, $value) => $query->whereHas('beneficios', fn ($query) => $query->whereIn('beneficios.nome', $filters['beneficios'])))
-            ->when(@$filters['cid10'], fn ($query, $value) => $query->whereHas('cid10', fn ($query) => $query->whereIn('cid10.codigo', $filters['cid10'])))
+            // ->when(@$filters['cid10'], fn ($query, $value) => $query->whereHas('cid10', fn ($query) => $query->whereIn('cid10.codigo', $filters['cid10'])))
             ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('ocupacoes', $filters['ocupacoes']))
             ->when($type === 'atendimentos' && @$between, fn ($query) => $query->whereBetween('atendimentos.created_at', $between))
+            ->when($type === 'encaminhamentos' && @$between, fn ($query) => $query->whereBetween('encaminhamentos.created_at', $between))
             ->when(! $type && @$between, fn ($query) => $query->whereBetween('associados.created_at', $between));
 
         self::$total = $select->count();
