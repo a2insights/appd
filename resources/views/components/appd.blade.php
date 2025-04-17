@@ -131,7 +131,9 @@
         <div class="yellow"></div>
         <div class="black"></div>
     </div>
-    <h4 class="code">#<b>{{ $model->id }}</b></h4>
+    @if(!isset($hideCode) || $hideCode === false)
+        <h4 class="code">#<b>{{ $model->id }}</b></h4>
+    @endif
     <div class="content">
         {{ $slot }}
     </div>
