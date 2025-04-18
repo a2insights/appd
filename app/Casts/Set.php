@@ -18,7 +18,7 @@ class Set implements Castable
         {
             public function get($model, $key, $value, $attributes)
             {
-                return isset($value) ? explode(',', $value) : null;
+                return isset($value) && $value ? explode(',', $value) : [];
             }
 
             public function set($model, $key, $value, $attributes)
