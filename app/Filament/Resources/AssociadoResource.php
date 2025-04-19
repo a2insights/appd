@@ -9,6 +9,7 @@ use App\Filament\Resources\AssociadoResource\Widgets\AssociadosOverview;
 use App\Filament\Schemas\AssociadoSchema;
 use App\Models\Associado;
 use App\Models\Cid10;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Facades\App\Services\MunicipioService;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -196,6 +197,26 @@ class AssociadoResource extends Resource
             ])
             ->filters(AssociadoFiltersTable::filters(), layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
+                Tables\Actions\Action::make('download')
+                ->label('Baixar')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->action(function (Tables\Actions\Action $action, $record) {
+                    $view = view('associados.print', [
+                        'record' => $record,
+                    ]);
+
+                    $pdf = Pdf::loadHTML($view)
+                        ->setPaper('A4', 'portrait')
+                        ->setOption('isRemoteEnabled', true);
+
+                    $fileName = $record->nome.'_'.$record->id.'_'.Str::random(5).'.pdf';
+
+                    return response()->streamDownload(
+                        fn () => print ($pdf->output()),
+                        $fileName
+                    );
+                }),
                 Tables\Actions\ViewAction::make()->modalWidth('full'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
