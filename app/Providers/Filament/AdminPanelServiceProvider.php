@@ -20,6 +20,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use JaOcero\FilaChat\FilaChatPlugin;
 use Wallo\FilamentCompanies\Pages\Auth\Login;
 
 class AdminPanelServiceProvider extends PanelProvider
@@ -28,6 +29,7 @@ class AdminPanelServiceProvider extends PanelProvider
     {
         return $panel
             ->id('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->homeUrl('/admin')
             ->path('admin')
             ->default()
@@ -76,6 +78,7 @@ class AdminPanelServiceProvider extends PanelProvider
                 \A2Insights\FilamentSaas\User\UserPlugin::make(),
                 \A2Insights\FilamentSaas\Features\FeaturesPlugin::make(),
                 \A2Insights\FilamentSaas\Settings\SettingsPlugin::make(),
+                FilaChatPlugin::make(),
             ])
             ->widgets([
                 AppdInfoWidget::class,
