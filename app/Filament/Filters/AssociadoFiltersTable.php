@@ -16,7 +16,12 @@ use App\Religiao;
 use App\Sexo;
 use App\TipoDeficiencia;
 use Facades\App\Services\MunicipioService;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -76,7 +81,6 @@ class AssociadoFiltersTable
 
                     $query->whereRaw('MONTH(data_nascimento) IN ('.implode(',', $data['values']).')');
                 }),
-            \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('data_nascimento'),
             SelectFilter::make('sexo')
                 ->options(Sexo::class),
             SelectFilter::make('declaracao_sexual')
@@ -146,6 +150,145 @@ class AssociadoFiltersTable
 
             //         $query->whereIn('bairro', $data['values']);
             //     }),
+            Filter::make('idade_custom')
+                ->form([
+                    Repeater::make('age_ranges')
+                        ->label('Intervalos de Idade')
+                        ->schema([
+                            TextInput::make('min_age')
+                                ->label('Idade Mínima')
+                                ->numeric()
+                                ->minValue(0)
+                                ->placeholder('Ex: 18')
+                                ->rules(['nullable', 'integer', 'min:0'])
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set, Get $get) {
+                                    if ($state !== null && $get('max_age') !== null && $state > $get('max_age')) {
+                                        $set('max_age', $state);
+                                    }
+                                }),
+                            TextInput::make('max_age')
+                                ->label('Idade Máxima')
+                                ->numeric()
+                                ->minValue(0)
+                                ->placeholder('Ex: 65')
+                                ->rules(function (Get $get) {
+                                    return [
+                                        'nullable',
+                                        'integer',
+                                        'min:0',
+                                        function ($attribute, $value, $fail) use ($get) {
+                                            $minAge = (int) $get('min_age');
+                                            if ($minAge !== 0 && $value !== null && (int) $value < $minAge) {
+                                                $fail('A idade máxima deve ser maior ou igual à idade mínima.');
+                                            }
+                                        },
+                                    ];
+                                })
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set, Get $get) {
+                                    if ($state !== null && $get('min_age') !== null && $state < $get('min_age')) {
+                                        $set('min_age', $state);
+                                    }
+                                }),
+                        ])
+                        ->defaultItems(1)
+                        ->columns(2)
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => ($min = $state['min_age'] ?? null) && ($max = $state['max_age'] ?? null) ? "{$min} - {$max} anos" : null),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    if (empty($data['age_ranges'])) {
+                        return $query;
+                    }
+
+                    $currentDate = Carbon::now();
+                    $query->where(function (Builder $subQuery) use ($data, $currentDate) {
+                        foreach ($data['age_ranges'] as $range) {
+                            $minAge = (int) ($range['min_age'] ?? null);
+                            $maxAge = (int) ($range['max_age'] ?? null);
+
+                            if ($minAge === 0 && $maxAge === 0) {
+                                continue;
+                            }
+
+                            $subQuery->orWhere(function (Builder $innerSubQuery) use ($minAge, $maxAge, $currentDate) {
+                                if ($maxAge > 0 && $minAge > 0) {
+                                    $birthYearMax = $currentDate->year - $minAge;
+                                    $birthYearMin = $currentDate->year - $maxAge;
+                                    $innerSubQuery->whereYear('data_nascimento', '>=', $birthYearMin)
+                                        ->whereYear('data_nascimento', '<=', $birthYearMax);
+
+                                } elseif ($minAge > 0) {
+                                    $birthYearMax = $currentDate->year - $minAge;
+                                    $innerSubQuery->whereYear('data_nascimento', '<=', $birthYearMax);
+                                } elseif ($maxAge > 0) {
+                                    $birthYearMin = $currentDate->year - $maxAge;
+                                    $innerSubQuery->whereYear('data_nascimento', '>=', $birthYearMin);
+                                }
+                            });
+                        }
+                    });
+
+                    return $query;
+                })
+                ->indicateUsing(function (array $data): array {
+                    $indicators = [];
+                    if (! empty($data['age_ranges'])) {
+                        foreach ($data['age_ranges'] as $range) {
+                            $minAge = $range['min_age'] ?? null;
+                            $maxAge = $range['max_age'] ?? null;
+
+                            if ($minAge !== null && $maxAge !== null) {
+                                $indicators["idade_{$minAge}_{$maxAge}"] = "Idade: {$minAge}-{$maxAge} anos";
+                            } elseif ($minAge !== null) {
+                                $indicators["idade_min_{$minAge}"] = "Idade: {$minAge}+ anos";
+                            } elseif ($maxAge !== null) {
+                                $indicators["idade_max_{$maxAge}"] = "Idade: até {$maxAge} anos";
+                            }
+                        }
+                    }
+
+                    return $indicators;
+                })
+                ->columnSpanFull(),
+            SelectFilter::make('idade')
+                ->options([
+                    '0-18' => '0-18 anos',
+                    '19-30' => '19-30 anos',
+                    '31-50' => '31-50 anos',
+                    '51-65' => '51-65 anos',
+                    '65+' => '65+ anos',
+                ])
+                ->query(function ($query, array $data) {
+                    if (empty($data['value'])) {
+                        return;
+                    }
+
+                    $currentYear = Carbon::now()->year;
+                    $ageRange = $data['value'];
+
+                    switch ($ageRange) {
+                        case '0-18':
+                            $query->whereYear('data_nascimento', '>=', $currentYear - 18);
+                            break;
+                        case '19-30':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 19)
+                                ->whereYear('data_nascimento', '>=', $currentYear - 30);
+                            break;
+                        case '31-50':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 31)
+                                ->whereYear('data_nascimento', '>=', $currentYear - 50);
+                            break;
+                        case '51-65':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 51)
+                                ->whereYear('data_nascimento', '>=', $currentYear - 65);
+                            break;
+                        case '65+':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 66);
+                            break;
+                    }
+                }),
         ];
     }
 

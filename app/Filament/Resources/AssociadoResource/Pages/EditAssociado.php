@@ -7,8 +7,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
-use Mansoor\FilamentVersionable\Page\RevisionsAction;
 use Illuminate\Support\Str;
+use Mansoor\FilamentVersionable\Page\RevisionsAction;
 
 class EditAssociado extends EditRecord
 {
@@ -38,8 +38,7 @@ class EditAssociado extends EditRecord
                         $fileName
                     );
                 })
-                ->hidden(fn () => ! $this->record), // Adiciona verificação para ocultar se não houver registro
-
+                ->hidden(fn () => ! $this->record),
             RevisionsAction::make()
                 ->label('Alterações'),
         ];
