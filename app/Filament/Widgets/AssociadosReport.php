@@ -54,9 +54,13 @@ class AssociadosReport extends ChartWidget
                     'position' => 'bottom',
                     'align' => 'center',
                 ],
-                'dataLabels' => [
+                'datalabels' => [
                     'display' => true,
-                    'align' => 'center',
+                    'font' => [
+                        'size' => 24,
+                        'weight' => 'bold',
+                    ],
+                    'textShadowColor' => 'rgba(0, 0, 0, 0.5)',
                 ],
             ],
             'options' => [
@@ -74,6 +78,11 @@ class AssociadosReport extends ChartWidget
                         'stacked' => false,
                         'title' => [
                             'display' => true,
+                            'text' => $xAxis,
+                        ],
+                        // Adicionado para ocultar as labels dos valores do eixo X
+                        'ticks' => [
+                            'display' => false,
                         ],
                     ],
                 ],
@@ -108,7 +117,6 @@ class AssociadosReport extends ChartWidget
     {
         $chartData = ['labels' => [], 'datasets' => []];
 
-        // Get unique labels for xAxis
         $labels = DB::table('associados')
             ->select("associados.$xAxis")  // Explicit table reference
             ->groupBy("associados.$xAxis")  // Explicit table reference
@@ -182,7 +190,6 @@ class AssociadosReport extends ChartWidget
             'rgba(255, 250, 205, 0.7)', // Lemon Chiffon
         ];
 
-        // Date range processing
         $between = [];
         $createdAt = explode(' - ', $filters['created_at'] ?? '');
         if (count($createdAt) === 2) {
@@ -190,7 +197,6 @@ class AssociadosReport extends ChartWidget
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';
         }
 
-        // Base query with explicit table references
         $select = DB::table('associados')
             ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
             ->when($type === 'encaminhamentos', fn ($query) => $query->join('talentos', 'associados.id', '=', 'talentos.associado_id')->join('encaminhamentos', 'talentos.id', '=', 'encaminhamentos.talento_id'))
@@ -211,9 +217,8 @@ class AssociadosReport extends ChartWidget
             ->when($type === 'encaminhamentos' && @$between, fn ($query) => $query->whereBetween('encaminhamentos.created_at', $between))
             ->when(! $type && @$between, fn ($query) => $query->whereBetween('associados.created_at', $between));
 
-        self::$total = $select->count('associados.id');  // Explicit count on primary key
+        self::$total = $select->count('associados.id');
 
-        // Group data with explicit table references
         $groupData = $select
             ->select(
                 "associados.$group as group_column",

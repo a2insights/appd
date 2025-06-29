@@ -76,4 +76,10 @@ return [
     'brevo' => [
         'newsletter_url' => env('BREVO_NEWSLETTER_URL'),
     ],
+
+    'serverless' => [
+        'chart_image' => [
+            'url' => env('CHART_IMAGE_URL'),
+        ],
+    ],
 ];

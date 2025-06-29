@@ -11,6 +11,7 @@ use Filament\Support\Facades\FilamentAsset;
 use HusamTariq\FilamentDatabaseSchedule\Models\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Marjose123\FilamentWebhookServer\Models\FilamentWebhookServer;
 use SolutionForest\FilamentFirewall\Models\Ip;
@@ -59,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Schedule::class, \App\Policies\SchedulePolicy::class);
 
         FilamentAsset::register([
-            Js::make('chart-js-plugins', 'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels')->module(),
+            Js::make('chart-js-plugins', Vite::asset('resources/js/filament-chart-js-plugins.js'))->module(),
         ]);
     }
 }
