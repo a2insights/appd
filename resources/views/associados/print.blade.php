@@ -238,10 +238,25 @@
         <div class="section-group multiline" style="margin-top: 12px;">
             <div class="info-label">Contatos</div>
             <div class="info-value">
-                @if($record->telefone_celular)Celular: {{ $record->telefone_celular }}@if($record->telefone_whatsapp) (WhatsApp)@endif<br>@endif
-                @if($record->telefone_fixo)Fixo: {{ $record->telefone_fixo }}<br>@endif
-                @if($record->email)Email: {{ $record->email }}@endif
+                @if($record->telefone_celular)
+                    Celular: {{ $record->telefone_celular }}<br>
+                @endif
+
+                @if($record->telefone_whatsapp)
+                    WhatsApp: {{ $record->telefone_whatsapp }}<br>
+                @endif
+
+                @if($record->telefone_fixo)
+                    Fixo: {{ $record->telefone_fixo }}<br>
+                @endif
+
+                @if($record->email)
+                    Email: {{ $record->email }}
+                @endif
             </div>
+            @if(!$record->telefone_celular && !$record->telefone_whatsapp && !$record->telefone_fixo && !$record->email)
+                <div class="info-value">Nenhum contato cadastrado</div>
+            @endif
         </div>
 
         @if($record->tipo_deficiencia || $record->causa_deficiencia || ($record->aparelhos_utilizado && count($record->aparelhos_utilizado) > 0))

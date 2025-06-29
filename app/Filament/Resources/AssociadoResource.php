@@ -65,12 +65,13 @@ class AssociadoResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('Código')
+                    ->label('ID')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
                     ->searchable(),
-                // Tables\Columns\ImageColumn::make('foto_url')
-                //     ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\ImageColumn::make('foto_url')
+                    ->label('Foto')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->extraAttributes(['autocomplete' => false])
@@ -78,8 +79,9 @@ class AssociadoResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('data_nascimento')
+                    ->label('D. Nasc.')
                     ->date('d/m/Y')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
@@ -99,7 +101,7 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('rg')
                     ->label('RG')
                     ->state(fn (Model $record) => self::formatDocument($record->rg))
-                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('titulo_eleitor')
                     ->label('Título de eleitor')
@@ -150,7 +152,7 @@ class AssociadoResource extends Resource
                     ->badge(),
                 Tables\Columns\TextColumn::make('tipo_deficiencia')
                     ->label('Tipo')
-                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('causa_deficiencia')
                     ->label('Causa')
@@ -217,8 +219,8 @@ class AssociadoResource extends Resource
                             $fileName
                         );
                     }),
-                Tables\Actions\ViewAction::make()->modalWidth('full'),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\ViewAction::make()->modalWidth('full'),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

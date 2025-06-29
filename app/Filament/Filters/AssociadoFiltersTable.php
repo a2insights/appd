@@ -57,30 +57,6 @@ class AssociadoFiltersTable
                         ->has('carteirinhas', '>', 1); // Garante que tenha mais de uma carteirinha
                 })
                 ->label('Data de Renovação'),
-            SelectFilter::make('aniversariantes')
-                ->attribute('data_nascimento')
-                ->multiple()
-                ->options([
-                    1 => 'Janeiro',
-                    2 => 'Fevereiro',
-                    3 => 'Março',
-                    4 => 'Abril',
-                    5 => 'Maio',
-                    6 => 'Junho',
-                    7 => 'Julho',
-                    8 => 'Agosto',
-                    9 => 'Setembro',
-                    10 => 'Outubro',
-                    11 => 'Novembro',
-                    12 => 'Dezembro',
-                ])
-                ->query(function ($query, array $data) {
-                    if (! isset($data['values']) || count($data['values']) === 0) {
-                        return;
-                    }
-
-                    $query->whereRaw('MONTH(data_nascimento) IN ('.implode(',', $data['values']).')');
-                }),
             SelectFilter::make('sexo')
                 ->options(Sexo::class),
             SelectFilter::make('declaracao_sexual')
@@ -150,6 +126,67 @@ class AssociadoFiltersTable
 
             //         $query->whereIn('bairro', $data['values']);
             //     }),
+            SelectFilter::make('idade')
+                ->options([
+                    '0-18' => '0-18 anos',
+                    '19-30' => '19-30 anos',
+                    '31-50' => '31-50 anos',
+                    '51-65' => '51-65 anos',
+                    '65+' => '65+ anos',
+                ])
+                ->query(function ($query, array $data) {
+                    if (empty($data['value'])) {
+                        return;
+                    }
+
+                    $currentYear = Carbon::now()->year;
+                    $ageRange = $data['value'];
+
+                    switch ($ageRange) {
+                        case '0-18':
+                            $query->whereYear('data_nascimento', '>=', $currentYear - 18);
+                            break;
+                        case '19-30':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 19)
+                                ->whereYear('data_nascimento', '>=', $currentYear - 30);
+                            break;
+                        case '31-50':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 31)
+                                ->whereYear('data_nascimento', '>=', $currentYear - 50);
+                            break;
+                        case '51-65':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 51)
+                                ->whereYear('data_nascimento', '>=', $currentYear - 65);
+                            break;
+                        case '65+':
+                            $query->whereYear('data_nascimento', '<=', $currentYear - 66);
+                            break;
+                    }
+                }),
+            SelectFilter::make('aniversariantes')
+                ->attribute('data_nascimento')
+                ->multiple()
+                ->options([
+                    1 => 'Janeiro',
+                    2 => 'Fevereiro',
+                    3 => 'Março',
+                    4 => 'Abril',
+                    5 => 'Maio',
+                    6 => 'Junho',
+                    7 => 'Julho',
+                    8 => 'Agosto',
+                    9 => 'Setembro',
+                    10 => 'Outubro',
+                    11 => 'Novembro',
+                    12 => 'Dezembro',
+                ])
+                ->query(function ($query, array $data) {
+                    if (! isset($data['values']) || count($data['values']) === 0) {
+                        return;
+                    }
+
+                    $query->whereRaw('MONTH(data_nascimento) IN ('.implode(',', $data['values']).')');
+                }),
             Filter::make('idade_custom')
                 ->form([
                     Repeater::make('age_ranges')
@@ -252,43 +289,6 @@ class AssociadoFiltersTable
                     return $indicators;
                 })
                 ->columnSpanFull(),
-            SelectFilter::make('idade')
-                ->options([
-                    '0-18' => '0-18 anos',
-                    '19-30' => '19-30 anos',
-                    '31-50' => '31-50 anos',
-                    '51-65' => '51-65 anos',
-                    '65+' => '65+ anos',
-                ])
-                ->query(function ($query, array $data) {
-                    if (empty($data['value'])) {
-                        return;
-                    }
-
-                    $currentYear = Carbon::now()->year;
-                    $ageRange = $data['value'];
-
-                    switch ($ageRange) {
-                        case '0-18':
-                            $query->whereYear('data_nascimento', '>=', $currentYear - 18);
-                            break;
-                        case '19-30':
-                            $query->whereYear('data_nascimento', '<=', $currentYear - 19)
-                                ->whereYear('data_nascimento', '>=', $currentYear - 30);
-                            break;
-                        case '31-50':
-                            $query->whereYear('data_nascimento', '<=', $currentYear - 31)
-                                ->whereYear('data_nascimento', '>=', $currentYear - 50);
-                            break;
-                        case '51-65':
-                            $query->whereYear('data_nascimento', '<=', $currentYear - 51)
-                                ->whereYear('data_nascimento', '>=', $currentYear - 65);
-                            break;
-                        case '65+':
-                            $query->whereYear('data_nascimento', '<=', $currentYear - 66);
-                            break;
-                    }
-                }),
         ];
     }
 
