@@ -38,19 +38,24 @@ class AssociadosReport extends ChartWidget
         $xAxis = $this->getFilter('xAxis');
         $group = $this->getFilter('group');
 
-        if (! $xAxis || ! $group) {
+        if (! $xAxis) {
             return [];
         }
 
-        return $this->getOptionsData($xAxis, $group);
+        $displayYAxis = !empty($group);
+
+        return $this->getOptionsData($xAxis, $displayYAxis, empty($group));
     }
 
-    public function getOptionsData($xAxis, $group): array
+    public function getOptionsData($xAxis, $displayYAxis = true, $showIndividualBarLabelsInLegend = false): array
     {
+        $legendDisplay = true;
+
+
         return [
             'plugins' => [
                 'legend' => [
-                    'display' => true,
+                    'display' => $legendDisplay,
                     'position' => 'bottom',
                     'align' => 'center',
                     'labels' => [
@@ -92,9 +97,10 @@ class AssociadosReport extends ChartWidget
                         'beginAtZero' => true,
                         'stacked' => false,
                         'title' => [
-                            'display' => true,
+                            'display' => $displayYAxis,
                             'text' => 'Quantidade',
                         ],
+                        'display' => $displayYAxis,
                     ],
                     'x' => [
                         'stacked' => false,
@@ -103,7 +109,7 @@ class AssociadosReport extends ChartWidget
                             'text' => $xAxis,
                         ],
                         'ticks' => [
-                            'display' => false,
+                            'display' => $showIndividualBarLabelsInLegend ? false : true,
                         ],
                     ],
                 ],
@@ -119,14 +125,18 @@ class AssociadosReport extends ChartWidget
         $filters = $this->filters;
         unset($filters['xAxis'], $filters['group']);
 
-        if (! $xAxis || ! $group) {
+        if (! $xAxis) {
             return [
                 'datasets' => [],
                 'labels' => [],
             ];
         }
 
-        return $this->generateDatasetsAndLabels($xAxis, $group, $filters, $this->reportType);
+        if (empty($group)) {
+            return $this->generateTotalCountDatasetsAndLabels($xAxis, $filters, $this->reportType);
+        }
+
+        return $this->generateGroupedDatasetsAndLabels($xAxis, $group, $filters, $this->reportType);
     }
 
     private function getFilter(string $key, $default = null)
@@ -134,109 +144,21 @@ class AssociadosReport extends ChartWidget
         return $this->filters[$key] ?? $default;
     }
 
-    public function generateDatasetsAndLabels(string $xAxis, string $group, ?array $filters = null, ?string $type = null): array
+    public function generateGroupedDatasetsAndLabels(string $xAxis, string $group, ?array $filters = null, ?string $type = null): array
     {
         $chartData = ['labels' => [], 'datasets' => []];
 
         $labels = DB::table('associados')
-            ->select("associados.$xAxis")  // Explicit table reference
-            ->groupBy("associados.$xAxis")  // Explicit table reference
+            ->select("associados.$xAxis")
+            ->groupBy("associados.$xAxis")
             ->pluck($xAxis)
             ->toArray();
 
-        $colors = [
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(153, 102, 255, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(153, 102, 255, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(255, 0, 0, 0.7)',  // Red
-            'rgba(0, 255, 0, 0.7)',  // Green
-            'rgba(0, 0, 255, 0.7)',  // Blue
-            'rgba(255, 255, 0, 0.7)', // Yellow
-            'rgba(0, 255, 255, 0.7)', // Cyan
-            'rgba(255, 0, 255, 0.7)', // Magenta
-            'rgba(128, 0, 0, 0.7)',   // Maroon
-            'rgba(128, 128, 0, 0.7)', // Olive
-            'rgba(0, 128, 0, 0.7)',   // Dark Green
-            'rgba(128, 0, 128, 0.7)', // Purple
-            'rgba(0, 0, 128, 0.7)',   // Navy
-            'rgba(192, 192, 192, 0.7)', // Silver
-            'rgba(128, 128, 128, 0.7)', // Gray
-            'rgba(0, 128, 128, 0.7)', // Teal
-            'rgba(255, 165, 0, 0.7)', // Orange
-            'rgba(255, 192, 203, 0.7)', // Pink
-            'rgba(186, 85, 211, 0.7)', // Orchid
-            'rgba(0, 255, 127, 0.7)', // Spring Green
-            'rgba(135, 206, 235, 0.7)', // Sky Blue
-            'rgba(100, 149, 237, 0.7)', // Cornflower Blue
-            'rgba(255, 228, 196, 0.7)', // Bisque
-            'rgba(255, 255, 255, 0.7)', // White
-            'rgba(0, 0, 0, 0.7)',       // Black
-            'rgba(128, 128, 128, 0.7)', // Gray
-            'rgba(255, 0, 0, 0.7)',     // Red
-            'rgba(0, 255, 0, 0.7)',     // Green
-            'rgba(0, 0, 255, 0.7)',     // Blue
-            'rgba(255, 255, 0, 0.7)',   // Yellow
-            'rgba(0, 255, 255, 0.7)',   // Cyan
-            'rgba(255, 0, 255, 0.7)',   // Magenta
-            'rgba(128, 0, 0, 0.7)',     // Maroon
-            'rgba(128, 128, 0, 0.7)',   // Olive
-            'rgba(0, 128, 0, 0.7)',     // Dark Green
-            'rgba(128, 0, 128, 0.7)',   // Purple
-            'rgba(0, 0, 128, 0.7)',     // Navy
-            'rgba(192, 192, 192, 0.7)', // Silver
-            'rgba(0, 128, 128, 0.7)',   // Teal
-            'rgba(255, 165, 0, 0.7)',   // Orange
-            'rgba(255, 192, 203, 0.7)', // Pink
-            'rgba(186, 85, 211, 0.7)',  // Orchid
-            'rgba(0, 255, 127, 0.7)',   // Spring Green
-            'rgba(135, 206, 235, 0.7)', // Sky Blue
-            'rgba(100, 149, 237, 0.7)', // Cornflower Blue
-            'rgba(255, 228, 196, 0.7)', // Bisque
-            'rgba(255, 99, 71, 0.7)',   // Tomato
-            'rgba(0, 139, 139, 0.7)',   // Dark Cyan
-            'rgba(255, 20, 147, 0.7)',  // Deep Pink
-            'rgba(0, 191, 255, 0.7)',   // Deep Sky Blue
-            'rgba(255, 105, 180, 0.7)', // Hot Pink
-            'rgba(0, 250, 154, 0.7)',   // Medium Spring Green
-            'rgba(70, 130, 180, 0.7)',  // Steel Blue
-            'rgba(255, 250, 205, 0.7)', // Lemon Chiffon
-        ];
+        $colors = $this->getChartColors();
 
-        $between = [];
-        $createdAt = explode(' - ', $filters['created_at'] ?? '');
-        if (count($createdAt) === 2) {
-            $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[0])->format('Y-m-d').' 00:00:00';
-            $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';
-        }
+        $between = $this->getDateFilterRange($filters);
 
-        $select = DB::table('associados')
-            ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
-            ->when($type === 'encaminhamentos', fn ($query) => $query->join('talentos', 'associados.id', '=', 'talentos.associado_id')->join('encaminhamentos', 'talentos.id', '=', 'encaminhamentos.talento_id'))
-            ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('associados.status', $filters['status']))
-            ->when(@$filters['sexo'], fn ($query, $value) => $query->where('associados.sexo', $filters['sexo']))
-            ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('associados.declaracao_sexual', $filters['declaracao_sexual']))
-            ->when(@$filters['estado_civil'], fn ($query, $value) => $query->whereIn('associados.estado_civil', $filters['estado_civil']))
-            ->when(@$filters['naturalidade_uf'], fn ($query, $value) => $query->whereIn('associados.naturalidade_uf', $filters['naturalidade_uf']))
-            ->when(@$filters['religiao'], fn ($query, $value) => $query->whereIn('associados.religiao', $filters['religiao']))
-            ->when(@$filters['tipo_deficiencia'], fn ($query, $value) => $query->whereIn('associados.tipo_deficiencia', $filters['tipo_deficiencia']))
-            ->when(@$filters['causa_deficiencia'], fn ($query, $value) => $query->whereIn('associados.causa_deficiencia', $filters['causa_deficiencia']))
-            ->when(@$filters['escolaridade'], fn ($query, $value) => $query->whereIn('associados.escolaridade', $filters['escolaridade']))
-            ->when(@$filters['raca'], fn ($query, $value) => $query->whereIn('associados.raca', $filters['raca']))
-            ->when(@$filters['aparelhos_utilizado'], fn ($query, $value) => $query->whereIn('associados.aparelhos_utilizado', $filters['aparelhos_utilizado']))
-            ->when(@$filters['beneficios'], fn ($query, $value) => $query->whereHas('beneficios', fn ($query) => $query->whereIn('beneficios.nome', $filters['beneficios'])))
-            ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('associados.ocupacoes', $filters['ocupacoes']))
-            ->when($type === 'atendimentos' && @$between, fn ($query) => $query->whereBetween('atendimentos.created_at', $between))
-            ->when($type === 'encaminhamentos' && @$between, fn ($query) => $query->whereBetween('encaminhamentos.created_at', $between))
-            ->when(! $type && @$between, fn ($query) => $query->whereBetween('associados.created_at', $between));
+        $select = $this->getBaseQuery($type, $filters, $between);
 
         self::$total = $select->count('associados.id');
 
@@ -259,7 +181,7 @@ class AssociadosReport extends ChartWidget
 
             if (! isset($groupTotals[$groupName])) {
                 if ($colorIndex >= count($colors)) {
-                    throw new \Exception('Not enough colors available for the number of groups.');
+                    $colorIndex = 0;
                 }
 
                 $groupTotals[$groupName] = [
@@ -285,5 +207,116 @@ class AssociadosReport extends ChartWidget
         }
 
         return $chartData;
+    }
+
+    public function generateTotalCountDatasetsAndLabels(string $xAxis, ?array $filters = null, ?string $type = null): array
+    {
+        $chartData = ['labels' => [], 'datasets' => []];
+
+        $labels = DB::table('associados')
+            ->select("associados.$xAxis")
+            ->groupBy("associados.$xAxis")
+            ->pluck($xAxis)
+            ->toArray();
+
+        $colors = $this->getChartColors();
+
+        $between = $this->getDateFilterRange($filters);
+
+        $select = $this->getBaseQuery($type, $filters, $between);
+
+        $totalCounts = $select
+            ->select(
+                "associados.$xAxis as x_axis_column",
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy("associados.$xAxis")
+            ->pluck('total', 'x_axis_column')
+            ->toArray();
+
+        self::$total = array_sum($totalCounts);
+
+        $colorIndex = 0;
+        foreach ($labels as $label) {
+            $dataValue = $totalCounts[$label] ?? 0;
+
+            if ($colorIndex >= count($colors)) {
+                $colorIndex = 0;
+            }
+
+            $chartData['datasets'][] = [
+                'label' => $label,
+                'data' => [$dataValue],
+                'backgroundColor' => $colors[$colorIndex],
+                'borderColor' => str_replace('0.7)', '1)', $colors[$colorIndex]),
+            ];
+            $colorIndex++;
+        }
+
+        $chartData['labels'] = [''];
+
+        return $chartData;
+    }
+
+    private function getBaseQuery(?string $type = null, ?array $filters = null, ?array $between = null)
+    {
+        return DB::table('associados')
+            ->when($type === 'atendimentos', fn ($query) => $query->join('atendimentos', 'associados.id', '=', 'atendimentos.associado_id'))
+            ->when($type === 'encaminhamentos', fn ($query) => $query->join('talentos', 'associados.id', '=', 'talentos.associado_id')->join('encaminhamentos', 'talentos.id', '=', 'encaminhamentos.talento_id'))
+            ->when(@$filters['status'], fn ($query, $value) => $query->whereIn('associados.status', $filters['status']))
+            ->when(@$filters['sexo'], fn ($query, $value) => $query->where('associados.sexo', $filters['sexo']))
+            ->when(@$filters['declaracao_sexual'], fn ($query, $value) => $query->whereIn('associados.declaracao_sexual', $filters['declaracao_sexual']))
+            ->when(@$filters['estado_civil'], fn ($query, $value) => $query->whereIn('associados.estado_civil', $filters['estado_civil']))
+            ->when(@$filters['naturalidade_uf'], fn ($query, $value) => $query->whereIn('associados.naturalidade_uf', $filters['naturalidade_uf']))
+            ->when(@$filters['religiao'], fn ($query, $value) => $query->whereIn('associados.religiao', $filters['religiao']))
+            ->when(@$filters['tipo_deficiencia'], fn ($query, $value) => $query->whereIn('associados.tipo_deficiencia', $filters['tipo_deficiencia']))
+            ->when(@$filters['causa_deficiencia'], fn ($query, $value) => $query->whereIn('associados.causa_deficiencia', $filters['causa_deficiencia']))
+            ->when(@$filters['escolaridade'], fn ($query, $value) => $query->whereIn('associados.escolaridade', $filters['escolaridade']))
+            ->when(@$filters['raca'], fn ($query, $value) => $query->whereIn('associados.raca', $filters['raca']))
+            ->when(@$filters['aparelhos_utilizado'], fn ($query, $value) => $query->whereIn('associados.aparelhos_utilizado', $filters['aparelhos_utilizado']))
+            ->when(@$filters['beneficios'], fn ($query, $value) => $query->whereHas('beneficios', fn ($query) => $query->whereIn('beneficios.nome', $filters['beneficios'])))
+            ->when(@$filters['ocupacoes'], fn ($query, $value) => $query->whereIn('associados.ocupacoes', $filters['ocupacoes']))
+            ->when($type === 'atendimentos' && @$between, fn ($query) => $query->whereBetween('atendimentos.created_at', $between))
+            ->when($type === 'encaminhamentos' && @$between, fn ($query) => $query->whereBetween('encaminhamentos.created_at', $between))
+            ->when(! $type && @$between, fn ($query) => $query->whereBetween('associados.created_at', $between));
+    }
+
+    private function getDateFilterRange(?array $filters): array
+    {
+        $between = [];
+        $createdAt = explode(' - ', $filters['created_at'] ?? '');
+        if (count($createdAt) === 2) {
+            $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[0])->format('Y-m-d').' 00:00:00';
+            $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';
+        }
+        return $between;
+    }
+
+    private function getChartColors(): array
+    {
+        return [
+            'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+            'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+            'rgba(255, 0, 0, 0.7)', 'rgba(0, 255, 0, 0.7)', 'rgba(0, 0, 255, 0.7)',
+            'rgba(255, 255, 0, 0.7)', 'rgba(0, 255, 255, 0.7)', 'rgba(255, 0, 255, 0.7)',
+            'rgba(128, 0, 0, 0.7)', 'rgba(128, 128, 0, 0.7)', 'rgba(0, 128, 0, 0.7)',
+            'rgba(128, 0, 128, 0.7)', 'rgba(0, 0, 128, 0.7)', 'rgba(192, 192, 192, 0.7)',
+            'rgba(128, 128, 128, 0.7)', 'rgba(0, 128, 128, 0.7)', 'rgba(255, 165, 0, 0.7)',
+            'rgba(255, 192, 203, 0.7)', 'rgba(186, 85, 211, 0.7)', 'rgba(0, 255, 127, 0.7)',
+            'rgba(135, 206, 235, 0.7)', 'rgba(100, 149, 237, 0.7)', 'rgba(255, 228, 196, 0.7)',
+            'rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.7)', 'rgba(128, 128, 128, 0.7)',
+            'rgba(255, 0, 0, 0.7)', 'rgba(0, 255, 0, 0.7)', 'rgba(0, 0, 255, 0.7)',
+            'rgba(255, 255, 0, 0.7)', 'rgba(0, 255, 255, 0.7)', 'rgba(255, 0, 255, 0.7)',
+            'rgba(128, 0, 0, 0.7)', 'rgba(128, 128, 0, 0.7)', 'rgba(0, 128, 0, 0.7)',
+            'rgba(128, 0, 128, 0.7)', 'rgba(0, 0, 128, 0.7)', 'rgba(192, 192, 192, 0.7)',
+            'rgba(0, 128, 128, 0.7)', 'rgba(255, 165, 0, 0.7)', 'rgba(255, 192, 203, 0.7)',
+            'rgba(186, 85, 211, 0.7)', 'rgba(0, 255, 127, 0.7)', 'rgba(135, 206, 235, 0.7)',
+            'rgba(100, 149, 237, 0.7)', 'rgba(255, 228, 196, 0.7)', 'rgba(255, 99, 71, 0.7)',
+            'rgba(0, 139, 139, 0.7)', 'rgba(255, 20, 147, 0.7)', 'rgba(0, 191, 255, 0.7)',
+            'rgba(255, 105, 180, 0.7)', 'rgba(0, 250, 154, 0.7)', 'rgba(70, 130, 180, 0.7)',
+            'rgba(255, 250, 205, 0.7)',
+        ];
     }
 }
