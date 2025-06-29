@@ -53,14 +53,36 @@ class AssociadosReport extends ChartWidget
                     'display' => true,
                     'position' => 'bottom',
                     'align' => 'center',
+                    'labels' => [
+                        'font' => [
+                            'size' => 14,
+                            'weight' => 'bold'
+                        ],
+                        'color' => '#333'
+                    ]
                 ],
                 'datalabels' => [
                     'display' => true,
                     'font' => [
-                        'size' => 24,
+                        'size' => 14,
                         'weight' => 'bold',
+                        'lineHeight' => 1.2
                     ],
+                    'color' => '#FFF',
+                    'backgroundColor' => 'rgba(0, 0, 0, 0.5)',
+                    'borderRadius' => 2,
+                    'padding' => [
+                        'top' => 3,
+                        'right' => 12,
+                        'bottom' => 3,
+                        'left' => 12
+                    ],
+                    'textStrokeColor' => 'rgba(255, 255, 255, 0.8)',
+                    'textStrokeWidth' => 1,
                     'textShadowColor' => 'rgba(0, 0, 0, 0.5)',
+                    'textShadowBlur' => 5,
+                    'align' => 'center',
+                    'anchor' => 'start'
                 ],
             ],
             'options' => [
@@ -80,7 +102,6 @@ class AssociadosReport extends ChartWidget
                             'display' => true,
                             'text' => $xAxis,
                         ],
-                        // Adicionado para ocultar as labels dos valores do eixo X
                         'ticks' => [
                             'display' => false,
                         ],
