@@ -45,6 +45,7 @@ class AdminPanelServiceProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([

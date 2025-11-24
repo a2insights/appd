@@ -47,6 +47,7 @@ services:
         ports:
             - 8081:80
         environment:
+            UPLOAD_LIMIT: 1G
             MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
         links:
             - "mysql:db"
