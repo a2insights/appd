@@ -4,7 +4,7 @@ composer = "*"
 nodejs = "18"
 
 [phases.setup]
-nixPkgs = ["python311Packages.supervisor", "nginx"]
+nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "nginx"]
 
 [phases.build]
 cmds = [
