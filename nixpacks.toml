@@ -4,7 +4,7 @@ composer = "*"
 nodejs = "22"
 
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "nodejs-22_x", "python311Packages.supervisor", "nginx"]
+nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx"]
 
 [phases.install]
 cmds = ["npm ci"]
