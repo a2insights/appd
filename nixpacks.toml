@@ -9,6 +9,7 @@ nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "n
 [phases.build]
 cmds = [
     "npm ci",
+    "npm install",
     "npm run build",
     "composer install --no-dev --optimize-autoloader",
     "mkdir -p /etc/supervisor/conf.d/",
