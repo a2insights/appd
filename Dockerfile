@@ -1,3 +1,15 @@
+# Stage 1: Build frontend assets
+FROM node:18 as frontend
+
+WORKDIR /app
+
+COPY package.json package-lock.json* vite.config.js ./
+COPY resources/ ./resources/
+COPY public/ ./public/
+
+RUN npm ci && npm run build
+
+# Stage 2: Build application
 FROM unit:1.32.1-php8.2
 
 # Install system dependencies
@@ -40,12 +52,17 @@ RUN chown -R unit:unit /var/www/html/storage /var/www/html/bootstrap/cache \
 # Copy application files
 COPY . .
 
+# Copy built frontend assets from the frontend stage
+COPY --from=frontend /app/public/build /var/www/html/public/build
+
 # Ensure permissions are correct after copy
-RUN chown -R unit:unit storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+RUN chown -R unit:unit storage bootstrap/cache public/build \
+    && chmod -R 775 storage bootstrap/cache public/build
 
 # Install dependencies
-RUN composer install --prefer-dist --optimize-autoloader --no-interaction
+# We use --no-scripts first to avoid the error, then dump-autoload to generate the optimized autoloader
+RUN composer install --prefer-dist --optimize-autoloader --no-interaction --no-scripts \
+    && composer dump-autoload --optimize
 
 # Copy Nginx Unit configuration
 COPY unit.json /docker-entrypoint.d/unit.json
