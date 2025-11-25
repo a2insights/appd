@@ -1,10 +1,10 @@
 [packages]
 php = "8.2"
 composer = "*"
-nodejs = "18"
+nodejs = "22"
 
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "nginx"]
+nixPkgs = ["php82", "php82Packages.composer", "nodejs-22_x", "python311Packages.supervisor", "nginx"]
 
 [phases.install]
 cmds = ["npm ci"]
