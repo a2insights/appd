@@ -4,7 +4,7 @@ composer = "*"
 nodejs = "22"
 
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx"]
+nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache"]
 
 [phases.install]
 cmds = ["npm ci"]
@@ -97,7 +97,7 @@ autorestart=true
 stopasgroup=true
 killasgroup=true
 numprocs=2
-startsecs=0
+startsecs=1
 stopwaitsecs=3600
 stdout_logfile=/var/log/worker-laravel.log
 stderr_logfile=/var/log/worker-laravel.log
