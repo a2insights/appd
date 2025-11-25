@@ -11,6 +11,7 @@ cmds = ["npm ci"]
 
 [phases.build]
 cmds = [
+    "npm install",
     "npm run build",
     "composer install --no-dev --optimize-autoloader",
     "mkdir -p /etc/supervisor/conf.d/",
