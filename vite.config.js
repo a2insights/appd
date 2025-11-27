@@ -8,8 +8,8 @@ export default defineConfig({
                 "resources/css/app.css",
                 "resources/js/app.js",
                 "resources/js/filament-chart-js-plugins.js",
-                "resources/css/filament/admin/theme.css",
-                "resources/css/filament/sysadmin/theme.css",
+                "resources/css/filament/admin/admin-theme.css",
+                "resources/css/filament/sysadmin/sysadmin-theme.css",
             ],
             refresh: [
                 ...refreshPaths,
