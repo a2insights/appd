@@ -102,6 +102,7 @@ stderr_logfile=/var/log/worker-laravel.log
 "php-fpm.conf" = '''
 [global]
 error_log = /proc/self/fd/2
+php.ini_value[zend_extension] = opcache
 
 [www]
 listen = 127.0.0.1:9000
