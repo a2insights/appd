@@ -18,22 +18,21 @@ class MunicipioService
 
     public function all(): Collection
     {
-        return $this->handleRequest(fn ($repository) => $repository->all(), false, 'all');
+        return $this->handleRequest(fn ($repository) => $repository->all(), false, 'municipio_service_all');
     }
 
     public function allByUf(string $uf): Collection
     {
-        return $this->handleRequest(fn ($repository) => $repository->allByUf($uf), false, 'allByUf');
+        return $this->handleRequest(fn ($repository) => $repository->allByUf($uf), false, "municipio_service_allByUf_{$uf}");
     }
 
     public function find(string $codigoIbge): ?Municipio
     {
-        return $this->handleRequest(fn ($repository) => $repository->find($codigoIbge), true, 'find');
+        return $this->handleRequest(fn ($repository) => $repository->find($codigoIbge), true, "municipio_service_find_{$codigoIbge}");
     }
 
-    private function handleRequest(callable $callback, bool $expectSingle = false, $method = 'all')
+    private function handleRequest(callable $callback, bool $expectSingle = false, string $cacheKey = 'default_key')
     {
-        $cacheKey = "municipio_service_{$method}";
         if (cache()->has($cacheKey)) {
             return cache($cacheKey);
         }

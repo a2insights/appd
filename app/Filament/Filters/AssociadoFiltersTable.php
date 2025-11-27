@@ -299,34 +299,54 @@ class AssociadoFiltersTable
             // FILTROS DE LOCALIZAÇÃO
             // ========================================
 
-            SelectFilter::make('naturalidade_uf')
-                ->label('UF de Naturalidade')
-                ->options(NaturalidadeUf::class)
-                ->multiple()
-                ->searchable()
-                ->preload(),
+            Filter::make('naturalidade')
+                ->label('Localização (Naturalidade)')
+                ->form([
+                    \Filament\Forms\Components\Grid::make(2)
+                        ->schema([
+                            Select::make('naturalidade_uf')
+                                ->label('UF de Naturalidade')
+                                ->options(NaturalidadeUf::class)
+                                ->multiple()
+                                ->searchable()                                                                                                                                                                                                                                                          
+                                ->preload()
+                                ->live()
+                                ->afterStateUpdated(fn (callable $set) => $set('naturalidade_municipio_ibge', null)),
 
-            SelectFilter::make('cidade')
-                ->label('Cidade (Endereço)')
-                ->options(fn (): array => self::getMunicipios()->mapWithKeys(fn (Municipio $item) => [$item->nome => $item->nome])->all())
-                ->query(function ($query, array $data) {
-                    if (!isset($data['values']) || count($data['values']) === 0) {
-                        return;
-                    }
+                            Select::make('naturalidade_municipio_ibge')
+                                ->label('Naturalidade (Município)')
+                                ->multiple()
+                                ->searchable()
+                                ->options(function (Get $get) {
+                                    $ufs = $get('naturalidade_uf');
+                                    if (empty($ufs)) {
+                                        return [];
+                                    }
 
-                    $query->whereIn('cidade', $data['values']);
-                })
-                ->multiple()
-                ->searchable()
-                ->preload(),
+                                    if (!is_array($ufs)) {
+                                        $ufs = [$ufs];
+                                    }
 
-            SelectFilter::make('perimetro')
-                ->label('Perímetro')
-                ->options([
-                    'urbano' => 'Urbano',
-                    'rural' => 'Rural',
+                                    $service = app(\App\Services\MunicipioService::class);
+                                    $municipios = collect();
+                                                                                                                                            
+                                    foreach ($ufs as $uf) {
+                                        $municipios = $municipios->merge($service->allByUf($uf));
+                                    }
+
+                                    return $municipios->sortBy('nome')->mapWithKeys(fn ($item) => [$item->codigoIbge => $item->nome])->all();
+                                }),
+                        ]),
                 ])
-                ->multiple(),
+                ->query(function (Builder $query, array $data) {
+                    if (!empty($data['naturalidade_uf'])) {
+                        $query->whereIn('naturalidade_uf', $data['naturalidade_uf']);
+                    }
+                    if (!empty($data['naturalidade_municipio_ibge'])) {
+                        $query->whereIn('naturalidade_municipio_ibge', $data['naturalidade_municipio_ibge']);
+                    }
+                })
+                ->columnSpan(2),
 
             Filter::make('endereco_avancado')
                 ->label('Endereço (Busca Avançada)')
@@ -498,6 +518,47 @@ class AssociadoFiltersTable
                     ]),
                     Repeater::make('condicoes')
                         ->label('Condições')
+                        ->itemLabel(fn (array $state): ?string => (function () use ($state) {
+                            $logic = match ($state['logic'] ?? 'and') {
+                                'and' => 'E',
+                                'or' => 'OU',
+                                'and_not' => 'E NÃO',
+                                'or_not' => 'OU NÃO',
+                                default => 'E',
+                            };
+                            
+                            $field = match ($state['field'] ?? '') {
+                                'estado' => 'Estado',
+                                'cidade' => 'Cidade',
+                                'bairro' => 'Bairro',
+                                'rua' => 'Rua',
+                                'cep' => 'CEP',
+                                default => ucfirst($state['field'] ?? 'Campo'),
+                            };
+
+                            $operator = match ($state['operator'] ?? 'contains') {
+                                'equals' => 'igual a',
+                                'contains' => 'contém',
+                                'starts_with' => 'começa com',
+                                'ends_with' => 'termina com',
+                                'not_equals' => 'diferente de',
+                                'not_contains' => 'não contém',
+                                'empty' => 'vazio',
+                                'not_empty' => 'preenchido',
+                                default => $state['operator'] ?? '',
+                            };
+
+                            $value = $state['value'] ?? '';
+                            if (is_array($value)) {
+                                $value = implode(', ', $value);
+                            }
+
+                            if (in_array($state['operator'] ?? '', ['empty', 'not_empty'])) {
+                                return "{$logic} {$field} {$operator}";
+                            }
+
+                            return "{$logic} {$field} {$operator} \"{$value}\"";
+                        })())
                         ->schema([
                             \Filament\Forms\Components\Grid::make(4)
                                 ->schema([
