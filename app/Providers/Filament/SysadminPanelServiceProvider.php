@@ -42,9 +42,6 @@ class SysadminPanelServiceProvider extends PanelProvider
             ->resources([
                 config('filament-logger.activity_resource'),
             ])
-            ->pages([
-                Pages\Dashboard::class,
-            ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->plugins([

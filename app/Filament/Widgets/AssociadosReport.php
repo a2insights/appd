@@ -284,7 +284,8 @@ class AssociadosReport extends ChartWidget
     private function getDateFilterRange(?array $filters): array
     {
         $between = [];
-        $createdAt = explode(' - ', $filters['created_at'] ?? '');
+        $filterValue = $filters['date_range'] ?? $filters['created_at'] ?? '';
+        $createdAt = explode(' - ', $filterValue);
         if (count($createdAt) === 2) {
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[0])->format('Y-m-d').' 00:00:00';
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';

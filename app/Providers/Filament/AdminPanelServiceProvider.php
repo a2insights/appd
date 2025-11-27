@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use A2Insights\FilamentSaas\User\Filament\Components\Phone;
 use A2Insights\FilamentSaas\User\Filament\Components\Username;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\AppdInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -42,9 +43,7 @@ class AdminPanelServiceProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             // ->unsavedChangesAlerts()
-            ->pages([
-                Pages\Dashboard::class,
-            ])
+            // ->pages([])
             ->viteTheme('resources/css/filament/admin/admin-theme.css')
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
