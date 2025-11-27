@@ -28,7 +28,7 @@ class AssociadosChart extends ChartWidget
         $startDate = now()->subYear();
         $endDate = now();
 
-        if (!empty($this->filters['date_range'])) {
+        if (!empty($this->filters['date_range']) && is_string($this->filters['date_range'])) {
             $dates = explode(' - ', $this->filters['date_range']);
             if (count($dates) === 2) {
                 $startDate = Carbon::createFromFormat('d/m/Y', $dates[0]);
