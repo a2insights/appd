@@ -172,8 +172,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('estado')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cidade')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('cidade'),
                 Tables\Columns\TextColumn::make('perimetro')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('telefone_celular')
@@ -189,8 +188,7 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Data de cadastro')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Última atualização')
                     ->dateTime('d/m/Y H:i')

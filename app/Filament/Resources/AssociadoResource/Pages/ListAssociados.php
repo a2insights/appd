@@ -12,6 +12,12 @@ class ListAssociados extends ListRecords
 {
     use ExposesTableToWidgets;
 
+    // width full
+    protected function getTableWidth(): string
+    {
+        return 'full';
+    }
+
     protected static string $resource = AssociadoResource::class;
 
     protected function getHeaderActions(): array

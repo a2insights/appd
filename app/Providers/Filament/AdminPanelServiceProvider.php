@@ -105,6 +105,7 @@ class AdminPanelServiceProvider extends PanelProvider
                 Platform::Windows, Platform::Linux => 'CTRL+K',
                 Platform::Mac => '⌘K',
                 default => null,
-            });
+            })
+           ->maxContentWidth('full');   
     }
-}
+}   

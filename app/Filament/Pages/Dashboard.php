@@ -22,7 +22,7 @@ class Dashboard extends FilamentDashboard
                 Section::make()
                     ->schema([
                         DateRangePicker::make('date_range')
-                            ->label('Período Padrão: 1 este ano')
+                            ->label('Período Padrão: Este ano')
                             ->default(fn () => [now()->subYear(), now()])
                             ->autoApply()
                             ->disableClear(false)

@@ -328,6 +328,395 @@ class AssociadoFiltersTable
                 ])
                 ->multiple(),
 
+            Filter::make('endereco_avancado')
+                ->label('Endereço (Busca Avançada)')
+                ->form([
+                    \Filament\Forms\Components\Actions::make([
+                        \Filament\Forms\Components\Actions\Action::make('add_para')
+                            ->label('Adicionar Estado: Pará')
+                            ->icon('heroicon-m-plus-circle')
+                            ->action(function (callable $set, Get $get) {
+                                $state = $get('condicoes') ?? [];
+                                
+                                // Verifica se já existe um filtro para estado = pa
+                                $exists = collect($state)->contains(function ($item) {
+                                    $val = $item['value'] ?? null;
+                                    return ($item['field'] ?? '') === 'estado' && (is_array($val) ? in_array('pa', $val) : $val === 'pa');
+                                });
+
+                                if (!$exists) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'estado',
+                                        'operator' => 'equals',
+                                        'value' => ['pa'],
+                                    ];
+                                    $set('condicoes', $state);
+                                }
+                            }),
+                        \Filament\Forms\Components\Actions\Action::make('add_belem')
+                            ->label('Adicionar Cidade: Belém')
+                            ->icon('heroicon-m-plus-circle')
+                            ->action(function (callable $set, Get $get) {
+                                $state = $get('condicoes') ?? [];
+
+                                // Helper para verificar existência
+                                $hasFilter = function($field, $value) use ($state) {
+                                    return collect($state)->contains(function ($item) use ($field, $value) {
+                                        if (($item['field'] ?? '') !== $field) return false;
+                                        $val = $item['value'] ?? null;
+                                        return is_array($val) ? in_array($value, $val) : $val === $value;
+                                    });
+                                };
+
+                                // Garante Estado = PA
+                                if (!$hasFilter('estado', 'pa')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'estado',
+                                        'operator' => 'equals',
+                                        'value' => ['pa'],
+                                    ];
+                                }
+
+                                // Garante Cidade = Belém
+                                if (!$hasFilter('cidade', 'Belém')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'cidade',
+                                        'operator' => 'equals',
+                                        'value' => ['Belém'],
+                                    ];
+                                }
+
+                                $set('condicoes', $state);
+                            }),
+                        \Filament\Forms\Components\Actions\Action::make('add_pedreira')
+                            ->label('Adicionar Bairro: Pedreira')
+                            ->icon('heroicon-m-plus-circle')
+                            ->action(function (callable $set, Get $get) {
+                                $state = $get('condicoes') ?? [];
+
+                                // Helper para verificar existência
+                                $hasFilter = function($field, $value) use ($state) {
+                                    return collect($state)->contains(function ($item) use ($field, $value) {
+                                        if (($item['field'] ?? '') !== $field) return false;
+                                        $val = $item['value'] ?? null;
+                                        return is_array($val) ? in_array($value, $val) : $val === $value;
+                                    });
+                                };
+
+                                // Garante Estado = PA
+                                if (!$hasFilter('estado', 'pa')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'estado',
+                                        'operator' => 'equals',
+                                        'value' => ['pa'],
+                                    ];
+                                }
+
+                                // Garante Cidade = Belém
+                                if (!$hasFilter('cidade', 'Belém')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'cidade',
+                                        'operator' => 'equals',
+                                        'value' => ['Belém'],
+                                    ];
+                                }
+
+                                // Adiciona Bairro = Pedreira
+                                if (!$hasFilter('bairro', 'Pedreira')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'bairro',
+                                        'operator' => 'contains',
+                                        'value' => ['Pedreira'],
+                                    ];
+                                }
+
+                                $set('condicoes', $state);
+                            }),
+                        \Filament\Forms\Components\Actions\Action::make('add_pedro_miranda')
+                            ->label('Adicionar Rua: Av. Pedro Miranda')
+                            ->icon('heroicon-m-plus-circle')
+                            ->action(function (callable $set, Get $get) {
+                                $state = $get('condicoes') ?? [];
+
+                                // Helper para verificar existência
+                                $hasFilter = function($field, $value) use ($state) {
+                                    return collect($state)->contains(function ($item) use ($field, $value) {
+                                        if (($item['field'] ?? '') !== $field) return false;
+                                        $val = $item['value'] ?? null;
+                                        return is_array($val) ? in_array($value, $val) : $val === $value;
+                                    });
+                                };
+
+                                // Garante Estado = PA
+                                if (!$hasFilter('estado', 'pa')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'estado',
+                                        'operator' => 'equals',
+                                        'value' => ['pa'],
+                                    ];
+                                }
+
+                                // Garante Cidade = Belém
+                                if (!$hasFilter('cidade', 'Belém')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'cidade',
+                                        'operator' => 'equals',
+                                        'value' => ['Belém'],
+                                    ];
+                                }
+
+                                // Garante Bairro = Pedreira
+                                if (!$hasFilter('bairro', 'Pedreira')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'bairro',
+                                        'operator' => 'contains',
+                                        'value' => ['Pedreira'],
+                                    ];
+                                }
+
+                                // Adiciona Rua = Avenida Pedro Miranda
+                                if (!$hasFilter('rua', 'Avenida Pedro Miranda')) {
+                                    $state[] = [
+                                        'logic' => empty($state) ? 'and' : 'and',
+                                        'field' => 'rua',
+                                        'operator' => 'contains',
+                                        'value' => ['Avenida Pedro Miranda'],
+                                    ];
+                                }
+
+                                $set('condicoes', $state);
+                            }),
+                    ]),
+                    Repeater::make('condicoes')
+                        ->label('Condições')
+                        ->schema([
+                            \Filament\Forms\Components\Grid::make(4)
+                                ->schema([
+                                    Select::make('logic')
+                                        ->label('Lógica')
+                                        ->options([
+                                            'and' => 'E (AND)',
+                                            'or' => 'OU (OR)',
+                                            'and_not' => 'E NÃO (AND NOT)',
+                                            'or_not' => 'OU NÃO (OR NOT)',
+                                        ])
+                                        ->default('and')
+                                        ->required()
+                                        ->disablePlaceholderSelection(),
+                                    Select::make('field')
+                                        ->label('Campo')
+                                        ->options([
+                                            'estado' => 'Estado (UF)',
+                                            'cidade' => 'Cidade',
+                                            'bairro' => 'Bairro',
+                                            'rua' => 'Rua/Logradouro',
+                                            'cep' => 'CEP',
+                                        ])
+                                        ->required()
+                                        ->reactive()
+                                        ->afterStateUpdated(fn (callable $set) => $set('value', null))
+                                        ->rules([
+                                            fn (Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                                if (in_array($value, ['bairro', 'rua'])) {
+                                                    // Tenta buscar o estado do repeater. 
+                                                    // Nota: O caminho relativo pode variar dependendo da versão do Filament e estrutura.
+                                                    // Assumindo que estamos dentro de um item do repeater.
+                                                    $repeaterState = $get('../../condicoes');
+                                                    
+                                                    // Se não conseguir acessar via relativo, tenta via nome absoluto do campo no formulário
+                                                    if (is_null($repeaterState)) {
+                                                        // Fallback: em alguns contextos o Get pode não resolver ../.. corretamente
+                                                        // Mas como é um Filter form, o state raiz é o form data.
+                                                        // Vamos tentar validar apenas se houver 'cidade' no array atual.
+                                                        // Porém, o $get('../../condicoes') é o padrão para acessar o pai.
+                                                        return; 
+                                                    }
+
+                                                    $hasCidade = collect($repeaterState)->contains(function ($item) {
+                                                        return ($item['field'] ?? '') === 'cidade';
+                                                    });
+
+                                                    if (! $hasCidade) {
+                                                        $fail('Para filtrar por Bairro ou Rua, você deve adicionar um filtro de Cidade primeiro.');
+                                                    }
+                                                }
+                                            },
+                                        ]),
+                                    Select::make('operator')
+                                        ->label('Operador')
+                                        ->options([
+                                            'equals' => 'Igual a',
+                                            'contains' => 'Contém',
+                                            'starts_with' => 'Começa com',
+                                            'ends_with' => 'Termina com',
+                                            'not_equals' => 'Diferente de',
+                                            'not_contains' => 'Não contém',
+                                            'empty' => 'Vazio/Nulo',
+                                            'not_empty' => 'Preenchido',
+                                        ])
+                                        ->default('contains')
+                                        ->required()
+                                        ->reactive(),
+                                    Select::make('value')
+                                        ->label('Valor')
+                                        ->multiple(fn (Get $get) => in_array($get('operator'), ['contains', 'equals', 'not_equals', 'not_contains']))
+                                        ->searchable()
+                                        ->getSearchResultsUsing(function (string $search, Get $get) {
+                                            $field = $get('field');
+                                            if (!$field) {
+                                                return [];
+                                            }
+
+                                            // Para estado e cidade, usamos listas pré-definidas/serviços se possível, ou busca no banco
+                                            if ($field === 'estado') {
+                                                return collect(\App\NaturalidadeUf::cases())
+                                                    ->filter(fn ($case) => str_contains(strtolower($case->getLabel()), strtolower($search)) || str_contains(strtolower($case->value), strtolower($search)))
+                                                    ->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])
+                                                    ->all();
+                                            }
+
+                                            if ($field === 'cidade') {
+                                                return self::getMunicipios()
+                                                    ->filter(fn ($municipio) => str_contains(strtolower($municipio->nome), strtolower($search)))
+                                                    ->take(50)
+                                                    ->mapWithKeys(fn ($municipio) => [$municipio->nome => $municipio->nome])
+                                                    ->all();
+                                            }
+
+                                            // Para outros campos, buscamos valores distintos no banco
+                                            return \App\Models\Associado::query()
+                                                ->where($field, 'like', "%{$search}%")
+                                                ->distinct()
+                                                ->limit(50)
+                                                ->pluck($field, $field)
+                                                ->toArray();
+                                        })
+                                        ->options(function (Get $get) {
+                                            $field = $get('field');
+                                            $value = $get('value');
+
+                                            if (!$field) {
+                                                return [];
+                                            }
+
+                                            $options = [];
+
+                                            if ($field === 'estado') {
+                                                $options = collect(\App\NaturalidadeUf::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])->all();
+                                            } elseif ($field === 'cidade') {
+                                                $options = self::getMunicipios()->take(100)->mapWithKeys(fn ($municipio) => [$municipio->nome => $municipio->nome])->all();
+                                            }
+
+                                            // Garante que o valor selecionado (via ação ou edição) esteja nas opções para ser exibido corretamente
+                                            if ($value) {
+                                                $values = is_array($value) ? $value : [$value];
+                                                foreach ($values as $v) {
+                                                    if (!isset($options[$v])) {
+                                                        $options[$v] = $v;
+                                                    }
+                                                }
+                                            }
+
+                                            return $options;
+                                        })
+                                        ->disabled(fn (Get $get) => in_array($get('operator'), ['empty', 'not_empty'])),
+                                ]),
+                        ])
+                        ->defaultItems(1)
+                        ->collapsible()
+                        ->cloneable(),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $conditions = $data['condicoes'] ?? [];
+
+                    if (empty($conditions)) {
+                        return $query;
+                    }
+
+                    $query->where(function (Builder $subQuery) use ($conditions) {
+                        foreach ($conditions as $index => $condition) {
+                            $logic = $condition['logic'] ?? 'and';
+                            $field = $condition['field'] ?? null;
+                            $operator = $condition['operator'] ?? 'contains';
+                            $value = $condition['value'] ?? null;
+
+                            if (!$field) {
+                                continue;
+                            }
+
+                            // Determine method based on logic
+                            if ($index === 0) {
+                                if ($logic === 'or') $logic = 'and';
+                                if ($logic === 'or_not') $logic = 'and_not';
+                            }
+
+                            $method = match ($logic) {
+                                'or' => 'orWhere',
+                                'and_not' => 'whereNot',
+                                'or_not' => 'orWhereNot',
+                                default => 'where',
+                            };
+
+                            $subQuery->$method(function (Builder $q) use ($field, $operator, $value) {
+                                $values = is_array($value) ? $value : [$value];
+
+                                switch ($operator) {
+                                    case 'equals':
+                                        $q->whereIn($field, $values);
+                                        break;
+                                    case 'not_equals':
+                                        $q->whereNotIn($field, $values);
+                                        break;
+                                    case 'contains':
+                                        $q->where(function ($sub) use ($field, $values) {
+                                            foreach ($values as $v) {
+                                                $sub->orWhere($field, 'like', "%{$v}%");
+                                            }
+                                        });
+                                        break;
+                                    case 'not_contains':
+                                        $q->where(function ($sub) use ($field, $values) {
+                                            foreach ($values as $v) {
+                                                $sub->where($field, 'not like', "%{$v}%");
+                                            }
+                                        });
+                                        break;
+                                    case 'starts_with':
+                                        $q->where(function ($sub) use ($field, $values) {
+                                            foreach ($values as $v) {
+                                                $sub->orWhere($field, 'like', "{$v}%");
+                                            }
+                                        });
+                                        break;
+                                    case 'ends_with':
+                                        $q->where(function ($sub) use ($field, $values) {
+                                            foreach ($values as $v) {
+                                                $sub->orWhere($field, 'like', "%{$v}");
+                                            }
+                                        });
+                                        break;
+                                    case 'empty':
+                                        $q->whereNull($field)->orWhere($field, '');
+                                        break;
+                                    case 'not_empty':
+                                        $q->whereNotNull($field)->where($field, '!=', '');
+                                        break;
+                                }
+                            });
+                        }
+                    });
+                })
+                ->columnSpanFull(),
+
             // ========================================
             // FILTROS SOCIODEMOGRÁFICOS
             // ========================================
