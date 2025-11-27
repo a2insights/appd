@@ -17,7 +17,7 @@ class AssociadosChart extends ChartWidget
 
     protected static ?string $heading = 'Cadastros e Atividades no Último Ano';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?string $maxHeight = '300px';
 
@@ -28,7 +28,7 @@ class AssociadosChart extends ChartWidget
         $startDate = now()->subYear();
         $endDate = now();
 
-        if (!empty($this->filters['date_range']) && is_string($this->filters['date_range'])) {
+        if (! empty($this->filters['date_range']) && is_string($this->filters['date_range'])) {
             $dates = explode(' - ', $this->filters['date_range']);
             if (count($dates) === 2) {
                 $startDate = Carbon::createFromFormat('d/m/Y', $dates[0]);
@@ -141,7 +141,7 @@ class AssociadosChart extends ChartWidget
                     'font' => [
                         'weight' => 'bold',
                     ],
-                    'formatter' => RawJs::make(<<<JS
+                    'formatter' => RawJs::make(<<<'JS'
                         function(value) {
                             alert(1)
                             return value > 0 ? value : '';

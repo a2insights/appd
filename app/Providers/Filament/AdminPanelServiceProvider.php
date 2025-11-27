@@ -4,7 +4,6 @@ namespace App\Providers\Filament;
 
 use A2Insights\FilamentSaas\User\Filament\Components\Phone;
 use A2Insights\FilamentSaas\User\Filament\Components\Username;
-use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\AppdInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -106,6 +105,6 @@ class AdminPanelServiceProvider extends PanelProvider
                 Platform::Mac => '⌘K',
                 default => null,
             })
-           ->maxContentWidth('full');   
+            ->maxContentWidth('full');
     }
-}   
+}

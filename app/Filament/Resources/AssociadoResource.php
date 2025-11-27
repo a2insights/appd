@@ -196,6 +196,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters(AssociadoFiltersTable::filters(), layout: FiltersLayout::AboveContentCollapsible)
+            ->deferFilters(true)
             ->actions([
                 Tables\Actions\Action::make('download')
                     ->label('Baixar')

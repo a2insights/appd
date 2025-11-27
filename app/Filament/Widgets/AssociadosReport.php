@@ -42,7 +42,7 @@ class AssociadosReport extends ChartWidget
             return [];
         }
 
-        $displayYAxis = !empty($group);
+        $displayYAxis = ! empty($group);
 
         return $this->getOptionsData($xAxis, $displayYAxis, empty($group));
     }
@@ -50,7 +50,6 @@ class AssociadosReport extends ChartWidget
     public function getOptionsData($xAxis, $displayYAxis = true, $showIndividualBarLabelsInLegend = false): array
     {
         $legendDisplay = true;
-
 
         return [
             'plugins' => [
@@ -61,17 +60,17 @@ class AssociadosReport extends ChartWidget
                     'labels' => [
                         'font' => [
                             'size' => 14,
-                            'weight' => 'bold'
+                            'weight' => 'bold',
                         ],
-                        'color' => '#333'
-                    ]
+                        'color' => '#333',
+                    ],
                 ],
                 'datalabels' => [
                     'display' => true,
                     'font' => [
                         'size' => 14,
                         'weight' => 'bold',
-                        'lineHeight' => 1.2
+                        'lineHeight' => 1.2,
                     ],
                     'color' => '#FFF',
                     'backgroundColor' => 'rgba(0, 0, 0, 0.5)',
@@ -80,14 +79,14 @@ class AssociadosReport extends ChartWidget
                         'top' => 3,
                         'right' => 12,
                         'bottom' => 3,
-                        'left' => 12
+                        'left' => 12,
                     ],
                     'textStrokeColor' => 'rgba(255, 255, 255, 0.8)',
                     'textStrokeWidth' => 1,
                     'textShadowColor' => 'rgba(0, 0, 0, 0.5)',
                     'textShadowBlur' => 5,
                     'align' => 'center',
-                    'anchor' => 'start'
+                    'anchor' => 'start',
                 ],
             ],
             'options' => [
@@ -290,6 +289,7 @@ class AssociadosReport extends ChartWidget
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[0])->format('Y-m-d').' 00:00:00';
             $between[] = Carbon::createFromFormat('d/m/Y', $createdAt[1])->format('Y-m-d').' 23:59:59';
         }
+
         return $between;
     }
 

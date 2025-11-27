@@ -251,7 +251,7 @@ class AssociadoFiltersTest extends TestCase
     public function it_filters_by_carteirinha_renewal_date()
     {
         $associadoComRenovacao = Associado::factory()->create();
-        
+
         // Criar 2 carteirinhas (renovação)
         Carteirinha::factory()->create([
             'associado_id' => $associadoComRenovacao->id,

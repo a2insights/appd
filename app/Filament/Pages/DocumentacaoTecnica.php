@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\File;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
@@ -26,16 +25,17 @@ class DocumentacaoTecnica extends Page
     protected static bool $shouldRegisterNavigation = false;
 
     public string $activeFile = '';
+
     public string $activeCategory = 'filtros';
 
     public function mount(): void
     {
         $this->activeCategory = request()->query('category', 'filtros');
         $this->activeFile = request()->query('file', '');
-        
+
         if (empty($this->activeFile)) {
             $files = $this->getTechnicalFiles();
-            if (!empty($files[$this->activeCategory])) {
+            if (! empty($files[$this->activeCategory])) {
                 $this->activeFile = array_key_first($files[$this->activeCategory]);
             }
         }
@@ -50,9 +50,10 @@ class DocumentacaoTecnica extends Page
     public function getTechnicalFiles(): array
     {
         $technicalPath = base_path('docs/technical');
-        
-        if (!File::exists($technicalPath)) {
+
+        if (! File::exists($technicalPath)) {
             File::makeDirectory($technicalPath, 0755, true);
+
             return [];
         }
 
@@ -72,7 +73,7 @@ class DocumentacaoTecnica extends Page
 
             $filename = $file->getFilename();
             $basename = $file->getBasename('.md');
-            
+
             // Categorizar por nome do arquivo
             if (str_contains($filename, 'filtro')) {
                 $organized['filtros'][$basename] = $this->formatTitle($basename);
@@ -87,44 +88,45 @@ class DocumentacaoTecnica extends Page
             }
         }
 
-        return array_filter($organized, fn($category) => !empty($category));
+        return array_filter($organized, fn ($category) => ! empty($category));
     }
 
     protected function formatTitle(string $filename): string
     {
         $title = str_replace(['-', '_'], ' ', $filename);
+
         return ucwords($title);
     }
 
     public function getFileContent(string $filename): string
     {
         $filePath = base_path("docs/technical/{$filename}.md");
-        
-        if (!File::exists($filePath)) {
+
+        if (! File::exists($filePath)) {
             return '<div class="text-center py-12">
                 <p class="text-gray-500 dark:text-gray-400">Documento não encontrado.</p>
             </div>';
         }
 
         $markdown = File::get($filePath);
-        
+
         $environment = new Environment([
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
         ]);
 
-        $environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
-        $environment->addExtension(new TableExtension());
+        $environment->addExtension(new CommonMarkCoreExtension);
+        $environment->addExtension(new GithubFlavoredMarkdownExtension);
+        $environment->addExtension(new TableExtension);
 
         $converter = new MarkdownConverter($environment);
-        
+
         return $converter->convert($markdown)->getContent();
     }
 
     public function getCategoryIcon(string $category): string
     {
-        return match($category) {
+        return match ($category) {
             'filtros' => 'heroicon-o-funnel',
             'api' => 'heroicon-o-code-bracket-square',
             'database' => 'heroicon-o-circle-stack',
@@ -136,7 +138,7 @@ class DocumentacaoTecnica extends Page
 
     public function getCategoryTitle(string $category): string
     {
-        return match($category) {
+        return match ($category) {
             'filtros' => '🔍 Filtros',
             'api' => '⚡ API',
             'database' => '💾 Database',

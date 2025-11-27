@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\File;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
@@ -30,10 +29,10 @@ class Releases extends Page
     public function mount(): void
     {
         $this->activeFile = request()->query('file', '');
-        
+
         if (empty($this->activeFile)) {
             $files = $this->getReleaseFiles();
-            if (!empty($files)) {
+            if (! empty($files)) {
                 $this->activeFile = array_key_first($files);
             }
         }
@@ -47,9 +46,10 @@ class Releases extends Page
     public function getReleaseFiles(): array
     {
         $releasesPath = base_path('docs/releases');
-        
-        if (!File::exists($releasesPath)) {
+
+        if (! File::exists($releasesPath)) {
             File::makeDirectory($releasesPath, 0755, true);
+
             return [];
         }
 
@@ -76,40 +76,41 @@ class Releases extends Page
         // Converter nome do arquivo em título legível
         // Ex: v2.0-sistema-documentacao -> v2.0 - Sistema Documentação
         $title = str_replace(['-', '_'], ' ', $filename);
+
         return ucwords($title);
     }
 
     public function getFileContent(string $filename): string
     {
         $filePath = base_path("docs/releases/{$filename}.md");
-        
-        if (!File::exists($filePath)) {
+
+        if (! File::exists($filePath)) {
             return '<div class="text-center py-12">
                 <p class="text-gray-500 dark:text-gray-400">Release não encontrada.</p>
             </div>';
         }
 
         $markdown = File::get($filePath);
-        
+
         $environment = new Environment([
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
         ]);
 
-        $environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
-        $environment->addExtension(new TableExtension());
+        $environment->addExtension(new CommonMarkCoreExtension);
+        $environment->addExtension(new GithubFlavoredMarkdownExtension);
+        $environment->addExtension(new TableExtension);
 
         $converter = new MarkdownConverter($environment);
-        
+
         return $converter->convert($markdown)->getContent();
     }
 
     public function getFileDate(string $filename): ?string
     {
         $filePath = base_path("docs/releases/{$filename}.md");
-        
-        if (!File::exists($filePath)) {
+
+        if (! File::exists($filePath)) {
             return null;
         }
 

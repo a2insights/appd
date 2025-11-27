@@ -8,7 +8,6 @@ use App\CausaDeficiencia;
 use App\DeclaracaoSexual;
 use App\Escolaridade;
 use App\EstadoCivil;
-use App\Municipio;
 use App\NaturalidadeUf;
 use App\Ocupacao;
 use App\Raca;
@@ -16,7 +15,6 @@ use App\Religiao;
 use App\Sexo;
 use App\TipoDeficiencia;
 use Facades\App\Services\MunicipioService;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -36,7 +34,7 @@ class AssociadoFiltersTable
             // ========================================
             // FILTROS BÁSICOS DE IDENTIFICAÇÃO
             // ========================================
-            
+
             SelectFilter::make('status')
                 ->label('Status')
                 ->options(AssociadoStatus::class)
@@ -78,12 +76,12 @@ class AssociadoFiltersTable
             \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter::make('carteirinhas.data_emissao')
                 ->query(function ($query, array $data) {
                     $date = $data['carteirinhas']['data_emissao'] ?? null;
-                    if (!$date) {
+                    if (! $date) {
                         return;
                     }
 
                     $date = explode('-', $date);
-                    if (!isset($date[0]) || !isset($date[1])) {
+                    if (! isset($date[0]) || ! isset($date[1])) {
                         return;
                     }
 
@@ -113,21 +111,21 @@ class AssociadoFiltersTable
                     '0-5' => '👶 0-5 anos (Primeira Infância)',
                     '6-11' => '🧒 6-11 anos (Criança)',
                     '12-17' => '👦 12-17 anos (Adolescente)',
-                    
+
                     // === JOVENS ===
                     '18-24' => '🎓 18-24 anos (Jovem)',
                     '25-29' => '💼 25-29 anos (Jovem Adulto)',
-                    
+
                     // === ADULTOS ===
                     '30-39' => '👨 30-39 anos (Adulto)',
                     '40-49' => '👔 40-49 anos (Adulto)',
                     '50-59' => '🧑 50-59 anos (Adulto)',
-                    
+
                     // === IDOSOS ===
                     '60-69' => '👴 60-69 anos (Idoso)',
                     '70-79' => '🧓 70-79 anos (Idoso)',
                     '80+' => '👵 80+ anos (Longevo)',
-                    
+
                     // === FAIXAS ESPECIAIS ===
                     '0-12' => '📚 0-12 anos (Educação Infantil)',
                     '13-18' => '🎒 13-18 anos (Educação Básica)',
@@ -153,10 +151,10 @@ class AssociadoFiltersTable
                         [$minAge, $maxAge] = explode('-', $ageRange);
                         $minAge = (int) $minAge;
                         $maxAge = (int) $maxAge;
-                        
+
                         $birthYearMax = $currentYear - $minAge;
                         $birthYearMin = $currentYear - $maxAge;
-                        
+
                         $query->whereYear('data_nascimento', '>=', $birthYearMin)
                             ->whereYear('data_nascimento', '<=', $birthYearMax);
                     }
@@ -249,7 +247,7 @@ class AssociadoFiltersTable
                 })
                 ->indicateUsing(function (array $data): array {
                     $indicators = [];
-                    if (!empty($data['age_ranges'])) {
+                    if (! empty($data['age_ranges'])) {
                         foreach ($data['age_ranges'] as $range) {
                             $minAge = $range['min_age'] ?? null;
                             $maxAge = $range['max_age'] ?? null;
@@ -287,7 +285,7 @@ class AssociadoFiltersTable
                     12 => 'Dezembro',
                 ])
                 ->query(function ($query, array $data) {
-                    if (!isset($data['values']) || count($data['values']) === 0) {
+                    if (! isset($data['values']) || count($data['values']) === 0) {
                         return;
                     }
 
@@ -308,7 +306,7 @@ class AssociadoFiltersTable
                                 ->label('UF de Naturalidade')
                                 ->options(NaturalidadeUf::class)
                                 ->multiple()
-                                ->searchable()                                                                                                                                                                                                                                                          
+                                ->searchable()
                                 ->preload()
                                 ->live()
                                 ->afterStateUpdated(fn (callable $set) => $set('naturalidade_municipio_ibge', null)),
@@ -317,32 +315,48 @@ class AssociadoFiltersTable
                                 ->label('Naturalidade (Município)')
                                 ->multiple()
                                 ->searchable()
-                                ->options(function (Get $get) {
+                                ->getSearchResultsUsing(function (string $search, Get $get) {
                                     $ufs = $get('naturalidade_uf');
                                     if (empty($ufs)) {
                                         return [];
                                     }
 
-                                    if (!is_array($ufs)) {
+                                    if (! is_array($ufs)) {
                                         $ufs = [$ufs];
                                     }
 
                                     $service = app(\App\Services\MunicipioService::class);
                                     $municipios = collect();
-                                                                                                                                            
+
                                     foreach ($ufs as $uf) {
                                         $municipios = $municipios->merge($service->allByUf($uf));
                                     }
 
-                                    return $municipios->sortBy('nome')->mapWithKeys(fn ($item) => [$item->codigoIbge => $item->nome])->all();
+                                    return $municipios
+                                        ->filter(fn ($item) => stripos($item->nome, $search) !== false)
+                                        ->sortBy('nome')
+                                        ->take(50)
+                                        ->mapWithKeys(fn ($item) => [$item->codigoIbge => $item->nome])
+                                        ->all();
+                                })
+                                ->getOptionLabelsUsing(function (array $values) {
+                                    $service = app(\App\Services\MunicipioService::class);
+
+                                    // Otimização: Se forem poucos valores, busca individualmente (cacheado).
+                                    // Se forem muitos, poderia ser melhor carregar tudo, mas find() é seguro.
+                                    return collect($values)->mapWithKeys(function ($codigo) use ($service) {
+                                        $municipio = $service->find($codigo);
+
+                                        return [$codigo => $municipio ? $municipio->nome : $codigo];
+                                    })->all();
                                 }),
                         ]),
                 ])
                 ->query(function (Builder $query, array $data) {
-                    if (!empty($data['naturalidade_uf'])) {
+                    if (! empty($data['naturalidade_uf'])) {
                         $query->whereIn('naturalidade_uf', $data['naturalidade_uf']);
                     }
-                    if (!empty($data['naturalidade_municipio_ibge'])) {
+                    if (! empty($data['naturalidade_municipio_ibge'])) {
                         $query->whereIn('naturalidade_municipio_ibge', $data['naturalidade_municipio_ibge']);
                     }
                 })
@@ -357,14 +371,15 @@ class AssociadoFiltersTable
                             ->icon('heroicon-m-plus-circle')
                             ->action(function (callable $set, Get $get) {
                                 $state = $get('condicoes') ?? [];
-                                
+
                                 // Verifica se já existe um filtro para estado = pa
                                 $exists = collect($state)->contains(function ($item) {
                                     $val = $item['value'] ?? null;
+
                                     return ($item['field'] ?? '') === 'estado' && (is_array($val) ? in_array('pa', $val) : $val === 'pa');
                                 });
 
-                                if (!$exists) {
+                                if (! $exists) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'estado',
@@ -381,16 +396,19 @@ class AssociadoFiltersTable
                                 $state = $get('condicoes') ?? [];
 
                                 // Helper para verificar existência
-                                $hasFilter = function($field, $value) use ($state) {
+                                $hasFilter = function ($field, $value) use ($state) {
                                     return collect($state)->contains(function ($item) use ($field, $value) {
-                                        if (($item['field'] ?? '') !== $field) return false;
+                                        if (($item['field'] ?? '') !== $field) {
+                                            return false;
+                                        }
                                         $val = $item['value'] ?? null;
+
                                         return is_array($val) ? in_array($value, $val) : $val === $value;
                                     });
                                 };
 
                                 // Garante Estado = PA
-                                if (!$hasFilter('estado', 'pa')) {
+                                if (! $hasFilter('estado', 'pa')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'estado',
@@ -400,7 +418,7 @@ class AssociadoFiltersTable
                                 }
 
                                 // Garante Cidade = Belém
-                                if (!$hasFilter('cidade', 'Belém')) {
+                                if (! $hasFilter('cidade', 'Belém')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'cidade',
@@ -418,16 +436,19 @@ class AssociadoFiltersTable
                                 $state = $get('condicoes') ?? [];
 
                                 // Helper para verificar existência
-                                $hasFilter = function($field, $value) use ($state) {
+                                $hasFilter = function ($field, $value) use ($state) {
                                     return collect($state)->contains(function ($item) use ($field, $value) {
-                                        if (($item['field'] ?? '') !== $field) return false;
+                                        if (($item['field'] ?? '') !== $field) {
+                                            return false;
+                                        }
                                         $val = $item['value'] ?? null;
+
                                         return is_array($val) ? in_array($value, $val) : $val === $value;
                                     });
                                 };
 
                                 // Garante Estado = PA
-                                if (!$hasFilter('estado', 'pa')) {
+                                if (! $hasFilter('estado', 'pa')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'estado',
@@ -437,7 +458,7 @@ class AssociadoFiltersTable
                                 }
 
                                 // Garante Cidade = Belém
-                                if (!$hasFilter('cidade', 'Belém')) {
+                                if (! $hasFilter('cidade', 'Belém')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'cidade',
@@ -447,7 +468,7 @@ class AssociadoFiltersTable
                                 }
 
                                 // Adiciona Bairro = Pedreira
-                                if (!$hasFilter('bairro', 'Pedreira')) {
+                                if (! $hasFilter('bairro', 'Pedreira')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'bairro',
@@ -465,16 +486,19 @@ class AssociadoFiltersTable
                                 $state = $get('condicoes') ?? [];
 
                                 // Helper para verificar existência
-                                $hasFilter = function($field, $value) use ($state) {
+                                $hasFilter = function ($field, $value) use ($state) {
                                     return collect($state)->contains(function ($item) use ($field, $value) {
-                                        if (($item['field'] ?? '') !== $field) return false;
+                                        if (($item['field'] ?? '') !== $field) {
+                                            return false;
+                                        }
                                         $val = $item['value'] ?? null;
+
                                         return is_array($val) ? in_array($value, $val) : $val === $value;
                                     });
                                 };
 
                                 // Garante Estado = PA
-                                if (!$hasFilter('estado', 'pa')) {
+                                if (! $hasFilter('estado', 'pa')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'estado',
@@ -484,7 +508,7 @@ class AssociadoFiltersTable
                                 }
 
                                 // Garante Cidade = Belém
-                                if (!$hasFilter('cidade', 'Belém')) {
+                                if (! $hasFilter('cidade', 'Belém')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'cidade',
@@ -494,7 +518,7 @@ class AssociadoFiltersTable
                                 }
 
                                 // Garante Bairro = Pedreira
-                                if (!$hasFilter('bairro', 'Pedreira')) {
+                                if (! $hasFilter('bairro', 'Pedreira')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'bairro',
@@ -504,7 +528,7 @@ class AssociadoFiltersTable
                                 }
 
                                 // Adiciona Rua = Avenida Pedro Miranda
-                                if (!$hasFilter('rua', 'Avenida Pedro Miranda')) {
+                                if (! $hasFilter('rua', 'Avenida Pedro Miranda')) {
                                     $state[] = [
                                         'logic' => empty($state) ? 'and' : 'and',
                                         'field' => 'rua',
@@ -526,7 +550,7 @@ class AssociadoFiltersTable
                                 'or_not' => 'OU NÃO',
                                 default => 'E',
                             };
-                            
+
                             $field = match ($state['field'] ?? '') {
                                 'estado' => 'Estado',
                                 'cidade' => 'Cidade',
@@ -588,18 +612,18 @@ class AssociadoFiltersTable
                                         ->rules([
                                             fn (Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
                                                 if (in_array($value, ['bairro', 'rua'])) {
-                                                    // Tenta buscar o estado do repeater. 
+                                                    // Tenta buscar o estado do repeater.
                                                     // Nota: O caminho relativo pode variar dependendo da versão do Filament e estrutura.
                                                     // Assumindo que estamos dentro de um item do repeater.
                                                     $repeaterState = $get('../../condicoes');
-                                                    
+
                                                     // Se não conseguir acessar via relativo, tenta via nome absoluto do campo no formulário
                                                     if (is_null($repeaterState)) {
                                                         // Fallback: em alguns contextos o Get pode não resolver ../.. corretamente
                                                         // Mas como é um Filter form, o state raiz é o form data.
                                                         // Vamos tentar validar apenas se houver 'cidade' no array atual.
                                                         // Porém, o $get('../../condicoes') é o padrão para acessar o pai.
-                                                        return; 
+                                                        return;
                                                     }
 
                                                     $hasCidade = collect($repeaterState)->contains(function ($item) {
@@ -633,7 +657,7 @@ class AssociadoFiltersTable
                                         ->searchable()
                                         ->getSearchResultsUsing(function (string $search, Get $get) {
                                             $field = $get('field');
-                                            if (!$field) {
+                                            if (! $field) {
                                                 return [];
                                             }
 
@@ -665,7 +689,7 @@ class AssociadoFiltersTable
                                             $field = $get('field');
                                             $value = $get('value');
 
-                                            if (!$field) {
+                                            if (! $field) {
                                                 return [];
                                             }
 
@@ -681,7 +705,7 @@ class AssociadoFiltersTable
                                             if ($value) {
                                                 $values = is_array($value) ? $value : [$value];
                                                 foreach ($values as $v) {
-                                                    if (!isset($options[$v])) {
+                                                    if (! isset($options[$v])) {
                                                         $options[$v] = $v;
                                                     }
                                                 }
@@ -710,14 +734,18 @@ class AssociadoFiltersTable
                             $operator = $condition['operator'] ?? 'contains';
                             $value = $condition['value'] ?? null;
 
-                            if (!$field) {
+                            if (! $field) {
                                 continue;
                             }
 
                             // Determine method based on logic
                             if ($index === 0) {
-                                if ($logic === 'or') $logic = 'and';
-                                if ($logic === 'or_not') $logic = 'and_not';
+                                if ($logic === 'or') {
+                                    $logic = 'and';
+                                }
+                                if ($logic === 'or_not') {
+                                    $logic = 'and_not';
+                                }
                             }
 
                             $method = match ($logic) {

@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Navigation\MenuItem;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;

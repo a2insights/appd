@@ -20,6 +20,7 @@ class Documentacao extends Page
     protected static bool $shouldRegisterNavigation = false;
 
     public string $activeSection = 'inicio';
+
     public string $activeCategory = 'geral';
 
     public function mount(): void
@@ -147,7 +148,7 @@ class Documentacao extends Page
     public function getSectionContent(string $category, string $section): string
     {
         $viewPath = "docs.sections.{$category}.{$section}";
-        
+
         if (view()->exists($viewPath)) {
             return view($viewPath)->render();
         }

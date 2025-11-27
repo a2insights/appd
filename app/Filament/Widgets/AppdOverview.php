@@ -20,7 +20,7 @@ class AppdOverview extends BaseWidget
         $startDate = null;
         $endDate = null;
 
-        if (!empty($this->filters['date_range']) && is_string($this->filters['date_range'])) {
+        if (! empty($this->filters['date_range']) && is_string($this->filters['date_range'])) {
             $dates = explode(' - ', $this->filters['date_range']);
             if (count($dates) === 2) {
                 $startDate = \Illuminate\Support\Carbon::createFromFormat('d/m/Y', $dates[0]);
@@ -32,6 +32,7 @@ class AppdOverview extends BaseWidget
             if ($startDate && $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }
+
             return $query;
         };
 
