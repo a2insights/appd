@@ -47,11 +47,21 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
             $stats['total'] = $baseQuery->count();
 
             // Sexo
-            $stats['sexo'] = $baseQuery->clone()
+            $sexoStats = $baseQuery->clone()
                 ->select('sexo', DB::raw('count(*) as count'))
                 ->groupBy('sexo')
                 ->pluck('count', 'sexo')
                 ->toArray();
+            
+            $stats['sexo'] = [];
+            foreach ($sexoStats as $key => $value) {
+                $label = $key ?: 'Não Informado';
+                if (isset($stats['sexo'][$label])) {
+                    $stats['sexo'][$label] += $value;
+                } else {
+                    $stats['sexo'][$label] = $value;
+                }
+            }
 
             // Estado Civil
             $stats['estado_civil'] = $baseQuery->clone()
@@ -126,14 +136,124 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
                 ->pluck('count', 'bairro')
                 ->toArray();
                 
-            // Deficiência (Sim/Não based on having entries in tipo_deficiencia or similar?)
-            // Or just group by tipo_deficiencia
-            $stats['tipo_deficiencia'] = $baseQuery->clone()
-                ->select('tipo_deficiencia', DB::raw('count(*) as count'))
-                ->whereNotNull('tipo_deficiencia')
-                ->groupBy('tipo_deficiencia')
-                ->pluck('count', 'tipo_deficiencia')
-                ->toArray();
+            // Helper to map stats to Enum labels
+            $mapEnumStats = function($query, $column, $enumClass) {
+                $rawStats = $query->clone()
+                    ->select($column, DB::raw('count(*) as count'))
+                    ->whereNotNull($column)
+                    ->groupBy($column)
+                    ->pluck('count', $column)
+                    ->toArray();
+                
+                $mapped = [];
+                foreach ($rawStats as $key => $value) {
+                    $label = $enumClass::tryFrom($key)?->getLabel() ?? $key;
+                    $mapped[$label] = $value;
+                }
+                arsort($mapped);
+                return $mapped;
+            };
+
+            // Raça/Cor
+            $stats['raca'] = $mapEnumStats($baseQuery, 'raca', \App\Raca::class);
+
+            // Religião
+            $stats['religiao'] = $mapEnumStats($baseQuery, 'religiao', \App\Religiao::class);
+
+            // Escolaridade
+            $stats['escolaridade'] = $mapEnumStats($baseQuery, 'escolaridade', \App\Escolaridade::class);
+
+            // Declaração Sexual
+            $stats['declaracao_sexual'] = $mapEnumStats($baseQuery, 'declaracao_sexual', \App\DeclaracaoSexual::class);
+
+            // Tipo de Deficiência
+            $stats['tipo_deficiencia'] = $mapEnumStats($baseQuery, 'tipo_deficiencia', \App\TipoDeficiencia::class);
+
+            // Causa da Deficiência
+            $stats['causa_deficiencia'] = $mapEnumStats($baseQuery, 'causa_deficiencia', \App\CausaDeficiencia::class);
+
+            // Aparelhos Utilizados (Top 10)
+            $aparelhos = $baseQuery->clone()
+                ->whereNotNull('aparelhos_utilizado')
+                ->pluck('aparelhos_utilizado')
+                ->flatten()
+                ->filter()
+                ->countBy()
+                ->sortDesc()
+                ->take(10);
+            
+            $stats['aparelhos_utilizado'] = [];
+            foreach ($aparelhos as $key => $count) {
+                $label = \App\AparelhoUtilizado::tryFrom($key)?->getLabel() ?? $key;
+                $stats['aparelhos_utilizado'][$label] = $count;
+            }
+
+            // CID-10 (Top 10)
+            $cids = $baseQuery->clone()
+                ->whereNotNull('cid10')
+                ->pluck('cid10')
+                ->flatten()
+                ->filter()
+                ->countBy()
+                ->sortDesc()
+                ->take(10);
+
+            $stats['cid10'] = [];
+            if ($cids->isNotEmpty()) {
+                $cidModels = \App\Models\Cid10::whereIn('id', $cids->keys())->get()->keyBy('id');
+                foreach ($cids as $id => $count) {
+                    $model = $cidModels->get($id);
+                    $label = $model ? "{$model->codigo} - " . \Illuminate\Support\Str::limit($model->descricao, 30) : "ID: $id";
+                    $stats['cid10'][$label] = $count;
+                }
+            }
+
+            // Ocupações (Top 10)
+            $ocupacoes = $baseQuery->clone()
+                ->whereNotNull('ocupacoes')
+                ->pluck('ocupacoes')
+                ->flatten()
+                ->filter()
+                ->countBy()
+                ->sortDesc()
+                ->take(10);
+            
+            $stats['ocupacoes'] = [];
+            foreach ($ocupacoes as $key => $count) {
+                $label = \App\Ocupacao::tryFrom($key)?->getLabel() ?? $key;
+                $stats['ocupacoes'][$label] = $count;
+            }
+
+            // Benefícios (Top 10)
+            $beneficios = DB::table('associado_beneficio')
+                ->whereIn('associado_id', $baseQuery->clone()->select('id'))
+                ->select('beneficio_id', DB::raw('count(*) as count'))
+                ->groupBy('beneficio_id')
+                ->orderBy('count', 'desc')
+                ->limit(10)
+                ->get();
+
+            $stats['beneficios'] = [];
+            if ($beneficios->isNotEmpty()) {
+                $beneficioModels = \App\Models\Beneficio::whereIn('id', $beneficios->pluck('beneficio_id'))->get()->keyBy('id');
+                foreach ($beneficios as $item) {
+                    $model = $beneficioModels->get($item->beneficio_id);
+                    $label = $model ? $model->nome : "ID: {$item->beneficio_id}";
+                    $stats['beneficios'][$label] = $item->count;
+                }
+            }
+
+            // Status
+            $stats['status'] = $mapEnumStats($baseQuery, 'status', \App\AssociadoStatus::class);
+
+            // Tempo de Associação
+            $stats['tempo_associacao'] = [
+                '< 1 ano' => $baseQuery->clone()->whereDate('created_at', '>', now()->subYear())->count(),
+                '1-3 anos' => $baseQuery->clone()->whereDate('created_at', '<=', now()->subYear())->whereDate('created_at', '>', now()->subYears(3))->count(),
+                '3-5 anos' => $baseQuery->clone()->whereDate('created_at', '<=', now()->subYears(3))->whereDate('created_at', '>', now()->subYears(5))->count(),
+                '5-10 anos' => $baseQuery->clone()->whereDate('created_at', '<=', now()->subYears(5))->whereDate('created_at', '>', now()->subYears(10))->count(),
+                '10+ anos' => $baseQuery->clone()->whereDate('created_at', '<=', now()->subYears(10))->count(),
+            ];
         }
 
         return view('livewire.segmentacao-infographic-modal', [
