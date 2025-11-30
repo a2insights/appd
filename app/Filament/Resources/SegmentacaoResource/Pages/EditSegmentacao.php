@@ -16,4 +16,9 @@ class EditSegmentacao extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function afterSave(): void
+    {
+        $this->dispatch('update-segmentacao-preview', filters: $this->record->filters);
+    }
 }

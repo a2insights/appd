@@ -317,38 +317,53 @@ class AssociadoFiltersTable
                                 ->searchable()
                                 ->getSearchResultsUsing(function (string $search, Get $get) {
                                     $ufs = $get('naturalidade_uf');
-                                    if (empty($ufs)) {
-                                        return [];
+                                    
+                                    $query = self::getMunicipios();
+
+                                    if (!empty($ufs)) {
+                                        if (! is_array($ufs)) {
+                                            $ufs = [$ufs];
+                                        }
+                                        $query = $query->filter(fn ($municipio) => in_array($municipio->uf, $ufs));
                                     }
 
-                                    if (! is_array($ufs)) {
-                                        $ufs = [$ufs];
-                                    }
-
-                                    $service = app(\App\Services\MunicipioService::class);
-                                    $municipios = collect();
-
-                                    foreach ($ufs as $uf) {
-                                        $municipios = $municipios->merge($service->allByUf($uf));
-                                    }
-
-                                    return $municipios
-                                        ->filter(fn ($item) => stripos($item->nome, $search) !== false)
+                                    return $query
+                                        ->filter(function ($municipio) use ($search) {
+                                            $search = \Illuminate\Support\Str::ascii($search);
+                                            $nome = \Illuminate\Support\Str::ascii($municipio->nome);
+                                            return stripos($nome, $search) !== false;
+                                        })
                                         ->sortBy('nome')
                                         ->take(50)
-                                        ->mapWithKeys(fn ($item) => [$item->codigoIbge => $item->nome])
+                                        ->mapWithKeys(fn ($item) => [$item->codigoIbge => "{$item->nome} - {$item->uf}"])
+                                        ->all();
+                                })
+                                ->options(function (Get $get) {
+                                    $ufs = $get('naturalidade_uf');
+                                    
+                                    $query = self::getMunicipios();
+
+                                    // If UF is selected, filter by it
+                                    if (!empty($ufs)) {
+                                        if (! is_array($ufs)) {
+                                            $ufs = [$ufs];
+                                        }
+                                        $query = $query->filter(fn ($municipio) => in_array($municipio->uf, $ufs));
+                                    }
+
+                                    // Always return options. If no UF selected, take first 50 to avoid performance hit.
+                                    // If UF selected, show all (or limit if needed, but usually per-state list is manageable).
+                                    return $query
+                                        ->sortBy('nome')
+                                        ->take(empty($ufs) ? 50 : null) 
+                                        ->mapWithKeys(fn ($item) => [$item->codigoIbge => "{$item->nome} - {$item->uf}"])
                                         ->all();
                                 })
                                 ->getOptionLabelsUsing(function (array $values) {
-                                    $service = app(\App\Services\MunicipioService::class);
-
-                                    // Otimização: Se forem poucos valores, busca individualmente (cacheado).
-                                    // Se forem muitos, poderia ser melhor carregar tudo, mas find() é seguro.
-                                    return collect($values)->mapWithKeys(function ($codigo) use ($service) {
-                                        $municipio = $service->find($codigo);
-
-                                        return [$codigo => $municipio ? $municipio->nome : $codigo];
-                                    })->all();
+                                    return self::getMunicipios()
+                                        ->whereIn('codigoIbge', $values)
+                                        ->mapWithKeys(fn ($item) => [$item->codigoIbge => "{$item->nome} - {$item->uf}"])
+                                        ->all();
                                 }),
                         ]),
                 ])
@@ -1086,7 +1101,8 @@ class AssociadoFiltersTable
                     ->grouped()
                     ->default('all')
                     ->formatStateUsing(fn ($state) => $state ?? 'all')
-                    ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state);
+                    ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state)
+                    ->live();
                 
                 $schema[] = $component;
 
@@ -1108,6 +1124,18 @@ class AssociadoFiltersTable
                 if (method_exists($filter, 'isPreloaded') && $filter->isPreloaded()) {
                     $component->preload();
                 }
+
+                // IMPORTANT: If the filter has dynamic options (Closure), getOptions() might return null or empty array initially.
+                // We need to check if we can extract the options closure or if we need to manually re-assign it.
+                // However, SelectFilter::getOptions() returns the array of options.
+                // If the options are defined via options(), they are stored.
+                // BUT, if the filter uses a relationship or custom logic that isn't simple options(), we might miss it.
+                // For 'naturalidade_municipio_ibge', it is defined as a Select::make inside a Filter::make (custom filter), NOT a SelectFilter.
+                // So this block is for standard SelectFilter.
+                
+                // WAIT! 'naturalidade_municipio_ibge' is inside a Filter::make('naturalidade') -> form([...]).
+                // It is NOT a SelectFilter at the top level. It is a custom filter with a form schema.
+                // So it falls into the `elseif ($filter instanceof \Filament\Tables\Filters\Filter)` block below.
                 
                 if (method_exists($filter, 'getColumnSpan') && $filter->getColumnSpan() === 'full') {
                     $component->columnSpanFull();
@@ -1139,6 +1167,12 @@ class AssociadoFiltersTable
                         if ($isFullWidth && method_exists($component, 'columnSpanFull')) {
                              $component->columnSpanFull();
                         }
+                        
+                        // Ensure ToggleButtons are live to trigger dirty state updates correctly
+                        if ($component instanceof \Filament\Forms\Components\ToggleButtons) {
+                            $component->live();
+                        }
+
                         $schema[] = $component;
                     }
                 }
