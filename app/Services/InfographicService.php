@@ -146,6 +146,9 @@ class InfographicService
             // Raça/Cor
             $stats['raca'] = $mapEnumStats($baseQuery, 'raca', \App\Raca::class);
 
+            // Estado Civil
+            $stats['estado_civil'] = $mapEnumStats($baseQuery, 'estado_civil', \App\EstadoCivil::class);
+
             // Religião
             $stats['religiao'] = $mapEnumStats($baseQuery, 'religiao', \App\Religiao::class);
 

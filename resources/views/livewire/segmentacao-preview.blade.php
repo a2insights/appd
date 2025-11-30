@@ -20,7 +20,7 @@
                 </x-slot>
 
                 <div class="w-full">
-                    @livewire('segmentacao-infographic', ['filters' => $filters], key('infographic-' . md5(json_encode($filters))))
+                    @livewire('segmentacao-infographic', ['filters' => $filters], key($this->getInfographicKey()))
                 </div>
 
                 <x-slot name="footer">

@@ -97,6 +97,31 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
                 continue;
             }
 
+            // List of boolean/ternary filters that use ToggleButtons
+            $booleanFilters = [
+                'possui_deficiencia', 
+                'possui_crm', 
+                'possui_carteirinha', 
+                'possui_talento', 
+                'possui_whatsapp', 
+                'possui_email', 
+                'possui_foto'
+            ];
+
+            if (in_array($name, $booleanFilters)) {
+                if ($value === 'all') {
+                    $displayValue = 'Todos';
+                } elseif ($value === '1' || $value === 1 || $value === true) {
+                    $displayValue = 'Sim';
+                } elseif ($value === '0' || $value === 0 || $value === false) {
+                    $displayValue = 'Não';
+                }
+            } elseif ($value === 'all') {
+                // Skip other filters if they are 'all', unless we want to show them too.
+                // For now, let's skip them to avoid clutter, as usually 'all' is default.
+                continue;
+            }
+
             if ($filter instanceof SelectFilter) {
                 $options = $filter->getOptions();
                 
@@ -124,8 +149,8 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
                 }
             }
             
-            // Handle Ternary/Boolean
-            if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
+            // Handle Ternary/Boolean (if not already handled by booleanFilters list above)
+            if ($filter instanceof \Filament\Tables\Filters\TernaryFilter && !in_array($name, $booleanFilters)) {
                  $displayValue = $value ? 'Sim' : 'Não';
             }
 

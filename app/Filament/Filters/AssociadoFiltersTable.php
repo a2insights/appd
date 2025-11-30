@@ -1176,6 +1176,7 @@ class AssociadoFiltersTable
                     $component->columnSpanFull();
                 }
                 
+                $component->live();
                 $schema[] = $component;
             } elseif ($filter instanceof \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter) {
                  $component = \Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker::make($filter->getName())
@@ -1186,6 +1187,7 @@ class AssociadoFiltersTable
                     $component->columnSpanFull();
                  }
 
+                 $component->live();
                  $schema[] = $component;
             } elseif ($filter instanceof \Filament\Tables\Filters\Filter) {
                 // For custom filters (Filter::make), we extract their form schema.
@@ -1205,6 +1207,11 @@ class AssociadoFiltersTable
                         
                         // Ensure ToggleButtons are live to trigger dirty state updates correctly
                         if ($component instanceof \Filament\Forms\Components\ToggleButtons) {
+                            $component->live();
+                        }
+
+                        // Ensure all components are live to trigger updates for preview
+                        if (method_exists($component, 'live')) {
                             $component->live();
                         }
 

@@ -144,4 +144,12 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
     {
         return view('livewire.segmentacao-preview');
     }
+
+    public function getInfographicKey()
+    {
+        // Sort filters by key to ensure deterministic order
+        $filters = $this->filters;
+        ksort($filters);
+        return 'infographic-' . md5(json_encode($filters));
+    }
 }
