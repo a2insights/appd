@@ -965,4 +965,48 @@ class AssociadoFiltersTable
     {
         return MunicipioService::all();
     }
+
+    public static function getFormSchema(): array
+    {
+        $filters = self::filters();
+        $schema = [];
+
+        foreach ($filters as $filter) {
+            if ($filter instanceof \Filament\Tables\Filters\SelectFilter) {
+                $component = Select::make($filter->getName())
+                    ->label($filter->getLabel())
+                    ->options($filter->getOptions());
+
+                if (method_exists($filter, 'isMultiple') && $filter->isMultiple()) {
+                    $component->multiple();
+                }
+
+                if (method_exists($filter, 'isSearchable') && $filter->isSearchable()) {
+                    $component->searchable();
+                } else {
+                    // Default to searchable if not explicitly checkable, as most filters are searchable
+                    $component->searchable();
+                }
+
+                if (method_exists($filter, 'isPreloaded') && $filter->isPreloaded()) {
+                    $component->preload();
+                }
+                
+                $schema[] = $component;
+            } elseif ($filter instanceof \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter) {
+                 $component = \Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker::make($filter->getName())
+                    ->label($filter->getLabel())
+                    ->autoApply();
+                 $schema[] = $component;
+            } elseif ($filter instanceof \Filament\Tables\Filters\Filter) {
+                $formSchema = $filter->getFormSchema();
+                if (!empty($formSchema)) {
+                    foreach ($formSchema as $component) {
+                        $schema[] = $component;
+                    }
+                }
+            }
+        }
+        return $schema;
+    }
 }
