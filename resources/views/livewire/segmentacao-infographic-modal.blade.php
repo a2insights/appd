@@ -1,4 +1,4 @@
-<div class="p-6 bg-gray-50 dark:bg-gray-950 min-h-screen print:bg-white print:p-0">
+<div class="p-6 bg-gray-50 dark:bg-gray-950 print:bg-white print:p-0">
     <!-- Print Styles -->
     <style>
         @media print {
@@ -155,14 +155,4 @@
             <p class="text-gray-500 dark:text-gray-400">Ajuste os filtros para visualizar o infográfico.</p>
         </div>
     @endif
-
-    <!-- Footer Actions -->
-    <div class="mt-8 flex justify-end gap-4 no-print fixed bottom-6 right-6">
-        <x-filament::button color="gray" outlined x-on:click="$dispatch('close-modal', { id: 'infographic-modal' })">
-            Fechar
-        </x-filament::button>
-        <x-filament::button icon="heroicon-o-printer" onclick="window.print()">
-            Imprimir PDF
-        </x-filament::button>
-    </div>
 </div>

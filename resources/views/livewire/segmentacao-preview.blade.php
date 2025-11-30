@@ -8,16 +8,31 @@
                 Ver Lista
             </x-filament::button>
 
-            <x-filament::modal id="infographic-modal" width="screen">
+            <x-filament::modal id="infographic-modal" width="screen" sticky-footer slide-over sticky-header>
                 <x-slot name="trigger">
                     <x-filament::button color="info" icon="heroicon-o-chart-pie" size="sm">
                         Infográfico
                     </x-filament::button>
                 </x-slot>
 
-                <div class="w-full h-full overflow-y-auto">
+                <x-slot name="heading">
+                    Infográfico da Segmentação
+                </x-slot>
+
+                <div class="w-full">
                     @livewire('segmentacao-infographic', ['filters' => $filters], key('infographic-' . md5(json_encode($filters))))
                 </div>
+
+                <x-slot name="footer">
+                    <div class="flex justify-end gap-4 w-full">
+                        <x-filament::button color="gray" outlined x-on:click="close()">
+                            Fechar
+                        </x-filament::button>
+                        <x-filament::button icon="heroicon-o-printer" onclick="window.print()">
+                            Imprimir PDF
+                        </x-filament::button>
+                    </div>
+                </x-slot>
             </x-filament::modal>
         @endif
         
