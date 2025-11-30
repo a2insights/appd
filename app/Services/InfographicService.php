@@ -63,11 +63,11 @@ class InfographicService
             $stats['naturalidade_municipio'] = [];
             if (!empty($natMunStats)) {
                 $municipioService = app(\App\Services\MunicipioService::class);
-                $municipios = collect($municipioService->all())->keyBy('id');
+                $municipios = collect($municipioService->all())->keyBy('codigoIbge');
                 
                 foreach ($natMunStats as $id => $count) {
                     $municipio = $municipios->get($id);
-                    $label = $municipio ? "{$municipio['nome']} - {$municipio['uf']}" : "ID: $id";
+                    $label = $municipio ? "{$municipio->nome} - {$municipio->uf}" : "ID: $id";
                     $stats['naturalidade_municipio'][$label] = $count;
                 }
             }
