@@ -94,10 +94,11 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
                 // blank() returns false for 0 and false, so this correctly handles boolean/integer zero values.
                 // For TernaryFilter, we treat 'all' (and '') as null (Todos).
                 if (!blank($value) && $value !== '' && $value !== 'all') {
-                    // Convert string '1'/'0' to boolean for TernaryFilter
+                    // Convert string/int '1'/'0' to boolean for TernaryFilter
                     if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
-                         if ($value === '1') $value = true;
-                         if ($value === '0') $value = false;
+                         // Use loose comparison to handle both string '1' and int 1
+                         if ($value == 1) $value = true;
+                         if ($value == 0) $value = false;
                     }
                     $filter->apply($query, ['value' => $value]);
                 }

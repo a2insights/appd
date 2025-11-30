@@ -718,7 +718,7 @@ class AssociadoFiltersTable
                         ])
                         ->defaultItems(1)
                         ->collapsible()
-                        ->cloneable(),
+                        ->cloneable()
                 ])
                 ->query(function (Builder $query, array $data) {
                     $conditions = $data['condicoes'] ?? [];
@@ -838,22 +838,39 @@ class AssociadoFiltersTable
             // FILTROS DE DEFICIÊNCIA
             // ========================================
 
-            TernaryFilter::make('possui_deficiencia')
-                ->label('Possui Deficiência?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->whereNotNull('tipo_deficiencia')
-                        ->orWhereNotNull('causa_deficiencia')
-                        ->orWhereJsonLength('cid10', '>', 0),
-                    false: fn (Builder $query) => $query->whereNull('tipo_deficiencia')
-                        ->whereNull('causa_deficiencia')
-                        ->where(function ($q) {
-                            $q->whereNull('cid10')
-                                ->orWhereJsonLength('cid10', '=', 0);
-                        }),
-                ),
+            Filter::make('possui_deficiencia')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_deficiencia')
+                        ->label('Possui Deficiência?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_deficiencia'] ?? null;
+                    if ($value === '1') {
+                        $query->where(function ($q) {
+                            $q->whereNotNull('tipo_deficiencia')
+                                ->orWhereNotNull('causa_deficiencia')
+                                ->orWhereJsonLength('cid10', '>', 0);
+                        });
+                    } elseif ($value === '0') {
+                        $query->where(function ($q) {
+                            $q->whereNull('tipo_deficiencia')
+                                ->whereNull('causa_deficiencia')
+                                ->where(function ($sub) {
+                                    $sub->whereNull('cid10')
+                                        ->orWhereJsonLength('cid10', '=', 0);
+                                });
+                        });
+                    }
+                }),
 
             SelectFilter::make('tipo_deficiencia')
                 ->label('Tipo de Deficiência')
@@ -881,15 +898,30 @@ class AssociadoFiltersTable
                 ->searchable()
                 ->preload(),
 
-            TernaryFilter::make('possui_crm')
-                ->label('Possui CRM?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->whereNotNull('crm')->where('crm', '!=', ''),
-                    false: fn (Builder $query) => $query->whereNull('crm')->orWhere('crm', '=', ''),
-                ),
+            Filter::make('possui_crm')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_crm')
+                        ->label('Possui CRM?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_crm'] ?? null;
+                    if ($value === '1') {
+                        $query->whereNotNull('crm')->where('crm', '!=', '');
+                    } elseif ($value === '0') {
+                        $query->where(function ($q) {
+                            $q->whereNull('crm')->orWhere('crm', '=', '');
+                        });
+                    }
+                }),
 
             // ========================================
             // FILTROS DE RELACIONAMENTOS
@@ -902,59 +934,130 @@ class AssociadoFiltersTable
                 ->multiple()
                 ->searchable(),
 
-            TernaryFilter::make('possui_carteirinha')
-                ->label('Possui Carteirinha?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->has('carteirinhas'),
-                    false: fn (Builder $query) => $query->doesntHave('carteirinhas'),
-                ),
+            Filter::make('possui_carteirinha')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_carteirinha')
+                        ->label('Possui Carteirinha?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_carteirinha'] ?? null;
+                    if ($value === '1') {
+                        $query->has('carteirinhas');
+                    } elseif ($value === '0') {
+                        $query->doesntHave('carteirinhas');
+                    }
+                }),
 
-            TernaryFilter::make('possui_talento')
-                ->label('Possui Talento Cadastrado?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->has('talento'),
-                    false: fn (Builder $query) => $query->doesntHave('talento'),
-                ),
+            Filter::make('possui_talento')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_talento')
+                        ->label('Possui Talento Cadastrado?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_talento'] ?? null;
+                    if ($value === '1') {
+                        $query->has('talento');
+                    } elseif ($value === '0') {
+                        $query->doesntHave('talento');
+                    }
+                }),
 
             // ========================================
             // FILTROS DE CONTATO
             // ========================================
 
-            TernaryFilter::make('possui_whatsapp')
-                ->label('Possui WhatsApp?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->whereNotNull('telefone_whatsapp')->where('telefone_whatsapp', '!=', ''),
-                    false: fn (Builder $query) => $query->whereNull('telefone_whatsapp')->orWhere('telefone_whatsapp', '=', ''),
-                ),
+            Filter::make('possui_whatsapp')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_whatsapp')
+                        ->label('Possui WhatsApp?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_whatsapp'] ?? null;
+                    if ($value === '1') {
+                        $query->whereNotNull('telefone_whatsapp')->where('telefone_whatsapp', '!=', '');
+                    } elseif ($value === '0') {
+                        $query->where(function ($q) {
+                            $q->whereNull('telefone_whatsapp')->orWhere('telefone_whatsapp', '=', '');
+                        });
+                    }
+                }),
 
-            TernaryFilter::make('possui_email')
-                ->label('Possui E-mail?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->whereNotNull('email')->where('email', '!=', ''),
-                    false: fn (Builder $query) => $query->whereNull('email')->orWhere('email', '=', ''),
-                ),
+            Filter::make('possui_email')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_email')
+                        ->label('Possui E-mail?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_email'] ?? null;
+                    if ($value === '1') {
+                        $query->whereNotNull('email')->where('email', '!=', '');
+                    } elseif ($value === '0') {
+                        $query->where(function ($q) {
+                            $q->whereNull('email')->orWhere('email', '=', '');
+                        });
+                    }
+                }),
 
-            TernaryFilter::make('possui_foto')
-                ->label('Possui Foto?')
-                ->placeholder('Todos')
-                ->trueLabel('Sim')
-                ->falseLabel('Não')
-                ->queries(
-                    true: fn (Builder $query) => $query->whereNotNull('foto')->where('foto', '!=', ''),
-                    false: fn (Builder $query) => $query->whereNull('foto')->orWhere('foto', '=', ''),
-                ),
+            Filter::make('possui_foto')
+                ->form([
+                    \Filament\Forms\Components\ToggleButtons::make('possui_foto')
+                        ->label('Possui Foto?')
+                        ->options([
+                            'all' => 'Todos',
+                            '1' => 'Sim',
+                            '0' => 'Não',
+                        ])
+                        ->grouped()
+                        ->default('all')
+                        ->formatStateUsing(fn ($state) => $state ?? 'all')
+                        ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $value = $data['possui_foto'] ?? null;
+                    if ($value === '1') {
+                        $query->whereNotNull('foto')->where('foto', '!=', '');
+                    } elseif ($value === '0') {
+                        $query->where(function ($q) {
+                            $q->whereNull('foto')->orWhere('foto', '=', '');
+                        });
+                    }
+                }),
         ];
     }
 
@@ -982,7 +1085,8 @@ class AssociadoFiltersTable
                     ])
                     ->grouped()
                     ->default('all')
-                    ->afterStateHydrated(fn ($component, $state) => $component->state($state ?? 'all'));
+                    ->formatStateUsing(fn ($state) => $state ?? 'all')
+                    ->dehydrateStateUsing(fn ($state) => $state === 'all' ? null : $state);
                 
                 $schema[] = $component;
 
@@ -1005,12 +1109,20 @@ class AssociadoFiltersTable
                     $component->preload();
                 }
                 
+                if (method_exists($filter, 'getColumnSpan') && $filter->getColumnSpan() === 'full') {
+                    $component->columnSpanFull();
+                }
+                
                 $schema[] = $component;
-
             } elseif ($filter instanceof \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter) {
                  $component = \Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker::make($filter->getName())
                     ->label($filter->getLabel())
                     ->autoApply();
+                 
+                 if (method_exists($filter, 'getColumnSpan') && $filter->getColumnSpan() === 'full') {
+                    $component->columnSpanFull();
+                 }
+
                  $schema[] = $component;
             } elseif ($filter instanceof \Filament\Tables\Filters\Filter) {
                 // For custom filters (Filter::make), we extract their form schema.
@@ -1019,7 +1131,14 @@ class AssociadoFiltersTable
                 // we add those components directly to the schema.
                 $formSchema = $filter->getFormSchema();
                 if (!empty($formSchema)) {
+                    // Check if the filter itself is marked as full width
+                    $isFullWidth = method_exists($filter, 'getColumnSpan') && $filter->getColumnSpan() === 'full';
+
                     foreach ($formSchema as $component) {
+                        // If the filter is full width, force the component to be full width
+                        if ($isFullWidth && method_exists($component, 'columnSpanFull')) {
+                             $component->columnSpanFull();
+                        }
                         $schema[] = $component;
                     }
                 }

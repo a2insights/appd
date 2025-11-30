@@ -63,7 +63,7 @@ class SegmentacaoResource extends Resource
                     ->description('Configure as regras para esta segmentação.')
                     ->statePath('filters')
                     ->schema(\App\Filament\Filters\AssociadoFiltersTable::getFormSchema())
-                    ->columns(3),
+                    ->columns(4),
 
                 Forms\Components\View::make('filament.resources.segmentacao.preview-widget')
                     ->viewData([
