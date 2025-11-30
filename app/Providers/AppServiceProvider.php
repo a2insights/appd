@@ -59,6 +59,10 @@ class AppServiceProvider extends ServiceProvider
         // Filament Database Schedule
         Gate::policy(Schedule::class, \App\Policies\SchedulePolicy::class);
 
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         FilamentAsset::register([
             Js::make('chart-js-plugins', Vite::asset('resources/js/filament-chart-js-plugins.js'))->module(),
         ]);

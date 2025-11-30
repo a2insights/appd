@@ -13,9 +13,11 @@ use Illuminate\Support\Carbon;
 
 class AssociadosChart extends ChartWidget
 {
+    use \Filament\Widgets\Concerns\InteractsWithPageFilters;
+
     protected static ?string $heading = 'Cadastros e Atividades no Último Ano';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?string $maxHeight = '300px';
 
@@ -23,34 +25,45 @@ class AssociadosChart extends ChartWidget
 
     protected function getData(): array
     {
+        $startDate = now()->subYear();
+        $endDate = now();
+
+        if (! empty($this->filters['date_range']) && is_string($this->filters['date_range'])) {
+            $dates = explode(' - ', $this->filters['date_range']);
+            if (count($dates) === 2) {
+                $startDate = Carbon::createFromFormat('d/m/Y', $dates[0]);
+                $endDate = Carbon::createFromFormat('d/m/Y', $dates[1]);
+            }
+        }
+
         $associadoData = Trend::query(Associado::query())
             ->between(
-                start: now()->subYear(),
-                end: now(),
+                start: $startDate,
+                end: $endDate,
             )
             ->perMonth()
             ->count();
 
         $carteirinhaData = Trend::query(Carteirinha::query())
             ->between(
-                start: now()->subYear(),
-                end: now(),
+                start: $startDate,
+                end: $endDate,
             )
             ->perMonth()
             ->count();
 
         $atendimentoData = Trend::query(Atendimento::query())
             ->between(
-                start: now()->subYear(),
-                end: now(),
+                start: $startDate,
+                end: $endDate,
             )
             ->perMonth()
             ->count();
 
         $encaminhamentoData = Trend::query(Encaminhamento::query())
             ->between(
-                start: now()->subYear(),
-                end: now(),
+                start: $startDate,
+                end: $endDate,
             )
             ->perMonth()
             ->count();
@@ -128,7 +141,7 @@ class AssociadosChart extends ChartWidget
                     'font' => [
                         'weight' => 'bold',
                     ],
-                    'formatter' => RawJs::make(<<<JS
+                    'formatter' => RawJs::make(<<<'JS'
                         function(value) {
                             alert(1)
                             return value > 0 ? value : '';
