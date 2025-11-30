@@ -37,6 +37,21 @@ class SegmentacaoResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Pré-visualização')
+                    ->schema([
+                        Forms\Components\View::make('filament.resources.segmentacao.preview-widget')
+                            ->columnSpanFull(),
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('preview')
+                                ->label('Atualizar Pré-visualização')
+                                ->icon('heroicon-o-arrow-path')
+                                ->action(function ($livewire, Get $get) {
+                                    $livewire->dispatch('update-preview', filters: $get('filters'));
+                                }),
+                        ])->fullWidth(),
+                    ])
+                    ->collapsible(),
+
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\TextInput::make('name')
