@@ -611,7 +611,7 @@ class AssociadoFiltersTable
                                         ])
                                         ->default('and')
                                         ->required()
-                                        ->disablePlaceholderSelection(),
+                                        ->selectablePlaceholder(),
                                     Select::make('field')
                                         ->label('Campo')
                                         ->options([
@@ -1166,6 +1166,12 @@ class AssociadoFiltersTable
                 // It is NOT a SelectFilter at the top level. It is a custom filter with a form schema.
                 // So it falls into the `elseif ($filter instanceof \Filament\Tables\Filters\Filter)` block below.
                 
+                // Fix for 'beneficios' not showing options because it uses relationship()
+                if ($filter->getName() === 'beneficios') {
+                    // Manually fetch options for the relationship
+                    $component->options(\App\Models\Beneficio::pluck('nome', 'id'));
+                }
+
                 if (method_exists($filter, 'getColumnSpan') && $filter->getColumnSpan() === 'full') {
                     $component->columnSpanFull();
                 }

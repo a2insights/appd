@@ -8,6 +8,10 @@
             <x-filament::button outlined size="sm" x-on:click="$dispatch('open-modal', { id: 'preview-table-modal' })">
                 Ver Lista
             </x-filament::button>
+
+            <x-filament::button color="info" icon="heroicon-o-chart-pie" size="sm" x-on:click="$dispatch('open-modal', { id: 'infographic-modal' })">
+                Infográfico
+            </x-filament::button>
         @endif
         
         <x-filament::modal id="preview-table-modal" width="5xl">
@@ -17,6 +21,12 @@
 
             <div class="overflow-hidden bg-white rounded-lg shadow dark:bg-gray-800">
                 {{ $this->table }}
+            </div>
+        </x-filament::modal>
+
+        <x-filament::modal id="infographic-modal" width="full">
+            <div class="w-full">
+                @livewire('segmentacao-infographic', ['filters' => $filters], key('infographic-' . md5(json_encode($filters))))
             </div>
         </x-filament::modal>
     </div>

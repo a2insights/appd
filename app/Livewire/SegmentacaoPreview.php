@@ -84,41 +84,49 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
         }
 
         $definitions = AssociadoFiltersTable::filters();
+        
+        // // Create a dummy table instance to satisfy the filter's dependency on a Table object.
+        // // We use an anonymous component to avoid recursion and side effects from the main component's table() method.
+        // $dummyComponent = new class extends \Livewire\Component implements \Filament\Forms\Contracts\HasForms, \Filament\Tables\Contracts\HasTable {
+        //     use \Filament\Forms\Concerns\InteractsWithForms;
+        //     use \Filament\Tables\Concerns\InteractsWithTable;
+            
+        //     public function table(\Filament\Tables\Table $table): \Filament\Tables\Table {
+        //         return $table->query(\App\Models\Associado::query());
+        //     }
+            
+        //     public function bootDummy() {
+        //         // Manually initialize the table to satisfy the typed property requirement
+        //         $this->table = $this->makeTable();
+        //     }
+        // };
+        
+        // $dummyComponent->bootDummy();
+        // $dummyTable = $dummyComponent->getTable();
 
         foreach ($definitions as $filter) {
+            // Inject the dummy table into the filter instance
+            if (method_exists($filter, 'table')) {
+               // $filter->table($dummyTable);
+            }
+            
             $name = $filter->getName();
             $value = data_get($this->filters, $name);
 
             if ($filter instanceof SelectFilter || $filter instanceof \Filament\Tables\Filters\TernaryFilter) {
-                // Only apply if value is present (not blank).
-                // blank() returns false for 0 and false, so this correctly handles boolean/integer zero values.
-                // For TernaryFilter, we treat 'all' (and '') as null (Todos).
                 if (!blank($value) && $value !== '' && $value !== 'all') {
-                    // Convert string/int '1'/'0' to boolean for TernaryFilter
                     if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
-                         // Use loose comparison to handle both string '1' and int 1
                          if ($value == 1) $value = true;
                          if ($value == 0) $value = false;
                          
                          $filter->apply($query, ['value' => $value]);
                     } elseif ($filter instanceof SelectFilter) {
-                        // For SelectFilter, especially multiple or relationship, we need to pass the value correctly.
-                        // Filament's SelectFilter expects 'value' => $value in the data array.
-                        // If it's multiple, $value is an array.
-                        // If it's relationship, apply() handles it if 'value' is set.
-                        
-                        // IMPORTANT: For relationship filters, Filament expects 'values' (plural) if multiple?
-                        // Or just 'value'. Let's check how Filament applies it.
-                        // Usually it uses $data['value'] or $data['values'].
-                        
-                        // Let's pass both to be safe, or just 'value' which is standard.
                         $filter->apply($query, ['value' => $value, 'values' => $value]);
                     }
                 }
                 continue;
             }
 
-            // Custom filters: Always apply (they handle empty checks internally), passing full data.
             $filterData = $this->filters;
             if (!blank($value)) {
                 $filterData['value'] = $value;
@@ -127,9 +135,6 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
             $filter->apply($query, $filterData);
         }
         
-        // Update count based on the current query
-        // Note: This might run twice (once for count, once for table), but it ensures sync.
-        // Ideally we capture the count from the table query, but for now this is explicit.
         $this->count = $query->count();
     }
 
