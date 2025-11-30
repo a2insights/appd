@@ -12,7 +12,7 @@
     </style>
 
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8 border-b pb-4 dark:border-gray-800">
+    <div class="flex justify-between items-center mb-4 border-b pb-4 dark:border-gray-800">
         <div>
             <h2 class="text-3xl font-bold text-gray-800 dark:text-white print-text-black">Relatório de Segmentação</h2>
             <p class="text-gray-500 dark:text-gray-400 print-text-black">Gerado em {{ now()->format('d/m/Y H:i') }}</p>
@@ -24,40 +24,65 @@
         </div>
     </div>
 
+    <!-- Active Filters Display -->
+    @if(!empty($activeFilters))
+        <div class="mb-6 p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 print:border-gray-300">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">Filtros Aplicados:</h3>
+            <div class="flex flex-wrap gap-2">
+                @foreach($activeFilters as $key => $value)
+                    @if(!blank($value) && $value !== 'all')
+                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 print:bg-gray-200 print:text-black border border-primary-200 dark:border-primary-800">
+                            <span class="font-bold mr-1">{{ str($key)->title()->replace('_', ' ') }}:</span>
+                            @if(is_array($value))
+                                {{ implode(', ', $value) }}
+                            @else
+                                {{ $value }}
+                            @endif
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     @if(($stats['total'] ?? 0) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 print:block">
             
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
             <!-- Sexo -->
             <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
                     <x-heroicon-o-user-group class="w-5 h-5" />
                     Distribuição por Sexo
                 </h3>
-                <div class="space-y-4">
-                    @php
-                        $totalSexo = array_sum($stats['sexo'] ?? []);
-                        $colors = ['Masculino' => 'bg-blue-500', 'Feminino' => 'bg-pink-500', 'Outro' => 'bg-gray-500'];
-                    @endphp
-                    @foreach($stats['sexo'] ?? [] as $label => $count)
-                        @php 
-                            $percentage = $totalSexo > 0 ? ($count / $totalSexo) * 100 : 0;
-                            $labelClean = $label ?: 'Não informado';
-                            $color = match(Str::lower($labelClean)) {
-                                'masculino', 'm' => 'bg-blue-500',
-                                'feminino', 'f' => 'bg-pink-500',
-                                default => 'bg-gray-400'
-                            };
-                        @endphp
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-medium text-gray-700 dark:text-gray-300 print-text-black">{{ $labelClean }}</span>
-                                <span class="text-gray-500 dark:text-gray-400 print-text-black">{{ $count }} ({{ number_format($percentage, 1) }}%)</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-800 print:bg-gray-200">
-                                <div class="{{ $color }} h-2.5 rounded-full print:bg-black" style="width: {{ $percentage }}%"></div>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'doughnut',
+                            data: {
+                                labels: @js(array_keys($stats['sexo'] ?? [])),
+                                datasets: [{
+                                    data: @js(array_values($stats['sexo'] ?? [])),
+                                    backgroundColor: ['#3b82f6', '#ec4899', '#9ca3af', '#10b981', '#f59e0b'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
                 </div>
             </div>
 
@@ -67,24 +92,48 @@
                     <x-heroicon-o-cake class="w-5 h-5" />
                     Faixa Etária
                 </h3>
-                <div class="flex items-end justify-between h-40 gap-2 pt-4">
-                    @php
-                        $maxAge = max($stats['faixa_etaria'] ?? [0]);
-                        $totalAge = array_sum($stats['faixa_etaria'] ?? []);
-                    @endphp
-                    @foreach(['0-17', '18-29', '30-49', '50-64', '65+'] as $range)
-                        @php
-                            $count = $stats['faixa_etaria'][$range] ?? 0;
-                            $height = $maxAge > 0 ? ($count / $maxAge) * 100 : 0;
-                        @endphp
-                        <div class="flex flex-col items-center w-full group">
-                            <div class="text-xs text-gray-500 mb-1 opacity-0 group-hover:opacity-100 transition-opacity print:opacity-100">{{ $count }}</div>
-                            <div class="w-full bg-primary-100 dark:bg-primary-900/50 rounded-t-md relative group hover:bg-primary-200 transition-colors print:bg-gray-300">
-                                <div class="absolute bottom-0 left-0 right-0 bg-primary-500 rounded-t-md transition-all duration-500 print:bg-gray-600" style="height: {{ $height }}%"></div>
-                            </div>
-                            <div class="text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium print-text-black">{{ $range }}</div>
-                        </div>
-                    @endforeach
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: @js(array_keys($stats['faixa_etaria'] ?? [])),
+                                datasets: [{
+                                    label: 'Associados',
+                                    data: @js(array_values($stats['faixa_etaria'] ?? [])),
+                                    backgroundColor: '#8b5cf6',
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return context.parsed.y + ' Associados';
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: { color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb' },
+                                        ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' }
+                                    },
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
                 </div>
             </div>
 
@@ -94,13 +143,38 @@
                     <x-heroicon-o-heart class="w-5 h-5" />
                     Estado Civil
                 </h3>
-                <div class="grid grid-cols-2 gap-4">
-                    @foreach($stats['estado_civil'] ?? [] as $label => $count)
-                        <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-transparent dark:border-gray-700 print:border print:bg-white">
-                            <div class="text-2xl font-bold text-gray-800 dark:text-white print-text-black">{{ $count }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400 truncate print-text-black" title="{{ $label }}">{{ $label ?: 'Não informado' }}</div>
-                        </div>
-                    @endforeach
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'pie',
+                            data: {
+                                labels: @js(array_keys($stats['estado_civil'] ?? [])),
+                                datasets: [{
+                                    data: @js(array_values($stats['estado_civil'] ?? [])),
+                                    backgroundColor: [
+                                        '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', 
+                                        '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef'
+                                    ],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                        labels: { 
+                                            boxWidth: 12,
+                                            color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' 
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
                 </div>
             </div>
 
@@ -155,4 +229,10 @@
             <p class="text-gray-500 dark:text-gray-400">Ajuste os filtros para visualizar o infográfico.</p>
         </div>
     @endif
+    <style>
+        .fi-topbar {
+            z-index: 10 !important;
+        }
+    </style>
+
 </div>

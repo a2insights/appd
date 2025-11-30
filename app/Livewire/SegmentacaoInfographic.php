@@ -1,3 +1,31 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <?php
 
 namespace App\Livewire;
@@ -90,7 +118,8 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
         }
 
         return view('livewire.segmentacao-infographic-modal', [
-            'stats' => $stats
+            'stats' => $stats,
+            'activeFilters' => $this->filters
         ]);
     }
 
