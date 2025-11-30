@@ -911,7 +911,15 @@ class AssociadoFiltersTable
                 ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->codigo} - {$record->descricao}")
                 ->multiple()
                 ->searchable()
-                ->preload(),
+                ->preload()
+                ->getSearchResultsUsing(function (string $search) {
+                    return \App\Models\Cid10::query()
+                        ->where('codigo', 'like', "%{$search}%")
+                        ->orWhere('descricao', 'like', "%{$search}%")
+                        ->limit(50)
+                        ->get()
+                        ->mapWithKeys(fn ($record) => [$record->id => "{$record->codigo} - {$record->descricao}"]);
+                }),
 
             Filter::make('possui_crm')
                 ->form([
@@ -1115,14 +1123,35 @@ class AssociadoFiltersTable
                     $component->multiple();
                 }
 
-                if (method_exists($filter, 'isSearchable') && $filter->isSearchable()) {
+                // Check for 'cid10' explicitly BEFORE checking isSearchable, to ensure we catch it.
+                // It seems isSearchable() might be returning false or the flow is different.
+                if ($filter->getName() === 'cid10') {
+                     $component->searchable()
+                        ->preload(false)
+                        ->getSearchResultsUsing(function (string $search) {
+                            return \App\Models\Cid10::query()
+                                ->where('codigo', 'like', "%{$search}%")
+                                ->orWhere('descricao', 'like', "%{$search}%")
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(fn ($record) => [$record->id => "{$record->codigo} - {$record->descricao}"]);
+                        })
+                        ->getOptionLabelsUsing(function (array $values) {
+                            return \App\Models\Cid10::whereIn('id', $values)
+                                ->get()
+                                ->mapWithKeys(fn ($record) => [$record->id => "{$record->codigo} - {$record->descricao}"]);
+                        });
+                } elseif (method_exists($filter, 'isSearchable') && $filter->isSearchable()) {
                     $component->searchable();
                 } else {
                     $component->searchable();
                 }
 
                 if (method_exists($filter, 'isPreloaded') && $filter->isPreloaded()) {
-                    $component->preload();
+                    // Only apply preload if not cid10 (already handled above)
+                    if ($filter->getName() !== 'cid10') {
+                        $component->preload();
+                    }
                 }
 
                 // IMPORTANT: If the filter has dynamic options (Closure), getOptions() might return null or empty array initially.

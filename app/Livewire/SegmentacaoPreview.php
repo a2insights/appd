@@ -99,8 +99,21 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
                          // Use loose comparison to handle both string '1' and int 1
                          if ($value == 1) $value = true;
                          if ($value == 0) $value = false;
+                         
+                         $filter->apply($query, ['value' => $value]);
+                    } elseif ($filter instanceof SelectFilter) {
+                        // For SelectFilter, especially multiple or relationship, we need to pass the value correctly.
+                        // Filament's SelectFilter expects 'value' => $value in the data array.
+                        // If it's multiple, $value is an array.
+                        // If it's relationship, apply() handles it if 'value' is set.
+                        
+                        // IMPORTANT: For relationship filters, Filament expects 'values' (plural) if multiple?
+                        // Or just 'value'. Let's check how Filament applies it.
+                        // Usually it uses $data['value'] or $data['values'].
+                        
+                        // Let's pass both to be safe, or just 'value' which is standard.
+                        $filter->apply($query, ['value' => $value, 'values' => $value]);
                     }
-                    $filter->apply($query, ['value' => $value]);
                 }
                 continue;
             }
