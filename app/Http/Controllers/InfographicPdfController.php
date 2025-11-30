@@ -36,7 +36,14 @@ class InfographicPdfController extends Controller
             $charts['faixa_etaria'] = $this->generateChartUrl('bar', array_keys($stats['faixa_etaria'] ?? []), array_values($stats['faixa_etaria'] ?? []), 'Faixa Etária');
             $charts['estado_civil'] = $this->generateChartUrl('pie', array_keys($stats['estado_civil'] ?? []), array_values($stats['estado_civil'] ?? []), 'Estado Civil');
             $charts['raca'] = $this->generateChartUrl('doughnut', array_keys($stats['raca'] ?? []), array_values($stats['raca'] ?? []), 'Raça/Cor');
-            $charts['declaracao_sexual'] = $this->generateChartUrl('pie', array_keys($stats['declaracao_sexual'] ?? []), array_values($stats['declaracao_sexual'] ?? []), 'Declaração Sexual');
+            
+            // Filter out 'Não Informado' for PDF to avoid dominance
+            $dsStats = $stats['declaracao_sexual'] ?? [];
+            if (isset($dsStats['Não Informado'])) {
+                unset($dsStats['Não Informado']);
+            }
+            $charts['declaracao_sexual'] = $this->generateChartUrl('pie', array_keys($dsStats), array_values($dsStats), 'Declaração Sexual');
+            
             $charts['escolaridade'] = $this->generateChartUrl('horizontalBar', array_keys($stats['escolaridade'] ?? []), array_values($stats['escolaridade'] ?? []), 'Escolaridade');
             $charts['religiao'] = $this->generateChartUrl('horizontalBar', array_keys($stats['religiao'] ?? []), array_values($stats['religiao'] ?? []), 'Religião');
             $charts['tipo_deficiencia'] = $this->generateChartUrl('doughnut', array_keys($stats['tipo_deficiencia'] ?? []), array_values($stats['tipo_deficiencia'] ?? []), 'Tipo de Deficiência');
@@ -103,7 +110,7 @@ class InfographicPdfController extends Controller
 
         // Encode and build URL
         $chartConfig = json_encode($config);
-        return 'https://quickchart.io/chart?c=' . urlencode($chartConfig) . '&w=500&h=300';
+        return 'https://quickchart.io/chart?c=' . urlencode($chartConfig) . '&w=800&h=400';
     }
 
     private function getColors($type, $count)

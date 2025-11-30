@@ -50,7 +50,7 @@ class AssociadoFiltersTable
 
             SelectFilter::make('declaracao_sexual')
                 ->label('Declaração Sexual')
-                ->options(DeclaracaoSexual::class)
+                ->options(collect(DeclaracaoSexual::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])->all())
                 ->multiple()
                 ->searchable(),
 

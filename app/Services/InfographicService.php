@@ -153,7 +153,18 @@ class InfographicService
             $stats['escolaridade'] = $mapEnumStats($baseQuery, 'escolaridade', \App\Escolaridade::class);
 
             // Declaração Sexual
-            $stats['declaracao_sexual'] = $mapEnumStats($baseQuery, 'declaracao_sexual', \App\DeclaracaoSexual::class);
+            $stats['declaracao_sexual'] = $baseQuery->clone()
+                ->select('declaracao_sexual', DB::raw('count(*) as count'))
+                ->groupBy('declaracao_sexual')
+                ->pluck('count', 'declaracao_sexual')
+                ->mapWithKeys(function ($count, $key) {
+                    if (blank($key)) {
+                        return ['Não Informado' => $count];
+                    }
+                    $label = \App\DeclaracaoSexual::tryFrom($key)?->getLabel() ?? $key;
+                    return [$label => $count];
+                })
+                ->toArray();
 
             // Tipo de Deficiência
             $stats['tipo_deficiencia'] = $mapEnumStats($baseQuery, 'tipo_deficiencia', \App\TipoDeficiencia::class);

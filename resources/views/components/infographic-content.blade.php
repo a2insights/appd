@@ -173,6 +173,7 @@
     </div>
 
     <!-- Declaração Sexual -->
+    @if(!empty($stats['declaracao_sexual']))
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
         <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
             <x-heroicon-o-heart class="w-5 h-5" />
@@ -206,6 +207,7 @@
             <canvas x-ref="canvas"></canvas>
         </div>
     </div>
+    @endif
 
     <!-- Escolaridade -->
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">

@@ -14,9 +14,8 @@
         .section-title { font-size: 14px; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-top: 20px; margin-bottom: 10px; color: #1f2937; clear: both; }
         
         .grid-container { width: 100%; margin-bottom: 10px; }
-        .chart-box { width: 48%; float: left; margin-bottom: 20px; page-break-inside: avoid; }
-        .chart-box:nth-child(even) { float: right; }
-        .chart-title { font-weight: bold; margin-bottom: 5px; font-size: 11px; color: #4b5563; }
+        .chart-box { width: 100%; margin-bottom: 20px; page-break-inside: avoid; clear: both; }
+        .chart-title { font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #4b5563; }
         .chart-img { width: 100%; height: auto; border: 1px solid #eee; border-radius: 5px; }
         
         .clearfix::after { content: ""; clear: both; display: table; }
