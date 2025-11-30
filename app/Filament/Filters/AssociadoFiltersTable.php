@@ -972,7 +972,21 @@ class AssociadoFiltersTable
         $schema = [];
 
         foreach ($filters as $filter) {
-            if ($filter instanceof \Filament\Tables\Filters\SelectFilter) {
+            if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
+                $component = \Filament\Forms\Components\ToggleButtons::make($filter->getName())
+                    ->label($filter->getLabel())
+                    ->options([
+                        'all' => 'Todos',
+                        '1' => $filter->getTrueLabel() ?? 'Sim',
+                        '0' => $filter->getFalseLabel() ?? 'Não',
+                    ])
+                    ->grouped()
+                    ->default('all')
+                    ->afterStateHydrated(fn ($component, $state) => $component->state($state ?? 'all'));
+                
+                $schema[] = $component;
+
+            } elseif ($filter instanceof \Filament\Tables\Filters\SelectFilter) {
                 $component = Select::make($filter->getName())
                     ->label($filter->getLabel())
                     ->options($filter->getOptions());
@@ -984,7 +998,6 @@ class AssociadoFiltersTable
                 if (method_exists($filter, 'isSearchable') && $filter->isSearchable()) {
                     $component->searchable();
                 } else {
-                    // Default to searchable if not explicitly checkable, as most filters are searchable
                     $component->searchable();
                 }
 
@@ -993,12 +1006,17 @@ class AssociadoFiltersTable
                 }
                 
                 $schema[] = $component;
+
             } elseif ($filter instanceof \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter) {
                  $component = \Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker::make($filter->getName())
                     ->label($filter->getLabel())
                     ->autoApply();
                  $schema[] = $component;
             } elseif ($filter instanceof \Filament\Tables\Filters\Filter) {
+                // For custom filters (Filter::make), we extract their form schema.
+                // IMPORTANT: We must preserve the keys/structure if possible, but here we are flattening.
+                // If a custom filter has a complex form (like 'idade_custom' with Repeater), 
+                // we add those components directly to the schema.
                 $formSchema = $filter->getFormSchema();
                 if (!empty($formSchema)) {
                     foreach ($formSchema as $component) {

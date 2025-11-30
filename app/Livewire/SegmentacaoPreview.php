@@ -89,12 +89,26 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
             $name = $filter->getName();
             $value = data_get($this->filters, $name);
 
-            if (empty($value)) {
+            if ($filter instanceof SelectFilter || $filter instanceof \Filament\Tables\Filters\TernaryFilter) {
+                // Only apply if value is present (not blank).
+                // blank() returns false for 0 and false, so this correctly handles boolean/integer zero values.
+                // For TernaryFilter, we treat 'all' (and '') as null (Todos).
+                if (!blank($value) && $value !== '' && $value !== 'all') {
+                    // Convert string '1'/'0' to boolean for TernaryFilter
+                    if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
+                         if ($value === '1') $value = true;
+                         if ($value === '0') $value = false;
+                    }
+                    $filter->apply($query, ['value' => $value]);
+                }
                 continue;
             }
 
+            // Custom filters: Always apply (they handle empty checks internally), passing full data.
             $filterData = $this->filters;
-            $filterData['value'] = $value;
+            if (!blank($value)) {
+                $filterData['value'] = $value;
+            }
 
             $filter->apply($query, $filterData);
         }

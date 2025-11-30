@@ -1,5 +1,5 @@
 <div 
-    class="fixed bottom-0 left-0 right-0 z-20 p-4 bg-white border-t border-gray-200 shadow-lg dark:bg-gray-900 dark:border-gray-700" 
+    class="fixed bottom-0 left-0 right-0 z-10 p-4 bg-white border-t border-gray-200 shadow-lg dark:bg-gray-900 dark:border-gray-700" 
     x-data="{ 
         loading: false,
         lastPreviewed: @js($initialFilters),
