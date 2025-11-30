@@ -80,13 +80,18 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
             ];
 
             // Naturalidade UF
-            $stats['naturalidade_uf'] = $baseQuery->clone()
+            $natUfStats = $baseQuery->clone()
                 ->select('naturalidade_uf', DB::raw('count(*) as count'))
-                ->whereNotNull('naturalidade_uf')
                 ->groupBy('naturalidade_uf')
                 ->orderBy('count', 'desc')
                 ->pluck('count', 'naturalidade_uf')
                 ->toArray();
+            
+            $stats['naturalidade_uf'] = [];
+            foreach ($natUfStats as $key => $value) {
+                $label = $key ?: 'Não Informado';
+                $stats['naturalidade_uf'][$label] = ($stats['naturalidade_uf'][$label] ?? 0) + $value;
+            }
 
             // Naturalidade Município (Top 10)
             $natMunStats = $baseQuery->clone()
@@ -107,48 +112,71 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
             }
 
             // Endereço UF (Estado)
-            $stats['endereco_uf'] = $baseQuery->clone()
+            $endUfStats = $baseQuery->clone()
                 ->select('estado', DB::raw('count(*) as count'))
-                ->whereNotNull('estado')
                 ->groupBy('estado')
                 ->orderBy('count', 'desc')
                 ->limit(10)
                 ->pluck('count', 'estado')
                 ->toArray();
+            
+            $stats['endereco_uf'] = [];
+            foreach ($endUfStats as $key => $value) {
+                $label = $key ?: 'Não Informado';
+                $stats['endereco_uf'][$label] = ($stats['endereco_uf'][$label] ?? 0) + $value;
+            }
 
             // Endereço Cidade
-            $stats['endereco_cidade'] = $baseQuery->clone()
+            $endCidadeStats = $baseQuery->clone()
                 ->select('cidade', DB::raw('count(*) as count'))
-                ->whereNotNull('cidade')
                 ->groupBy('cidade')
                 ->orderBy('count', 'desc')
                 ->limit(10)
                 ->pluck('count', 'cidade')
                 ->toArray();
 
+            $stats['endereco_cidade'] = [];
+            foreach ($endCidadeStats as $key => $value) {
+                $label = $key ?: 'Não Informado';
+                $stats['endereco_cidade'][$label] = ($stats['endereco_cidade'][$label] ?? 0) + $value;
+            }
+
             // Endereço Bairro
-            $stats['endereco_bairro'] = $baseQuery->clone()
+            $endBairroStats = $baseQuery->clone()
                 ->select('bairro', DB::raw('count(*) as count'))
-                ->whereNotNull('bairro')
                 ->groupBy('bairro')
                 ->orderBy('count', 'desc')
                 ->limit(10)
                 ->pluck('count', 'bairro')
                 ->toArray();
+
+            $stats['endereco_bairro'] = [];
+            foreach ($endBairroStats as $key => $value) {
+                $label = $key ?: 'Não Informado';
+                $stats['endereco_bairro'][$label] = ($stats['endereco_bairro'][$label] ?? 0) + $value;
+            }
                 
             // Helper to map stats to Enum labels
             $mapEnumStats = function($query, $column, $enumClass) {
                 $rawStats = $query->clone()
                     ->select($column, DB::raw('count(*) as count'))
-                    ->whereNotNull($column)
                     ->groupBy($column)
                     ->pluck('count', $column)
                     ->toArray();
                 
                 $mapped = [];
                 foreach ($rawStats as $key => $value) {
-                    $label = $enumClass::tryFrom($key)?->getLabel() ?? $key;
-                    $mapped[$label] = $value;
+                    if (blank($key)) {
+                        $label = 'Não Informado';
+                    } else {
+                        $label = $enumClass::tryFrom($key)?->getLabel() ?? $key;
+                    }
+                    
+                    if (isset($mapped[$label])) {
+                        $mapped[$label] += $value;
+                    } else {
+                        $mapped[$label] = $value;
+                    }
                 }
                 arsort($mapped);
                 return $mapped;
