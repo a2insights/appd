@@ -23,6 +23,8 @@ class SegmentacaoResource extends Resource
 {
     protected static ?string $model = Segmentacao::class;
 
+    protected static ?string $cluster = \App\Filament\Clusters\Segmentacoes::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-funnel';
 
     protected static ?string $navigationLabel = 'Segmentações';

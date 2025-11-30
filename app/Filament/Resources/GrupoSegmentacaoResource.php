@@ -17,6 +17,8 @@ class GrupoSegmentacaoResource extends Resource
 {
     protected static ?string $model = GrupoSegmentacao::class;
 
+    protected static ?string $cluster = \App\Filament\Clusters\Segmentacoes::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $navigationLabel = 'Grupos de Segmentação';
