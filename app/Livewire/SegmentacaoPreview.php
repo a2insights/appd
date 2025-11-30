@@ -25,12 +25,12 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
     public $count = 0;
     public $readyToLoad = false;
 
-    #[On('update-preview')]
+    #[On('update-segmentacao-preview')]
     public function update($filters)
     {
         $this->filters = $filters;
         $this->readyToLoad = true;
-        // Reset table pagination when filters change
+        
         $this->resetTable(); 
     }
 
