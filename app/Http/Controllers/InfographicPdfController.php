@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 
 class InfographicPdfController extends Controller
 {
-    public function download(Request $request, InfographicService $service)
+    public function download(Request $request, InfographicService $service, \App\Services\FilterFormatterService $formatter)
     {
         $filters = $request->input('filters', []);
         
@@ -61,10 +61,14 @@ class InfographicPdfController extends Controller
             $charts['endereco_bairro'] = $this->generateChartUrl('horizontalBar', array_keys($stats['endereco_bairro'] ?? []), array_values($stats['endereco_bairro'] ?? []), 'Top 10 Bairros');
         }
 
+        // Format filters for display
+        $formattedFilters = $formatter->format($filters);
+
         $pdf = Pdf::loadView('pdf.infographic', [
             'stats' => $stats,
-            'charts' => $charts
-        ]);
+            'charts' => $charts,
+            'filters' => $formattedFilters
+        ])->setPaper('a4', 'landscape');
 
         return $pdf->stream('infografico-segmentacao.pdf');
     }
@@ -110,7 +114,8 @@ class InfographicPdfController extends Controller
 
         // Encode and build URL
         $chartConfig = json_encode($config);
-        return 'https://quickchart.io/chart?c=' . urlencode($chartConfig) . '&w=800&h=400';
+        // Increased resolution for landscape full page
+        return 'https://quickchart.io/chart?c=' . urlencode($chartConfig) . '&w=1200&h=600&devicePixelRatio=2';
     }
 
     private function getColors($type, $count)

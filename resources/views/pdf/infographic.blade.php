@@ -4,212 +4,273 @@
     <meta charset="UTF-8">
     <title>Infográfico de Segmentação</title>
     <style>
-        @page { margin: 20px; size: A4; }
-        body { font-family: sans-serif; color: #333; font-size: 12px; }
-        .header { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
-        .header h2 { margin: 0; color: #1e3a8a; }
-        .header p { margin: 5px 0 0; color: #666; font-size: 10px; }
-        .total-box { float: right; text-align: right; margin-top: -40px; }
-        .total-val { font-size: 24px; font-weight: bold; color: #2563eb; }
-        .section-title { font-size: 14px; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-top: 20px; margin-bottom: 10px; color: #1f2937; clear: both; }
+        @font-face {
+            font-family: 'Poppins';
+            src: url('{{ public_path("fonts/Poppins-Regular.ttf") }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Poppins';
+            src: url('{{ public_path("fonts/Poppins-Medium.ttf") }}') format('truetype');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Poppins';
+            src: url('{{ public_path("fonts/Poppins-Bold.ttf") }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        @page {
+            margin: 0;
+            size: A4 landscape;
+        }
+        body {
+            font-family: 'Poppins', 'Helvetica', 'Arial', sans-serif;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
         
-        .grid-container { width: 100%; margin-bottom: 10px; }
-        .chart-box { width: 100%; margin-bottom: 20px; page-break-inside: avoid; clear: both; }
-        .chart-title { font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #4b5563; }
-        .chart-img { width: 100%; height: auto; border: 1px solid #eee; border-radius: 5px; }
+        /* Header & Footer */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px; /* Adjusted height */
+            background-color: #ffffff;
+            border-bottom: 2px solid #f1f5f9;
+            padding: 15px 40px;
+            z-index: 1000;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background-color: #ffffff;
+            border-top: 1px solid #f1f5f9;
+            padding: 5px 40px;
+            text-align: right;
+            font-size: 9px;
+            color: #94a3b8;
+            line-height: 30px;
+        }
+
+        /* Content Area */
+        .page-container {
+            width: 100%;
+            height: 100%;
+            page-break-after: always;
+            position: relative;
+        }
         
-        .clearfix::after { content: ""; clear: both; display: table; }
+        .content-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+        }
+        .content-cell {
+            vertical-align: middle;
+            text-align: center;
+            padding-top: 140px; /* Space for header */
+            padding-bottom: 50px; /* Space for footer */
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+
+        /* Header Layout */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header-left {
+            width: 65%;
+            vertical-align: top;
+        }
+        .header-right {
+            width: 35%;
+            vertical-align: top;
+            text-align: right;
+        }
         
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 10px; background: #eff6ff; color: #1e40af; font-size: 10px; margin-right: 5px; margin-bottom: 5px; border: 1px solid #dbeafe; }
-        .badge-count { font-weight: bold; margin-left: 3px; }
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+            color: #0f172a;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Filters Section */
+        .filters-container {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 10px;
+            color: #475569;
+            line-height: 1.5;
+            max-height: 42px; /* Limit height */
+            overflow: hidden;
+        }
+        .filters-label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            font-size: 9px;
+            display: block;
+        }
+        .filter-item {
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .filter-key {
+            font-weight: 500;
+            color: #64748b;
+        }
+        .filter-val {
+            font-weight: 600;
+            color: #0369a1;
+        }
+
+        /* Total Badge */
+        .total-box {
+            display: inline-block;
+            text-align: right;
+        }
+        .total-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e40af;
+            line-height: 1;
+        }
+        .total-text {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .date-info {
+            font-size: 9px;
+            color: #cbd5e1;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* Chart Image */
+        .chart-img {
+            max-width: 95%;
+            max-height: 480px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        .section-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .page-number:before {
+            content: "Página " counter(page);
+        }
+        
+        .page-container:last-child {
+            page-break-after: auto;
+        }
     </style>
 </head>
 <body>
-    
-    <div class="header">
-        <h2>Relatório de Segmentação</h2>
-        <p>Gerado em {{ now()->format('d/m/Y H:i') }}</p>
-        <div class="total-box">
-            <div style="font-size: 10px; text-transform: uppercase; color: #666;">Total Encontrado</div>
-            <div class="total-val">{{ number_format($stats['total'] ?? 0, 0, ',', '.') }}</div>
-            <div style="font-size: 10px; color: #999;">Associados</div>
+
+    <header>
+        <table class="header-table">
+            <tr>
+                <td class="header-left">
+                    <h1>Relatório de Segmentação</h1>
+                    <div class="filters-container">
+                        <span class="filters-label">Filtros Aplicados:</span>
+                        @forelse($filters as $key => $filter)
+                            <span class="filter-item">
+                                <span class="filter-key">{{ $filter['label'] }}:</span>
+                                <span class="filter-val">{{ \Illuminate\Support\Str::limit($filter['value'], 30) }}</span>
+                            </span>
+                        @empty
+                            <span style="font-style: italic; color: #94a3b8;">Todos os associados</span>
+                        @endforelse
+                    </div>
+                </td>
+                <td class="header-right">
+                    <div class="total-box">
+                        <div class="total-number">{{ number_format($stats['total'] ?? 0, 0, ',', '.') }}</div>
+                        <div class="total-text">Total Encontrado</div>
+                    </div>
+                    <div class="date-info">
+                        Gerado em {{ now()->format('d/m/Y H:i') }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </header>
+
+    <footer>
+        <span class="page-number"></span> | A2 Insights
+    </footer>
+
+    @php
+        $sections = [
+            'Demografia' => ['sexo', 'faixa_etaria', 'estado_civil'],
+            'Identificação Social' => ['raca', 'declaracao_sexual', 'escolaridade', 'religiao'],
+            'Saúde e Deficiência' => ['tipo_deficiencia', 'causa_deficiencia', 'aparelhos_utilizado', 'cid10'],
+            'Profissional e Benefícios' => ['ocupacoes', 'beneficios'],
+            'Dados da Associação' => ['status', 'tempo_associacao'],
+            'Naturalidade' => ['naturalidade_uf', 'naturalidade_municipio'],
+            'Localização Atual' => ['endereco_uf', 'endereco_cidade', 'endereco_bairro'],
+        ];
+
+        $flatCharts = [];
+        foreach($sections as $sectionName => $chartKeys) {
+            foreach($chartKeys as $key) {
+                if(!empty($charts[$key])) {
+                    $flatCharts[] = [
+                        'key' => $key,
+                        'section' => $sectionName,
+                        'title' => $key === 'cid10' ? 'Diagnósticos (CID-10)' : ($key === 'naturalidade_municipio' ? 'Top 10 Municípios' : ucwords(str_replace('_', ' ', $key))),
+                        'url' => $charts[$key]
+                    ];
+                }
+            }
+        }
+    @endphp
+
+    @foreach($flatCharts as $chart)
+        <div class="page-container">
+            <table class="content-table">
+                <tr>
+                    <td class="content-cell">
+                        <div class="section-label">
+                            {{ $chart['section'] }} &bull; {{ $chart['title'] }}
+                        </div>
+                        <img src="{{ $chart['url'] }}" class="chart-img">
+                    </td>
+                </tr>
+            </table>
         </div>
-    </div>
-
-    <!-- Demografia -->
-    <div class="grid-container clearfix">
-        @if(!empty($charts['sexo']))
-        <div class="chart-box">
-            <div class="chart-title">Distribuição por Sexo</div>
-            <img src="{{ $charts['sexo'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['faixa_etaria']))
-        <div class="chart-box">
-            <div class="chart-title">Faixa Etária</div>
-            <img src="{{ $charts['faixa_etaria'] }}" class="chart-img">
-        </div>
-        @endif
-        
-        <div class="clearfix"></div>
-
-        @if(!empty($charts['estado_civil']))
-        <div class="chart-box">
-            <div class="chart-title">Estado Civil</div>
-            <img src="{{ $charts['estado_civil'] }}" class="chart-img">
-        </div>
-        @endif
-    </div>
-
-    <!-- Identificação Social -->
-    <div class="section-title">Identificação Social</div>
-    <div class="grid-container clearfix">
-        @if(!empty($charts['raca']))
-        <div class="chart-box">
-            <div class="chart-title">Raça/Cor</div>
-            <img src="{{ $charts['raca'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['declaracao_sexual']))
-        <div class="chart-box">
-            <div class="chart-title">Declaração Sexual</div>
-            <img src="{{ $charts['declaracao_sexual'] }}" class="chart-img">
-        </div>
-        @endif
-
-        <div class="clearfix"></div>
-
-        @if(!empty($charts['escolaridade']))
-        <div class="chart-box">
-            <div class="chart-title">Escolaridade</div>
-            <img src="{{ $charts['escolaridade'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['religiao']))
-        <div class="chart-box">
-            <div class="chart-title">Religião</div>
-            <img src="{{ $charts['religiao'] }}" class="chart-img">
-        </div>
-        @endif
-    </div>
-
-    <!-- Saúde e Deficiência -->
-    <div class="section-title">Saúde e Deficiência</div>
-    <div class="grid-container clearfix">
-        @if(!empty($charts['tipo_deficiencia']))
-        <div class="chart-box">
-            <div class="chart-title">Tipo de Deficiência</div>
-            <img src="{{ $charts['tipo_deficiencia'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['causa_deficiencia']))
-        <div class="chart-box">
-            <div class="chart-title">Causa da Deficiência</div>
-            <img src="{{ $charts['causa_deficiencia'] }}" class="chart-img">
-        </div>
-        @endif
-
-        <div class="clearfix"></div>
-
-        @if(!empty($charts['aparelhos_utilizado']))
-        <div class="chart-box">
-            <div class="chart-title">Aparelhos Utilizados (Top 10)</div>
-            <img src="{{ $charts['aparelhos_utilizado'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['cid10']))
-        <div class="chart-box">
-            <div class="chart-title">Diagnósticos (CID-10) (Top 10)</div>
-            <img src="{{ $charts['cid10'] }}" class="chart-img">
-        </div>
-        @endif
-    </div>
-
-    <!-- Profissional e Benefícios -->
-    <div class="section-title">Profissional e Benefícios</div>
-    <div class="grid-container clearfix">
-        @if(!empty($charts['ocupacoes']))
-        <div class="chart-box">
-            <div class="chart-title">Ocupações (Top 10)</div>
-            <img src="{{ $charts['ocupacoes'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['beneficios']))
-        <div class="chart-box">
-            <div class="chart-title">Benefícios Utilizados (Top 10)</div>
-            <img src="{{ $charts['beneficios'] }}" class="chart-img">
-        </div>
-        @endif
-    </div>
-
-    <!-- Dados da Associação -->
-    <div class="section-title">Dados da Associação</div>
-    <div class="grid-container clearfix">
-        @if(!empty($charts['status']))
-        <div class="chart-box">
-            <div class="chart-title">Status do Associado</div>
-            <img src="{{ $charts['status'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['tempo_associacao']))
-        <div class="chart-box">
-            <div class="chart-title">Tempo de Associação</div>
-            <img src="{{ $charts['tempo_associacao'] }}" class="chart-img">
-        </div>
-        @endif
-    </div>
-
-    <!-- Naturalidade -->
-    <div class="section-title">Naturalidade</div>
-    <div class="grid-container clearfix">
-        @if(!empty($charts['naturalidade_uf']))
-        <div class="chart-box">
-            <div class="chart-title">Naturalidade (UF)</div>
-            <img src="{{ $charts['naturalidade_uf'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['naturalidade_municipio']))
-        <div class="chart-box">
-            <div class="chart-title">Naturalidade (Top 10 Municípios)</div>
-            <img src="{{ $charts['naturalidade_municipio'] }}" class="chart-img">
-        </div>
-        @endif
-    </div>
-
-    <!-- Localização Atual -->
-    <div class="section-title">Localização Atual</div>
-    <div class="grid-container clearfix">
-        @if(!empty($charts['endereco_uf']))
-        <div class="chart-box">
-            <div class="chart-title">Estado (UF)</div>
-            <img src="{{ $charts['endereco_uf'] }}" class="chart-img">
-        </div>
-        @endif
-
-        @if(!empty($charts['endereco_cidade']))
-        <div class="chart-box">
-            <div class="chart-title">Top 10 Cidades</div>
-            <img src="{{ $charts['endereco_cidade'] }}" class="chart-img">
-        </div>
-        @endif
-
-        <div class="clearfix"></div>
-
-        @if(!empty($charts['endereco_bairro']))
-        <div class="chart-box" style="width: 100%;">
-            <div class="chart-title">Top 10 Bairros</div>
-            <img src="{{ $charts['endereco_bairro'] }}" class="chart-img" style="max-height: 300px; object-fit: contain;">
-        </div>
-        @endif
-    </div>
+    @endforeach
 
 </body>
 </html>
