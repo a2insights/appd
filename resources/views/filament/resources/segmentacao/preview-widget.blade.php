@@ -11,7 +11,7 @@
             this.loading = true;
             this.lastPreviewed = JSON.parse(JSON.stringify(this.currentFilters));
             $dispatch('update-segmentacao-preview', { 
-                filters: this.currentFilters 
+                filters: this.lastPreviewed 
             });
         }
     }"

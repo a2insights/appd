@@ -1176,7 +1176,7 @@ class AssociadoFiltersTable
                     $component->columnSpanFull();
                 }
                 
-                $component->live();
+                $component->live(onBlur: false);
                 $schema[] = $component;
             } elseif ($filter instanceof \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter) {
                  $component = \Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker::make($filter->getName())
@@ -1187,7 +1187,7 @@ class AssociadoFiltersTable
                     $component->columnSpanFull();
                  }
 
-                 $component->live();
+                 $component->live(onBlur: false);
                  $schema[] = $component;
             } elseif ($filter instanceof \Filament\Tables\Filters\Filter) {
                 // For custom filters (Filter::make), we extract their form schema.
@@ -1215,6 +1215,7 @@ class AssociadoFiltersTable
                             $component->live();
                         }
 
+                        $component->live(onBlur: false);
                         $schema[] = $component;
                     }
                 }
