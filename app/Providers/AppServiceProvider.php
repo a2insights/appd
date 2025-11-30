@@ -11,7 +11,6 @@ use Filament\Support\Facades\FilamentAsset;
 use HusamTariq\FilamentDatabaseSchedule\Models\Schedule;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Marjose123\FilamentWebhookServer\Models\FilamentWebhookServer;
@@ -64,8 +63,8 @@ class AppServiceProvider extends ServiceProvider
             Js::make('chart-js-plugins', Vite::asset('resources/js/filament-chart-js-plugins.js'))->module(),
         ]);
 
-        if (app()->environment('production')) {
-            URL::forceScheme('https');
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }
 }
