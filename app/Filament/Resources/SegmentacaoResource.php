@@ -41,7 +41,21 @@ class SegmentacaoResource extends Resource
                             ->label('Nome da Segmentação')
                             ->required()
                             ->maxLength(255),
-                    ]),
+                        Forms\Components\Select::make('grupo_segmentacao_id')
+                            ->label('Grupo')
+                            ->relationship('grupo', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Nome')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Descrição')
+                                    ->maxLength(65535),
+                            ]),
+                    ])->columns(2),
 
                 Forms\Components\Section::make('Filtros')
                     ->description('Configure as regras para esta segmentação.')
@@ -57,6 +71,10 @@ class SegmentacaoResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('grupo.name')
+                    ->label('Grupo')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

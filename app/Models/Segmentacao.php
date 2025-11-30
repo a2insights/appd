@@ -11,7 +11,13 @@ class Segmentacao extends Model
     protected $fillable = [
         'name',
         'filters',
+        'grupo_segmentacao_id',
     ];
+
+    public function grupo()
+    {
+        return $this->belongsTo(GrupoSegmentacao::class, 'grupo_segmentacao_id');
+    }
 
     protected $casts = [
         'filters' => 'array',
