@@ -29,17 +29,11 @@
         <div class="mb-6 p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 print:border-gray-300">
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">Filtros Aplicados:</h3>
             <div class="flex flex-wrap gap-2">
-                @foreach($activeFilters as $key => $value)
-                    @if(!blank($value) && $value !== 'all')
-                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 print:bg-gray-200 print:text-black border border-primary-200 dark:border-primary-800">
-                            <span class="font-bold mr-1">{{ str($key)->title()->replace('_', ' ') }}:</span>
-                            @if(is_array($value))
-                                {{ implode(', ', $value) }}
-                            @else
-                                {{ $value }}
-                            @endif
-                        </div>
-                    @endif
+                @foreach($activeFilters as $filter)
+                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 print:bg-gray-200 print:text-black border border-primary-200 dark:border-primary-800">
+                        <span class="font-bold mr-1">{{ $filter['label'] }}:</span>
+                        {{ $filter['value'] }}
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -178,28 +172,193 @@
                 </div>
             </div>
 
-            <!-- Localização (Top 5 Estados) -->
+            <!-- SEÇÃO NATURALIDADE -->
+            <div class="md:col-span-2 mt-4 mb-2">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white border-b pb-2 dark:border-gray-700">Naturalidade</h3>
+            </div>
+
+            <!-- Naturalidade UF -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
+                    <x-heroicon-o-map class="w-5 h-5" />
+                    Naturalidade (UF)
+                </h3>
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: @js(array_keys($stats['naturalidade_uf'] ?? [])),
+                                datasets: [{
+                                    label: 'Associados',
+                                    data: @js(array_values($stats['naturalidade_uf'] ?? [])),
+                                    backgroundColor: '#3b82f6',
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } },
+                                    y: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Naturalidade Município -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
+                    <x-heroicon-o-building-library class="w-5 h-5" />
+                    Naturalidade (Top 10 Municípios)
+                </h3>
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: @js(array_keys($stats['naturalidade_municipio'] ?? [])),
+                                datasets: [{
+                                    label: 'Associados',
+                                    data: @js(array_values($stats['naturalidade_municipio'] ?? [])),
+                                    backgroundColor: '#10b981',
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } },
+                                    y: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- SEÇÃO LOCALIZAÇÃO ATUAL -->
+            <div class="md:col-span-2 mt-4 mb-2">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white border-b pb-2 dark:border-gray-700">Localização Atual</h3>
+            </div>
+
+            <!-- Endereço UF -->
             <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
                     <x-heroicon-o-map-pin class="w-5 h-5" />
-                    Top Localizações (Estado)
+                    Estado (UF)
                 </h3>
-                <div class="space-y-3">
-                    @php
-                        $maxState = max($stats['estado'] ?? [0]);
-                    @endphp
-                    @foreach(array_slice($stats['estado'] ?? [], 0, 5) as $label => $count)
-                        @php
-                            $width = $maxState > 0 ? ($count / $maxState) * 100 : 0;
-                        @endphp
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 text-sm font-bold text-gray-600 dark:text-gray-300 print-text-black">{{ $label ?: 'N/A' }}</div>
-                            <div class="flex-1 bg-gray-100 rounded-full h-2 dark:bg-gray-800 print:bg-gray-100">
-                                <div class="bg-green-500 h-2 rounded-full print:bg-gray-600" style="width: {{ $width }}%"></div>
-                            </div>
-                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400 print-text-black">{{ $count }}</div>
-                        </div>
-                    @endforeach
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: @js(array_keys($stats['endereco_uf'] ?? [])),
+                                datasets: [{
+                                    label: 'Associados',
+                                    data: @js(array_values($stats['endereco_uf'] ?? [])),
+                                    backgroundColor: '#f59e0b',
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } },
+                                    y: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Endereço Cidade -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
+                    <x-heroicon-o-building-office-2 class="w-5 h-5" />
+                    Top 10 Cidades
+                </h3>
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: @js(array_keys($stats['endereco_cidade'] ?? [])),
+                                datasets: [{
+                                    label: 'Associados',
+                                    data: @js(array_values($stats['endereco_cidade'] ?? [])),
+                                    backgroundColor: '#8b5cf6',
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } },
+                                    y: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Endereço Bairro -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 md:col-span-2 border border-gray-100 dark:border-gray-800 print-break-inside-avoid print:shadow-none print:border print:mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2 print-text-black">
+                    <x-heroicon-o-home-modern class="w-5 h-5" />
+                    Top 10 Bairros
+                </h3>
+                <div class="relative h-64" x-data="{
+                    init() {
+                        new Chart(this.$refs.canvas, {
+                            type: 'bar',
+                            data: {
+                                labels: @js(array_keys($stats['endereco_bairro'] ?? [])),
+                                datasets: [{
+                                    label: 'Associados',
+                                    data: @js(array_values($stats['endereco_bairro'] ?? [])),
+                                    backgroundColor: '#ec4899',
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } },
+                                    y: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151' } }
+                                }
+                            }
+                        });
+                    }
+                }">
+                    <canvas x-ref="canvas"></canvas>
                 </div>
             </div>
 

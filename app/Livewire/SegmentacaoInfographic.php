@@ -1,31 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <?php
 
 namespace App\Livewire;
@@ -97,14 +69,61 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
                 '65+' => $baseQuery->clone()->whereDate('data_nascimento', '<=', now()->subYears(65))->count(),
             ];
 
-            // UF (Estado) - Address state
-            $stats['estado'] = $baseQuery->clone()
+            // Naturalidade UF
+            $stats['naturalidade_uf'] = $baseQuery->clone()
+                ->select('naturalidade_uf', DB::raw('count(*) as count'))
+                ->whereNotNull('naturalidade_uf')
+                ->groupBy('naturalidade_uf')
+                ->orderBy('count', 'desc')
+                ->pluck('count', 'naturalidade_uf')
+                ->toArray();
+
+            // Naturalidade Município (Top 10)
+            $natMunStats = $baseQuery->clone()
+                ->select('naturalidade_municipio_ibge', DB::raw('count(*) as count'))
+                ->whereNotNull('naturalidade_municipio_ibge')
+                ->groupBy('naturalidade_municipio_ibge')
+                ->orderBy('count', 'desc')
+                ->limit(10)
+                ->pluck('count', 'naturalidade_municipio_ibge')
+                ->toArray();
+
+            $municipios = (new \App\Services\MunicipioService())->all();
+            $stats['naturalidade_municipio'] = [];
+            foreach ($natMunStats as $ibge => $count) {
+                $mun = $municipios->firstWhere('codigoIbge', $ibge);
+                $name = $mun ? "{$mun->nome} - {$mun->uf}" : $ibge;
+                $stats['naturalidade_municipio'][$name] = $count;
+            }
+
+            // Endereço UF (Estado)
+            $stats['endereco_uf'] = $baseQuery->clone()
                 ->select('estado', DB::raw('count(*) as count'))
                 ->whereNotNull('estado')
                 ->groupBy('estado')
                 ->orderBy('count', 'desc')
                 ->limit(10)
                 ->pluck('count', 'estado')
+                ->toArray();
+
+            // Endereço Cidade
+            $stats['endereco_cidade'] = $baseQuery->clone()
+                ->select('cidade', DB::raw('count(*) as count'))
+                ->whereNotNull('cidade')
+                ->groupBy('cidade')
+                ->orderBy('count', 'desc')
+                ->limit(10)
+                ->pluck('count', 'cidade')
+                ->toArray();
+
+            // Endereço Bairro
+            $stats['endereco_bairro'] = $baseQuery->clone()
+                ->select('bairro', DB::raw('count(*) as count'))
+                ->whereNotNull('bairro')
+                ->groupBy('bairro')
+                ->orderBy('count', 'desc')
+                ->limit(10)
+                ->pluck('count', 'bairro')
                 ->toArray();
                 
             // Deficiência (Sim/Não based on having entries in tipo_deficiencia or similar?)
@@ -119,8 +138,90 @@ class SegmentacaoInfographic extends Component implements HasForms, HasTable
 
         return view('livewire.segmentacao-infographic-modal', [
             'stats' => $stats,
-            'activeFilters' => $this->filters
+            'activeFilters' => $this->getFormattedFilters()
         ]);
+    }
+
+    protected function getFormattedFilters()
+    {
+        $definitions = AssociadoFiltersTable::filters();
+        $formatted = [];
+
+        foreach ($definitions as $filter) {
+            $name = $filter->getName();
+            $value = data_get($this->filters, $name);
+
+            if (blank($value) || $value === 'all') {
+                continue;
+            }
+
+            $label = $filter->getLabel();
+            $displayValue = $value;
+
+            // Handle Custom 'naturalidade' filter
+            if ($name === 'naturalidade') {
+                $parts = [];
+                if (!empty($value['naturalidade_uf'])) {
+                    $parts[] = 'UF: ' . implode(', ', (array)$value['naturalidade_uf']);
+                }
+                if (!empty($value['naturalidade_municipio_ibge'])) {
+                    $municipios = (new \App\Services\MunicipioService())->all();
+                    $names = collect((array)$value['naturalidade_municipio_ibge'])
+                        ->map(function($ibge) use ($municipios) {
+                            $mun = $municipios->firstWhere('codigoIbge', $ibge);
+                            return $mun ? $mun->nome : $ibge;
+                        })
+                        ->join(', ');
+                    $parts[] = 'Municípios: ' . $names;
+                }
+                if (!empty($parts)) {
+                    $formatted[$name] = [
+                        'label' => $label,
+                        'value' => implode(' | ', $parts)
+                    ];
+                }
+                continue;
+            }
+
+            if ($filter instanceof SelectFilter) {
+                $options = $filter->getOptions();
+                
+                // Handle Enums
+                if (is_string($options) && enum_exists($options)) {
+                   $values = (array) $value;
+                   $displayValue = collect($values)
+                        ->map(fn($v) => $options::tryFrom($v)?->getLabel() ?? $v)
+                        ->join(', ');
+                } 
+                // Handle Relationships
+                elseif ($name === 'cid10') {
+                     $displayValue = \App\Models\Cid10::whereIn('id', (array)$value)->pluck('codigo')->join(', ');
+                } elseif ($name === 'beneficios') {
+                     $displayValue = \App\Models\Beneficio::whereIn('id', (array)$value)->pluck('nome')->join(', ');
+                } elseif ($name === 'grupo_segmentacao_id') {
+                     $displayValue = \App\Models\GrupoSegmentacao::whereIn('id', (array)$value)->pluck('name')->join(', ');
+                }
+                // Handle Array Options
+                elseif (is_array($options)) {
+                    $values = (array) $value;
+                    $displayValue = collect($values)
+                        ->map(fn($v) => $options[$v] ?? $v)
+                        ->join(', ');
+                }
+            }
+            
+            // Handle Ternary/Boolean
+            if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
+                 $displayValue = $value ? 'Sim' : 'Não';
+            }
+
+            $formatted[$name] = [
+                'label' => $label,
+                'value' => is_array($displayValue) ? implode(', ', $displayValue) : $displayValue
+            ];
+        }
+        
+        return $formatted;
     }
 
     protected function applyFilters($query)
