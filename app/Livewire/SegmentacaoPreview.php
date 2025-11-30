@@ -71,7 +71,8 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
             ->actions([]) // Clear actions for preview
             ->bulkActions([]) // Clear bulk actions
             ->filters([]) // Clear filters as we apply them manually from the form state
-            ->headerActions([]); // Clear header actions
+            ->headerActions([]) // Clear header actions
+            ->defaultPaginationPageOption(5);
     }
 
     protected function applyFilters($query)
