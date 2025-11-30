@@ -28,8 +28,13 @@
                         <x-filament::button color="gray" outlined x-on:click="close()">
                             Fechar
                         </x-filament::button>
-                        <x-filament::button icon="heroicon-o-printer" onclick="window.print()">
-                            Imprimir PDF
+                        <x-filament::button
+                            icon="heroicon-o-document-arrow-down"
+                            tag="a"
+                            href="{{ route('associados.infographic.pdf', ['filters' => $filters]) }}"
+                            target="_blank"
+                        >
+                            Baixar PDF
                         </x-filament::button>
                     </div>
                 </x-slot>
