@@ -25,13 +25,26 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
     public $count = 0;
     public $readyToLoad = false;
 
+    public function mount($initialFilters = [])
+    {
+        if (!empty($initialFilters)) {
+            $this->filters = $initialFilters;
+            $this->readyToLoad = true;
+            
+            $query = Associado::query();
+            $this->applyFilters($query);
+            $this->count = $query->count();
+        }
+    }
+
     #[On('update-segmentacao-preview')]
     public function update($filters)
     {
         $this->filters = $filters;
         $this->readyToLoad = true;
         
-        $this->resetTable(); 
+        $this->resetTable();
+        $this->dispatch('preview-updated');
     }
 
     public function table(Table $table): Table

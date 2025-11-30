@@ -66,6 +66,9 @@ class SegmentacaoResource extends Resource
                     ->columns(3),
 
                 Forms\Components\View::make('filament.resources.segmentacao.preview-widget')
+                    ->viewData([
+                        'initialFilters' => $form->getRecord()?->filters ?? [],
+                    ])
                     ->columnSpanFull(),
             ]);
     }
