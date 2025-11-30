@@ -44,7 +44,7 @@
             >
                 <div class="flex items-center gap-2">
                     <x-filament::loading-indicator class="h-5 w-5" x-show="loading" />
-                    <span>Pré-visualizar</span>
+                    <span>Aplicar Filtros</span>
                 </div>
             </x-filament::button>
         </div>

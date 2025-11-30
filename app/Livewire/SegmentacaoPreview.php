@@ -77,62 +77,64 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
 
     protected function applyFilters($query)
     {
-        if (!$this->readyToLoad) {
-            // Return empty result if not ready
-            $query->whereRaw('1 = 0');
-            return;
-        }
-
         $definitions = AssociadoFiltersTable::filters();
-        
-        // // Create a dummy table instance to satisfy the filter's dependency on a Table object.
-        // // We use an anonymous component to avoid recursion and side effects from the main component's table() method.
-        // $dummyComponent = new class extends \Livewire\Component implements \Filament\Forms\Contracts\HasForms, \Filament\Tables\Contracts\HasTable {
-        //     use \Filament\Forms\Concerns\InteractsWithForms;
-        //     use \Filament\Tables\Concerns\InteractsWithTable;
-            
-        //     public function table(\Filament\Tables\Table $table): \Filament\Tables\Table {
-        //         return $table->query(\App\Models\Associado::query());
-        //     }
-            
-        //     public function bootDummy() {
-        //         // Manually initialize the table to satisfy the typed property requirement
-        //         $this->table = $this->makeTable();
-        //     }
-        // };
-        
-        // $dummyComponent->bootDummy();
-        // $dummyTable = $dummyComponent->getTable();
 
         foreach ($definitions as $filter) {
-            // Inject the dummy table into the filter instance
-            if (method_exists($filter, 'table')) {
-               // $filter->table($dummyTable);
-            }
-            
             $name = $filter->getName();
             $value = data_get($this->filters, $name);
 
-            if ($filter instanceof SelectFilter || $filter instanceof \Filament\Tables\Filters\TernaryFilter) {
-                if (!blank($value) && $value !== '' && $value !== 'all') {
-                    if ($filter instanceof \Filament\Tables\Filters\TernaryFilter) {
-                         if ($value == 1) $value = true;
-                         if ($value == 0) $value = false;
-                         
-                         $filter->apply($query, ['value' => $value]);
-                    } elseif ($filter instanceof SelectFilter) {
-                        $filter->apply($query, ['value' => $value, 'values' => $value]);
-                    }
+            // Skip empty values (but allow '0' for boolean-like fields if needed, though blank() handles it)
+            // blank() returns true for null, '', [], but false for 0, '0', false.
+            if (blank($value) || $value === 'all') {
+                continue;
+            }
+
+            // 1. Handle SelectFilter
+            if ($filter instanceof SelectFilter) {
+                $values = (array) $value;
+                
+                // Handle Relationship Filters manually
+                if (in_array($name, ['cid10', 'beneficios'])) {
+                    $query->whereHas($name, function ($q) use ($values) {
+                        $q->whereIn($q->getModel()->getKeyName(), $values);
+                    });
+                } else {
+                    // Standard attribute filter
+                    $query->whereIn($name, $values);
                 }
                 continue;
             }
 
-            $filterData = $this->filters;
-            if (!blank($value)) {
-                $filterData['value'] = $value;
+            // 2. Handle DateRangeFilter
+            if ($filter instanceof \Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter) {
+                 $dates = explode(' - ', $value);
+                 if (count($dates) === 2) {
+                     try {
+                         $start = \Carbon\Carbon::createFromFormat('d/m/Y', $dates[0])->startOfDay();
+                         $end = \Carbon\Carbon::createFromFormat('d/m/Y', $dates[1])->endOfDay();
+                         
+                         if ($name === 'carteirinhas.data_emissao') {
+                             $query->whereHas('carteirinhas', function ($q) use ($start, $end) {
+                                 $q->whereBetween('data_emissao', [$start, $end]);
+                             })->has('carteirinhas', '>', 1);
+                         } else {
+                             $query->whereBetween($name, [$start, $end]);
+                         }
+                     } catch (\Exception $e) {
+                         // Ignore invalid dates
+                     }
+                 }
+                 continue;
             }
 
-            $filter->apply($query, $filterData);
+            // 3. Handle Custom Filters (Filter::make)
+            // We pass the entire filters array as data because custom filters might depend on multiple fields
+            // (e.g. naturalidade depends on naturalidade_uf and naturalidade_municipio_ibge)
+            if ($filter instanceof \Filament\Tables\Filters\Filter) {
+                // We try to apply it. If it fails due to missing Table, we might need another strategy,
+                // but usually custom query callbacks don't rely on the Table instance.
+                $filter->apply($query, $this->filters);
+            }
         }
         
         $this->count = $query->count();
