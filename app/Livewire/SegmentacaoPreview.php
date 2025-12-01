@@ -16,10 +16,16 @@ use Illuminate\Contracts\View\View;
 use App\Filament\Resources\AssociadoResource;
 use Livewire\Component;
 
-class SegmentacaoPreview extends Component implements HasForms, HasTable
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\Action;
+use App\Services\InfographicPdfService;
+
+class SegmentacaoPreview extends Component implements HasForms, HasTable, HasActions
 {
     use InteractsWithForms;
     use InteractsWithTable;
+    use InteractsWithActions;
 
     public $filters = [];
     public $count = 0;
@@ -143,6 +149,21 @@ class SegmentacaoPreview extends Component implements HasForms, HasTable
     public function render(): View
     {
         return view('livewire.segmentacao-preview');
+    }
+
+    public function downloadPdfAction(): Action
+    {
+        return Action::make('downloadPdf')
+            ->label('Baixar PDF')
+            ->icon('heroicon-o-document-arrow-down')
+            ->extraAttributes([
+                'x-on:click' => "window.startDownloadProgress()",
+            ])
+            ->action(function (InfographicPdfService $service) {
+                return response()->streamDownload(function () use ($service) {
+                    echo $service->generate($this->filters)->output();
+                }, 'infografico-segmentacao.pdf');
+            });
     }
 
     public function getInfographicKey()

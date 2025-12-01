@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
 use App\Models\Associado;
-use App\Services\InfographicService;
 use App\Filament\Filters\AssociadoFiltersTable;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Blade;
 
-class InfographicPdfController extends Controller
+class InfographicPdfService
 {
-    public function download(Request $request, InfographicService $service, \App\Services\FilterFormatterService $formatter)
+    public function __construct(
+        protected InfographicService $infographicService,
+        protected FilterFormatterService $filterFormatter
+    ) {}
+
+    public function generate(array $filters)
     {
-        $filters = $request->input('filters', []);
-        
         // Reconstruct Query
         $query = Associado::query();
         $filterDefinitions = AssociadoFiltersTable::filters();
@@ -27,7 +28,7 @@ class InfographicPdfController extends Controller
             );
         }
 
-        $stats = $service->getStats($query);
+        $stats = $this->infographicService->getStats($query);
 
         // Generate Chart URLs
         $charts = [];
@@ -62,7 +63,7 @@ class InfographicPdfController extends Controller
         }
 
         // Format filters for display
-        $formattedFilters = $formatter->format($filters);
+        $formattedFilters = $this->filterFormatter->format($filters);
 
         $pdf = Pdf::loadView('pdf.infographic', [
             'stats' => $stats,
@@ -70,7 +71,7 @@ class InfographicPdfController extends Controller
             'filters' => $formattedFilters
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download('infografico-segmentacao.pdf');
+        return $pdf;
     }
 
     private function generateChartUrl($type, $labels, $data, $title)
