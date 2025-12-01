@@ -19,5 +19,4 @@ Route::get('associados/carteirinhas/validacao/{uuid}', [App\Http\Controllers\Car
 Route::get('/', function () {
     return redirect('/admin');
 });
-Route::get('admin/associados/infographic/pdf', [App\Http\Controllers\InfographicPdfController::class, 'download'])
-    ->name('associados.infographic.pdf');
+

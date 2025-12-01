@@ -28,7 +28,7 @@
             size: A4 landscape;
         }
         body {
-            font-family: 'Poppins', 'Helvetica', 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
             color: #1e293b;
             margin: 0;
             padding: 0;
@@ -121,7 +121,7 @@
             overflow: hidden;
         }
         .filters-label {
-            font-weight: 600;
+            font-weight: 700;
             color: #334155;
             margin-bottom: 3px;
             text-transform: uppercase;
@@ -138,7 +138,7 @@
             color: #64748b;
         }
         .filter-val {
-            font-weight: 600;
+            font-weight: 700;
             color: #0369a1;
         }
 
@@ -157,7 +157,7 @@
             font-size: 9px;
             text-transform: uppercase;
             color: #64748b;
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 2px;
         }
         .date-info {
@@ -179,7 +179,7 @@
         .section-label {
             font-size: 12px;
             color: #94a3b8;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 20px;

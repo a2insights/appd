@@ -80,6 +80,25 @@ class InfographicPdfService
             return null;
         }
 
+        $isBar = in_array($type, ['bar', 'horizontalBar']);
+
+        $padding = ['top' => 20, 'bottom' => 20, 'left' => 20, 'right' => 20];
+        $scales = [];
+
+        if ($type === 'horizontalBar') {
+            $padding['right'] = 60; // Space for labels on the right
+            $scales = [
+                'xAxes' => [['ticks' => ['beginAtZero' => true, 'font' => ['family' => 'Poppins']]]],
+                'yAxes' => [['ticks' => ['autoSkip' => false, 'font' => ['family' => 'Poppins']]]]
+            ];
+        } elseif ($type === 'bar') {
+            $padding['top'] = 40; // Space for labels on top
+            $scales = [
+                'yAxes' => [['ticks' => ['beginAtZero' => true, 'font' => ['family' => 'Poppins']]]],
+                'xAxes' => [['ticks' => ['autoSkip' => false, 'font' => ['family' => 'Poppins']]]]
+            ];
+        }
+
         $config = [
             'type' => $type,
             'data' => [
@@ -91,25 +110,42 @@ class InfographicPdfService
                 ]]
             ],
             'options' => [
+                'layout' => [
+                    'padding' => $padding
+                ],
                 'plugins' => [
                     'legend' => [
                         'display' => in_array($type, ['doughnut', 'pie']),
                         'position' => 'right',
-                        'align' => 'start'
+                        'align' => 'start',
+                        'labels' => [
+                            'font' => [
+                                'family' => 'Poppins'
+                            ]
+                        ]
                     ],
                     'title' => [
                         'display' => false,
-                        'text' => $title
+                        'text' => $title,
+                        'font' => [
+                            'family' => 'Poppins'
+                        ]
                     ],
                     'datalabels' => [
                         'display' => true,
                         'color' => '#000',
-                        'anchor' => 'end',
-                        'align' => 'start',
-                        'offset' => -10,
-                        'font' => ['weight' => 'bold']
+                        'anchor' => $isBar ? 'end' : 'center',
+                        'align' => $isBar ? 'end' : 'center',
+                        'offset' => $isBar ? 4 : 0,
+                        'font' => [
+                            'weight' => 'bold',
+                            'size' => 10,
+                            'family' => 'Poppins'
+                        ],
+                        'clip' => false
                     ]
-                ]
+                ],
+                'scales' => $scales
             ]
         ];
 
