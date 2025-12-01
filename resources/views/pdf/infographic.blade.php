@@ -33,20 +33,18 @@
             margin: 0;
             padding: 0;
             background: #fff;
+            height: 100%; /* Ensure body takes full height */
+        }
+        html { height: 100%; } /* Ensure html takes full height */
+        
+        /* Ensure font inheritance for tables and other elements in domPDF */
+        table, td, th, div, p, span, h1, h2, h3, h4, h5, h6, li, a {
+            font-family: 'Poppins', sans-serif;
         }
         
         /* Header & Footer */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100px; /* Adjusted height */
-            background-color: #ffffff;
-            border-bottom: 2px solid #f1f5f9;
-            padding: 15px 40px;
-            z-index: 1000;
-        }
+        /* Header removed as it is now conditional */
+        
         footer {
             position: fixed;
             bottom: 0;
@@ -78,7 +76,7 @@
         .content-cell {
             vertical-align: middle;
             text-align: center;
-            padding-top: 140px; /* Space for header */
+            /* Removed padding-top: 140px; */
             padding-bottom: 50px; /* Space for footer */
             padding-left: 40px;
             padding-right: 40px;
@@ -88,10 +86,14 @@
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px; /* Add spacing below header */
+            border-bottom: 2px solid #f1f5f9; /* Moved border here */
+            padding-bottom: 10px;
         }
         .header-left {
             width: 65%;
             vertical-align: top;
+            text-align: left; /* Ensure alignment */
         }
         .header-right {
             width: 35%;
@@ -193,39 +195,34 @@
         .page-container:last-child {
             page-break-after: auto;
         }
+
+        /* Official Header */
+        .official-header {
+            margin-bottom: 30px;
+            position: relative;
+            text-align: left; /* Reset alignment */
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .official-header img {
+            width: 70px;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .official-header-text {
+            margin-left: 80px;
+            font-size: 10px;
+            line-height: 1.3;
+            color: #334155;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <table class="header-table">
-            <tr>
-                <td class="header-left">
-                    <h1>Relatório de Segmentação</h1>
-                    <div class="filters-container">
-                        <span class="filters-label">Filtros Aplicados:</span>
-                        @forelse($filters as $key => $filter)
-                            <span class="filter-item">
-                                <span class="filter-key">{{ $filter['label'] }}:</span>
-                                <span class="filter-val">{{ \Illuminate\Support\Str::limit($filter['value'], 30) }}</span>
-                            </span>
-                        @empty
-                            <span style="font-style: italic; color: #94a3b8;">Todos os associados</span>
-                        @endforelse
-                    </div>
-                </td>
-                <td class="header-right">
-                    <div class="total-box">
-                        <div class="total-number">{{ number_format($stats['total'] ?? 0, 0, ',', '.') }}</div>
-                        <div class="total-text">Total Encontrado</div>
-                    </div>
-                    <div class="date-info">
-                        Gerado em {{ now()->format('d/m/Y H:i') }}
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </header>
+    {{-- Header removed --}}
 
     <footer>
         <span class="page-number"></span> | A2 Insights
@@ -257,11 +254,213 @@
         }
     @endphp
 
+    {{-- Page 1: Cover --}}
+    <div class="page-container bg-white z-20">
+        <table class="content-table">
+            <tr>
+                <td class="content-cell align-middle text-center p-0">
+                    
+                    {{-- Spacer Div (Gap) --}}
+                    <div style="height: 100px;"></div>
+
+                    {{-- Logo & Official Text Group --}}
+                    <div class="mb-12 mt-10" style="text-align: center; margin-left: 40px; margin-right: 40px;">
+                        <img src="{{ public_path('img/logo.svg') }}" alt="Logo APPD" style="width: 80px; display: inline-block; margin-bottom: 15px;">
+                        {{-- Spacer Div (Gap) --}}
+                        <div style="height: 50px;"></div>
+                        <div style="text-align: center;">
+                            <p style="font-size: 11px; font-weight: bold; margin: 0; line-height: 1.4; color: #333;">
+                                Associação Paraense das Pessoas com Deficiência - A.P.P.D. <br>
+                                <span style="font-weight: normal;">
+                                    Fundada em 26.11.1981, declarada de utilidade pública Municipal - Lei nº 7.549 de 18.12.91<br>
+                                    Estadual Lei nº 5.565 de 27.10.89 - Federal - Lei nº 91 - Decreto 50.517 de 17.12.91<br>
+                                    CNAS nº 28985.000439/94-79 - Filantropia: Resolução 040 de 09.04.98<br>
+                                    CNPJ: 04.704.797/0001-69
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Separator --}}
+                    <div style="border-bottom: 2px solid #3b82f6; width: 60px; margin: 40px auto;"></div>
+                    
+                    {{-- Title Section --}}
+                    <div class="mb-10">
+                        <h2 class="text-sm text-slate-500 uppercase mb-2" style="letter-spacing: 2px;">Relatório Oficial</h2>
+                        <h1 class="text-3xl text-slate-800 font-bold uppercase mb-4" style="font-size: 36px; letter-spacing: 1px;">
+                            Segmentação de Associados
+                        </h1>
+                        <div class="text-sm text-slate-400">
+                            Gerado em {{ now()->format('d/m/Y') }} às {{ now()->format('H:i') }}
+                        </div>
+                    </div>
+
+                    {{-- Stats Box --}}
+                    <div class="inline-block bg-gray-50 border rounded p-5 mb-8" style="min-width: 250px;">
+                        <span class="block text-xs text-slate-500 uppercase font-bold mb-1">Total de Registros</span>
+                        <span class="block text-3xl text-blue-500 font-bold">
+                            {{ number_format($stats['total'] ?? 0, 0, ',', '.') }}
+                        </span>
+                        <span class="block text-xs text-slate-400 mt-1">Associados Encontrados</span>
+                    </div>
+
+                    {{-- Bottom Decoration --}}
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 10px; background-color: #3b82f6;"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {{-- Page 2: Context / Filters --}}
+    <div class="page-container">
+        <table class="content-table">
+            <tr>
+                <td class="content-cell pt-10 align-top text-left">
+                    <h2 class="text-xl text-slate-800 mb-5 border-b-2 pb-2">
+                        Parâmetros do Relatório
+                    </h2>
+                    
+                    <div class="bg-gray-50 p-5 rounded border">
+                        <h3 class="text-base text-slate-700 mb-4 uppercase">Filtros Aplicados</h3>
+                        
+                        {{-- Use Floats instead of Flexbox for domPDF --}}
+                        <div class="w-full">
+                            @forelse($filters as $key => $filter)
+                                <div class="mb-4 w-half float-left avoid-break">
+                                    <span class="block text-xs text-slate-500 font-semibold uppercase">
+                                        {{ $filter['label'] }}
+                                    </span>
+                                    <span class="block text-sm text-slate-900 font-medium">
+                                        {{ $filter['value'] }}
+                                    </span>
+                                </div>
+                            @empty
+                                <div class="w-full text-center text-slate-400 italic">
+                                    Nenhum filtro aplicado. Relatório geral de todos os associados.
+                                </div>
+                            @endforelse
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {{-- Page 3: Table of Contents (Sumário) --}}
+    <div class="page-container">
+        <table class="content-table">
+            <tr>
+                <td class="content-cell pt-5 align-top text-left">
+                    <h2 class="text-xl text-slate-800 mb-5 border-b-2 pb-2">
+                        Sumário dos Gráficos
+                    </h2>
+                    
+                    @php
+                        // Split sections into two columns for table layout
+                        $allSections = $sections;
+                        $chunkSize = ceil(count($allSections) / 2);
+                        $chunks = array_chunk($allSections, $chunkSize, true);
+                        $leftColumn = $chunks[0] ?? [];
+                        $rightColumn = $chunks[1] ?? [];
+                    @endphp
+
+                    <table class="w-full" style="border-collapse: collapse;">
+                        <tr>
+                            {{-- Left Column --}}
+                            <td class="w-half align-top">
+                                @foreach($leftColumn as $sectionName => $chartKeys)
+                                    @php
+                                        $hasCharts = false;
+                                        foreach($chartKeys as $key) {
+                                            if(!empty($charts[$key])) $hasCharts = true;
+                                        }
+                                    @endphp
+                                    
+                                    @if($hasCharts)
+                                        <div class="mb-5">
+                                            <h4 class="text-sm text-blue-500 uppercase mb-2 font-bold">
+                                                {{ $sectionName }}
+                                            </h4>
+                                            <ul class="list-none p-0 m-0">
+                                                @foreach($chartKeys as $key)
+                                                    @if(!empty($charts[$key]))
+                                                        <li class="mb-1 text-xs text-slate-600 border-b-dashed pb-2">
+                                                            {{ $key === 'cid10' ? 'Diagnósticos (CID-10)' : ($key === 'naturalidade_municipio' ? 'Top 10 Municípios' : ucwords(str_replace('_', ' ', $key))) }}
+                                                        </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </td>
+                            
+                            {{-- Spacer --}}
+                            <td style="width: 4%;"></td>
+
+                            {{-- Right Column --}}
+                            <td class="w-half align-top">
+                                @foreach($rightColumn as $sectionName => $chartKeys)
+                                    @php
+                                        $hasCharts = false;
+                                        foreach($chartKeys as $key) {
+                                            if(!empty($charts[$key])) $hasCharts = true;
+                                        }
+                                    @endphp
+                                    
+                                    @if($hasCharts)
+                                        <div class="mb-5">
+                                            <h4 class="text-sm text-blue-500 uppercase mb-2 font-bold">
+                                                {{ $sectionName }}
+                                            </h4>
+                                            <ul class="list-none p-0 m-0">
+                                                @foreach($chartKeys as $key)
+                                                    @if(!empty($charts[$key]))
+                                                        <li class="mb-1 text-xs text-slate-600 border-b-dashed pb-2">
+                                                            {{ $key === 'cid10' ? 'Diagnósticos (CID-10)' : ($key === 'naturalidade_municipio' ? 'Top 10 Municípios' : ucwords(str_replace('_', ' ', $key))) }}
+                                                        </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {{-- Charts Pages (Page 4+) --}}
     @foreach($flatCharts as $chart)
         <div class="page-container">
             <table class="content-table">
                 <tr>
-                    <td class="content-cell">
+                    <td class="content-cell pt-5 align-top">
+                        {{-- Header for Chart Pages --}}
+                        <table class="header-table mb-5 border-b-2 pb-2">
+                            <tr>
+                                <td class="header-left text-left">
+                                    <h1>Relatório de Segmentação</h1>
+                                    <div class="filters-container" style="border: none; background: transparent; padding: 0;">
+                                        {{-- Filters removed as requested --}}
+                                    </div>
+                                </td>
+                                <td class="header-right text-right">
+                                    <div class="total-box">
+                                        <div class="total-number">{{ number_format($stats['total'] ?? 0, 0, ',', '.') }}</div>
+                                        <div class="total-text">Total Encontrado</div>
+                                    </div>
+                                    <div class="date-info">
+                                        Gerado em {{ now()->format('d/m/Y H:i') }}
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
                         <div class="section-label">
                             {{ $chart['section'] }} &bull; {{ $chart['title'] }}
                         </div>
