@@ -60,12 +60,9 @@
             line-height: 30px;
         }
 
-        /* Content Area */
         .page-container {
-            width: 100%;
-            height: 100%;
             page-break-after: always;
-            position: relative;
+            display: block;
         }
         
         .content-table {
@@ -312,21 +309,21 @@
     </div>
 
     {{-- Page 2: Context / Filters --}}
-    <div class="page-container">
+    <div class="page-container2">
         <table class="content-table">
             <tr>
-                <td class="content-cell pt-10 align-top text-left">
-                    <h2 class="text-xl text-slate-800 mb-5 border-b-2 pb-2">
+                <td class="content-cell pt-5 align-top text-left">
+                    <h2 class="text-xl text-slate-800 mb-3 border-b-2 pb-2">
                         Parâmetros do Relatório
                     </h2>
                     
-                    <div class="bg-gray-50 p-5 rounded border">
-                        <h3 class="text-base text-slate-700 mb-4 uppercase">Filtros Aplicados</h3>
+                    <div class="bg-gray-50 p-3 rounded border">
+                        <h3 class="text-base text-slate-700 mb-2 uppercase">Filtros Aplicados</h3>
                         
                         {{-- Use Floats instead of Flexbox for domPDF --}}
                         <div class="w-full">
                             @forelse($filters as $key => $filter)
-                                <div class="mb-4 w-half float-left avoid-break">
+                                <div class="mb-2 w-half float-left avoid-break">
                                     <span class="block text-xs text-slate-500 font-semibold uppercase">
                                         {{ $filter['label'] }}
                                     </span>
@@ -348,90 +345,62 @@
     </div>
 
     {{-- Page 3: Table of Contents (Sumário) --}}
-    <div class="page-container">
+    <div class="page-container3">
+        @php
+            $allSections = $sections;
+            $chunkSize = ceil(count($allSections) / 3);
+            $columns = array_chunk($allSections, $chunkSize, true);
+        @endphp
+
         <table class="content-table">
             <tr>
-                <td class="content-cell pt-5 align-top text-left">
-                    <h2 class="text-xl text-slate-800 mb-5 border-b-2 pb-2">
-                        Sumário dos Gráficos
+                <td class="content-cell pt-2 align-top text-left">
+                    <h2 class="text-xl text-slate-800 mb-3 border-b-2 pb-2">
+                          Sumário dos Gráficos
                     </h2>
-                    
-                    @php
-                        // Split sections into two columns for table layout
-                        $allSections = $sections;
-                        $chunkSize = ceil(count($allSections) / 2);
-                        $chunks = array_chunk($allSections, $chunkSize, true);
-                        $leftColumn = $chunks[0] ?? [];
-                        $rightColumn = $chunks[1] ?? [];
-                    @endphp
 
                     <table class="w-full" style="border-collapse: collapse;">
                         <tr>
-                            {{-- Left Column --}}
-                            <td class="w-half align-top">
-                                @foreach($leftColumn as $sectionName => $chartKeys)
-                                    @php
-                                        $hasCharts = false;
-                                        foreach($chartKeys as $key) {
-                                            if(!empty($charts[$key])) $hasCharts = true;
-                                        }
-                                    @endphp
-                                    
-                                    @if($hasCharts)
-                                        <div class="mb-5">
-                                            <h4 class="text-sm text-blue-500 uppercase mb-2 font-bold">
-                                                {{ $sectionName }}
-                                            </h4>
-                                            <ul class="list-none p-0 m-0">
-                                                @foreach($chartKeys as $key)
-                                                    @if(!empty($charts[$key]))
-                                                        <li class="mb-1 text-xs text-slate-600 border-b-dashed pb-2">
-                                                            {{ $key === 'cid10' ? 'Diagnósticos (CID-10)' : ($key === 'naturalidade_municipio' ? 'Top 10 Municípios' : ucwords(str_replace('_', ' ', $key))) }}
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </td>
-                            
-                            {{-- Spacer --}}
-                            <td style="width: 4%;"></td>
+                            @foreach($columns as $column)
+                                <td class="align-top" style="width: 33%;">
+                                    @foreach($column as $sectionName => $chartKeys)
 
-                            {{-- Right Column --}}
-                            <td class="w-half align-top">
-                                @foreach($rightColumn as $sectionName => $chartKeys)
-                                    @php
-                                        $hasCharts = false;
-                                        foreach($chartKeys as $key) {
-                                            if(!empty($charts[$key])) $hasCharts = true;
-                                        }
-                                    @endphp
-                                    
-                                    @if($hasCharts)
-                                        <div class="mb-5">
-                                            <h4 class="text-sm text-blue-500 uppercase mb-2 font-bold">
-                                                {{ $sectionName }}
-                                            </h4>
-                                            <ul class="list-none p-0 m-0">
-                                                @foreach($chartKeys as $key)
-                                                    @if(!empty($charts[$key]))
-                                                        <li class="mb-1 text-xs text-slate-600 border-b-dashed pb-2">
-                                                            {{ $key === 'cid10' ? 'Diagnósticos (CID-10)' : ($key === 'naturalidade_municipio' ? 'Top 10 Municípios' : ucwords(str_replace('_', ' ', $key))) }}
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+                                @php
+                                    $hasCharts = collect($chartKeys)
+                                        ->contains(fn($key) => !empty($charts[$key]));
+                                @endphp
+
+                                @if($hasCharts)
+                                    <div class="mb-3">
+                                        <h4 class="text-sm text-blue-500 uppercase mb-1 font-bold">
+                                            {{ $sectionName }}
+                                        </h4>
+
+                                        <ul class="list-none p-0 m-0">
+                                            @foreach($chartKeys as $key)
+                                                @if(!empty($charts[$key]))
+                                                    <li class="mb-0 text-xs text-slate-600 border-b-dashed pb-1">
+                                                        {{ $key === 'cid10' ? 'Diagnósticos (CID-10)' :
+                                                            ($key === 'naturalidade_municipio' ? 'Top 10 Municípios' :
+                                                                ucwords(str_replace('_', ' ', $key))
+                                                            )
+                                                        }}
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                            @endforeach
+                        </td>
+                    @endforeach
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
     </div>
 
     {{-- Charts Pages (Page 4+) --}}
