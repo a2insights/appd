@@ -103,6 +103,7 @@ class Associado extends Model implements HasMedia
         'foto',
         'nome',
         'status',
+        'data_associacao',
         'data_nascimento',
         'nome_social',
         'sexo',
@@ -158,6 +159,7 @@ class Associado extends Model implements HasMedia
     {
         return [
             'status' => AssociadoStatus::class,
+            'data_associacao' => 'date',
             'data_nascimento' => 'date',
             'sexo' => Sexo::class,
             'declaracao_sexual' => DeclaracaoSexual::class,

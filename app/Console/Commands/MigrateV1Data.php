@@ -89,6 +89,7 @@ class MigrateV1Data extends Command
                 // 'naturalidade_municipio_ibge' => ?,
                 'mae' => Str::upper($row[27]),
                 'pai' => Str::upper($row[28]),
+                'data_associacao' => $row[29] ?? '2000-01-01',
                 'created_at' => $row[29] ?? '2000-01-01 00:00:00',
                 'updated_at' => @$row[39],
                 'cpf' => preg_replace('/\D/', '', $row[30]),

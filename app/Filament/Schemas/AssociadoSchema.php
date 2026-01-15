@@ -82,6 +82,14 @@ class AssociadoSchema
                     ->default(AssociadoStatus::ATIVO)
                     ->required()
                     ->columnSpan(2),
+                Forms\Components\DatePicker::make('data_associacao')
+                    ->label('Data de Associação')
+                    ->displayFormat('d/m/Y')
+                    ->format('Y-m-d')
+                    ->seconds(false)
+                    ->locale('pt_BR')
+                    ->required() // Assuming it should be required as per migration allowing null but logic implies it should exist
+                    ->columnSpan(1),
                 Forms\Components\DatePicker::make('data_nascimento')
                     ->displayFormat('d/m/Y')
                     ->format('Y-m-d')

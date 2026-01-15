@@ -80,6 +80,11 @@ class AssociadoResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('data_associacao')
+                    ->label('Data de Associação')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('data_nascimento')
                     ->label('D. Nasc.')
                     ->date('d/m/Y')

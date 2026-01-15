@@ -155,6 +155,11 @@
             <span class="info-value">{{ $record->data_nascimento?->format('d/m/Y') }}</span>
         </div>
 
+        <div class="section-group info-row">
+            <span class="info-label">Data de Assoc.</span>
+            <span class="info-value">{{ $record->data_associacao?->format('d/m/Y') }}</span>
+        </div>
+
         @if($record->declaracao_sexual)
         <div class="section-group info-row">
             <span class="info-label">Decl. Sexual</span>
