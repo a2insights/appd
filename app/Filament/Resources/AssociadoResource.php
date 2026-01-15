@@ -69,9 +69,9 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('foto_url')
-                    ->label('Foto')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                // Tables\Columns\ImageColumn::make('foto_url')
+                //     ->label('Foto')
+                //     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('nome')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->extraAttributes(['autocomplete' => false])

@@ -38,36 +38,36 @@ class AssociadoSchema
             \DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner::make()
                 ->lock()
                 ->columnSpanFull(),
-            Forms\Components\FileUpload::make('foto')
-                ->imagePreviewHeight('200')
-                // ->panelAspectRatio('2:1')
-                // ->panelLayout('integrated')
-                ->imageEditor()
-                ->visibility('private')
-                ->imageResizeMode('cover')
-                ->imageCropAspectRatio('3:4')
-                ->panelLayout('integrated')
-                // ->imageEditorAspectRatios([
-                //     '1:1',
-                //     null,
-                // ])
-                ->imageEditorMode(2)
-                // ->loadingIndicatorPosition('left')
-                // ->panelAspectRatio('1:1')
-                // ->panelLayout('integrated')
-                // TODO: Not working. Create an PR to fix this in filament
-                ->removeUploadedFileButtonPosition('right')
-                // ->uploadButtonPosition('left')
-                // ->uploadProgressIndicatorPosition('left')
-                ->required()
-                ->directory('avatars')
-                ->downloadable()
-                ->maxSize(1024)
-                ->image()
-                ->removeUploadedFileButtonPosition('right')
-                ->acceptedFileTypes(['image/jpeg', 'image/png'])
-                ->openable()
-                ->columnSpanFull(),
+            // Forms\Components\FileUpload::make('foto')
+            //     ->imagePreviewHeight('200')
+            //     // ->panelAspectRatio('2:1')
+            //     // ->panelLayout('integrated')
+            //     ->imageEditor()
+            //     ->visibility('private')
+            //     ->imageResizeMode('cover')
+            //     ->imageCropAspectRatio('3:4')
+            //     ->panelLayout('integrated')
+            //     // ->imageEditorAspectRatios([
+            //     //     '1:1',
+            //     //     null,
+            //     // ])
+            //     ->imageEditorMode(2)
+            //     // ->loadingIndicatorPosition('left')
+            //     // ->panelAspectRatio('1:1')
+            //     // ->panelLayout('integrated')
+            //     // TODO: Not working. Create an PR to fix this in filament
+            //     ->removeUploadedFileButtonPosition('right')
+            //     // ->uploadButtonPosition('left')
+            //     // ->uploadProgressIndicatorPosition('left')
+            //     ->required()
+            //     ->directory('avatars')
+            //     ->downloadable()
+            //     ->maxSize(1024)
+            //     ->image()
+            //     ->removeUploadedFileButtonPosition('right')
+            //     ->acceptedFileTypes(['image/jpeg', 'image/png'])
+            //     ->openable()
+            //     ->columnSpanFull(),
             Forms\Components\Group::make([
                 Forms\Components\TextInput::make('nome')
                     ->required()
@@ -371,17 +371,17 @@ class AssociadoSchema
             ])
                 ->columnSpanFull()
                 ->columns(10),
-            SpatieMediaLibraryFileUpload::make('arquivos')
-                ->multiple()
-                ->maxSize(2048)
-                ->reorderable()
-                ->visibility('private')
-                ->collection('associados_arquivos')
-                ->preserveFilenames()
-                ->downloadable()
-                // ->panelLayout('grid')
-                ->openable()
-                ->columnSpanFull(),
+            // SpatieMediaLibraryFileUpload::make('arquivos')
+            //     ->multiple()
+            //     ->maxSize(2048)
+            //     ->reorderable()
+            //     ->visibility('private')
+            //     ->collection('associados_arquivos')
+            //     ->preserveFilenames()
+            //     ->downloadable()
+            //     // ->panelLayout('grid')
+            //     ->openable()
+            //     ->columnSpanFull(),
         ];
     }
 
