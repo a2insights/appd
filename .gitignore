@@ -1,6 +1,6 @@
 /.phpunit.cache
 /node_modules
-# /public/build (removido para mandar dist direto)
+/public/build
 /public/js
 /public/css
 /public/vendor
