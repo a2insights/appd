@@ -12,13 +12,13 @@ nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "n
 [phases.install]
 dependsOn = ["setup"]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-scripts",
-    "npm install"
+    "composer install --no-dev --optimize-autoloader --no-scripts"
 ]
 
 [phases.build]
 dependsOn = ["install"]
 cmds = [
+    "npm install --include=dev",
     "npm run build",
     "rm -rf bootstrap/cache/*.php",
     "composer dump-autoload --optimize",

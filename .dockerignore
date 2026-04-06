@@ -1,0 +1,9 @@
+node_modules
+vendor
+public/build
+public/storage
+.env
+.git
+.phpunit.cache
+storage/*.key
+/bootstrap/cache/*.php
