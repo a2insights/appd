@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        if (class_exists(\Barryvdh\Debugbar\ServiceProvider::class)) {
+            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
+        }
+
         Relation::morphMap([
             'associado' => Associado::class,
         ]);
