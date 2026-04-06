@@ -1,22 +1,28 @@
 [packages]
 php = "8.2"
 composer = "*"
+nodejs = "18"
 
 [variables]
-# Garante que o log do Laravel vá para o terminal do Coolify para facilitarmos o debug
+NPM_CONFIG_INCLUDE = "dev"
+NODE_ENV = "development"
 LOG_CHANNEL = "stderr"
 
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
+nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
 
 [phases.install]
 dependsOn = ["setup"]
-cmds = ["composer install --no-dev --optimize-autoloader --no-scripts"]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-scripts",
+    "npm install --include=dev --no-audit --no-fund --loglevel=error --ignore-scripts"
+]
 
 [phases.build]
 dependsOn = ["install"]
 cmds = [
     "rm -rf bootstrap/cache/*.php",
+    "npm run build",
     "composer dump-autoload --optimize",
     "mkdir -p /etc/supervisor/conf.d/",
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
@@ -30,7 +36,6 @@ cmd = '/assets/start.sh'
 [staticAssets]
 "start.sh" = '''
 #!/bin/bash
-# Corrigir permissões de escrita imediatamente
 mkdir -p /app/storage/logs
 mkdir -p /app/storage/framework/sessions
 mkdir -p /app/storage/framework/views
@@ -39,13 +44,16 @@ chmod -R 777 /app/storage /app/bootstrap/cache
 
 # Nginx setup
 mkdir -p /var/log/nginx
+# Criar diretórios de cache do nginx com permissões para o processo
 mkdir -p /var/lib/nginx/body
 mkdir -p /var/lib/nginx/proxy
 mkdir -p /var/lib/nginx/fastcgi
+
+# Copy config and replace PORT
 cp /assets/nginx.template.conf /etc/nginx.conf
 sed -i "s/PORT_PLACEHOLDER/${PORT:-80}/g" /etc/nginx.conf
 
-# Teste Nginx
+# Testar a configuração do Nginx antes de subir
 nginx -c /etc/nginx.conf -t
 
 # Start supervisor
@@ -189,17 +197,20 @@ http {
 
         # BLOQUEIO CRÍTICO: Restringe execução PHP apenas para o index.php (ou apenas arquivos existentes)
         location ~ \.php$ {
+            # Garante que o arquivo PHP existe antes de passar para o FPM (evita RCE em alguns cenários)
             try_files $uri =404;
             
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include /assets/fastcgi_params;
             
+            # Prevenção de Buffer Overflow
             fastcgi_buffer_size 128k;
             fastcgi_buffers 4 256k;
             fastcgi_busy_buffers_size 256k;
         }
 
+        # Nega acesso a arquivos ocultos (.env, .git, etc)
         location ~ /\.(?!well-known).* {
             deny all;
         }
