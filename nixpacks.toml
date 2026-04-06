@@ -1,14 +1,14 @@
 [packages]
 php = "8.2"
 composer = "*"
-nodejs = "20"
+nodejs = "18"
 
 [variables]
 NPM_CONFIG_INCLUDE = "dev"
 NODE_ENV = "development"
 
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
+nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
 
 [phases.build]
 cmds = [
