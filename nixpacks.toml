@@ -3,16 +3,17 @@ php = "8.2"
 composer = "*"
 nodejs = "22"
 
+[variables]
+NPM_CONFIG_INCLUDE = "dev"
+NODE_ENV = "development"
+
 [phases.setup]
 nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
 
-[phases.install]
-dependsOn = ["setup"]
-cmds = ["npm ci --include=dev", "composer install --no-dev --optimize-autoloader --no-scripts"]
-
 [phases.build]
-dependsOn = ["install"]
 cmds = [
+    "npm ci --include=dev",
+    "composer install --no-dev --optimize-autoloader --no-scripts",
     "npm run build",
     "composer dump-autoload --optimize",
     "mkdir -p /etc/supervisor/conf.d/",
@@ -100,54 +101,27 @@ stdout_logfile=/var/log/worker-laravel.log
 stderr_logfile=/var/log/worker-laravel.log
 '''
 
-"php-fpm.conf" = '''
-[global]
-error_log = /proc/self/fd/2
-
-[www]
-listen = 127.0.0.1:9000
-pm = dynamic
-pm.max_children = 40              ; Aumentado para 40 (Utiliza ~3GB de RAM, seguro para 12GB)
-pm.min_spare_servers = 10         ; Aumentado para evitar cold starts
-pm.max_spare_servers = 30         ; Aumentado
-pm.start_servers = 20             ; Aumentado para start mais rápido
-clear_env = no
-php_admin_value[post_max_size] = 35M
-php_admin_value[upload_max_filesize] = 30M
-
-; ----------------------------------------------------
-; ** OTIMIZAÇÃO CRÍTICA: PHP OPCACHE (RESOLVE O TTFB) **
-; ----------------------------------------------------
-php_admin_flag[opcache.enable] = on
-php_admin_value[opcache.memory_consumption] = 256 ; Uso generoso de 256MB de RAM para cache
-php_admin_value[opcache.max_accelerated_files] = 20000
-php_admin_value[opcache.validate_timestamps] = 0  ; Desempenho máximo: Não verifica se o arquivo mudou.
-php_admin_value[opcache.revalidate_freq] = 0      ; Só deve ser alterado após o deploy.
-'''
-
-"nginx.template.conf" = '''
+[staticAssets."nginx.template.conf"]
+content = '''
+user root;
 worker_processes auto;
+pid /assets/nginx.pid;
 daemon off;
-pid /var/lib/nginx/nginx.pid;
 
 events {
-    worker_connections 4096;
+    worker_connections 1024;
 }
 
 http {
-    include /assets/mime.types;
-    index index.php;
-
+    include /etc/nginx/mime.types;
     default_type application/octet-stream;
-    log_format main '$remote_addr - $remote_user [$time_local] $status '
-                    '"$request" $body_bytes_sent "$http_referer" '
-                    '"$http_user_agent" "$http_x_forwarded_for"';
     
     access_log /var/log/nginx-access.log;
     error_log /var/log/nginx-error.log;
 
     sendfile on;
-    tcp_nopush on;
+    keepalive_timeout 65;
+    
     server_names_hash_bucket_size 128;
 
     client_body_temp_path /var/lib/nginx/body;
