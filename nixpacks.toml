@@ -16,6 +16,7 @@ cmds = ["composer install --no-dev --optimize-autoloader --no-scripts"]
 dependsOn = ["install"]
 cmds = [
     # Removemos o npm e o vite daqui!
+    "rm -rf bootstrap/cache/*.php",
     "composer dump-autoload --optimize",
     "mkdir -p /etc/supervisor/conf.d/",
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
