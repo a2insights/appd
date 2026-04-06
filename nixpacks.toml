@@ -17,7 +17,7 @@ cmds = ["echo 'Skipping default install phase to save RAM'"]
 [phases.build]
 dependsOn = ["install"]
 cmds = [
-    "npm install --include=dev --no-audit --no-fund --loglevel=error",
+    "npm install --include=dev --no-audit --no-fund --loglevel=error --ignore-scripts --prefer-offline",
     "composer install --no-dev --optimize-autoloader --no-scripts",
     "npm run build",
     "composer dump-autoload --optimize",
