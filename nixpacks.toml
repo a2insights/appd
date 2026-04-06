@@ -101,8 +101,7 @@ stdout_logfile=/var/log/worker-laravel.log
 stderr_logfile=/var/log/worker-laravel.log
 '''
 
-[staticAssets."nginx.template.conf"]
-content = '''
+"nginx.template.conf" = '''
 user root;
 worker_processes auto;
 pid /assets/nginx.pid;
