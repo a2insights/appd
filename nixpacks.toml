@@ -125,34 +125,33 @@ php_admin_value[opcache.revalidate_freq] = 0      ; Só deve ser alterado após 
 '''
 
 "nginx.template.conf" = '''
-worker_processes 5;
+worker_processes auto;
 daemon off;
-worker_rlimit_nofile 8192;
 pid /var/lib/nginx/nginx.pid;
 
 events {
-  worker_connections  4096;
+    worker_connections 4096;
 }
 
 http {
-    include    /assets/mime.types;
-    index    index.html index.htm index.php;
+    include /assets/mime.types;
+    index index.php;
 
     default_type application/octet-stream;
-    log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-        '"$request" $body_bytes_sent "$http_referer" '
-        '"$http_user_agent" "$http_x_forwarded_for"';
+    log_format main '$remote_addr - $remote_user [$time_local] $status '
+                    '"$request" $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+    
     access_log /var/log/nginx-access.log;
     error_log /var/log/nginx-error.log;
-    sendfile     on;
-    tcp_nopush   on;
+
+    sendfile on;
+    tcp_nopush on;
     server_names_hash_bucket_size 128;
 
     client_body_temp_path /var/lib/nginx/body;
     proxy_temp_path /var/lib/nginx/proxy;
     fastcgi_temp_path /var/lib/nginx/fastcgi;
-    uwsgi_temp_path /var/lib/nginx/uwsgi;
-    scgi_temp_path /var/lib/nginx/scgi;
 
     server {
         listen PORT_PLACEHOLDER;
@@ -160,7 +159,12 @@ http {
         server_name localhost;
         root /app/public;
 
+        # Segurança: Headers de proteção
+        add_header X-Frame-Options "SAMEORIGIN";
         add_header X-Content-Type-Options "nosniff";
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Referrer-Policy "no-referrer-when-downgrade";
+        
         client_max_body_size 35M;
         index index.php;
         charset utf-8;
@@ -174,12 +178,27 @@ http {
 
         error_page 404 /index.php;
 
+        # BLOQUEIO CRÍTICO: Não permite execução de PHP em pastas de assets/upload
+        location ~ ^/(storage|uploads|assets|wp-content|wp-includes|cgi-bin)/.*\.php$ {
+            deny all;
+        }
+
+        # BLOQUEIO CRÍTICO: Restringe execução PHP apenas para o index.php (ou apenas arquivos existentes)
         location ~ \.php$ {
+            # Garante que o arquivo PHP existe antes de passar para o FPM (evita RCE em alguns cenários)
+            try_files $uri =404;
+            
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include /assets/fastcgi_params;
+            
+            # Prevenção de Buffer Overflow
+            fastcgi_buffer_size 128k;
+            fastcgi_buffers 4 256k;
+            fastcgi_busy_buffers_size 256k;
         }
 
+        # Nega acesso a arquivos ocultos (.env, .git, etc)
         location ~ /\.(?!well-known).* {
             deny all;
         }
