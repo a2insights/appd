@@ -31,13 +31,17 @@ cmd = '/assets/start.sh'
 "start.sh" = '''
 #!/bin/bash
 mkdir -p /var/log/nginx
+# Criar diretórios de cache do nginx com permissões para o processo
 mkdir -p /var/lib/nginx/body
-touch /var/log/nginx-access.log
-touch /var/log/nginx-error.log
+mkdir -p /var/lib/nginx/proxy
+mkdir -p /var/lib/nginx/fastcgi
 
 # Copy config and replace PORT
 cp /assets/nginx.template.conf /etc/nginx.conf
 sed -i "s/PORT_PLACEHOLDER/${PORT:-80}/g" /etc/nginx.conf
+
+# Testar a configuração do Nginx antes de subir
+nginx -c /etc/nginx.conf -t
 
 # Start supervisor
 supervisord -c /etc/supervisord.conf -n
@@ -45,14 +49,15 @@ supervisord -c /etc/supervisord.conf -n
 
 "supervisord.conf" = '''
 [unix_http_server]
-file=/assets/supervisor.sock
+file=/tmp/supervisor.sock
 
 [supervisord]
+user=root
 logfile=/var/log/supervisord.log
 logfile_maxbytes=50MB
 logfile_backups=10
 loglevel=info
-pidfile=/assets/supervisord.pid
+pidfile=/tmp/supervisord.pid
 nodaemon=false
 silent=false
 minfds=1024
@@ -62,7 +67,7 @@ minprocs=200
 supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
 [supervisorctl]
-serverurl=unix:///assets/supervisor.sock
+serverurl=unix:///tmp/supervisor.sock
 
 [include]
 files = /etc/supervisor/conf.d/*.conf
@@ -106,7 +111,7 @@ stderr_logfile=/var/log/worker-laravel.log
 "nginx.template.conf" = '''
 user root;
 worker_processes auto;
-pid /assets/nginx.pid;
+pid /tmp/nginx.pid;
 daemon off;
 
 events {
@@ -114,11 +119,11 @@ events {
 }
 
 http {
-    include /etc/nginx/mime.types;
+    include /assets/mime.types;
     default_type application/octet-stream;
     
-    access_log /var/log/nginx-access.log;
-    error_log /var/log/nginx-error.log;
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
 
     sendfile on;
     keepalive_timeout 65;
