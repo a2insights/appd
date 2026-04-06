@@ -63,8 +63,12 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        FilamentAsset::register([
-            Js::make('chart-js-plugins', Vite::asset('resources/js/filament-chart-js-plugins.js'))->module(),
-        ]);
+        try {
+            FilamentAsset::register([
+                Js::make('chart-js-plugins', Vite::asset('resources/js/filament-chart-js-plugins.js'))->module(),
+            ]);
+        } catch (\Exception $e) {
+            // No manifest found, likely during build
+        }
     }
 }
