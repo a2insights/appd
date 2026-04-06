@@ -7,11 +7,12 @@ nodejs = "22"
 nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
 
 [phases.install]
-cmds = ["npm ci --include=dev"]
+dependsOn = ["setup"]
+cmds = ["npm ci --include=dev", "composer install --no-dev --optimize-autoloader --no-scripts"]
 
 [phases.build]
+dependsOn = ["install"]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-scripts",
     "npm run build",
     "composer dump-autoload --optimize",
     "mkdir -p /etc/supervisor/conf.d/",
