@@ -3,7 +3,8 @@ php = "8.2"
 composer = "*"
 
 [variables]
-# Nenhuma variável de Node necessária mais
+# Garante que o log do Laravel vá para o terminal do Coolify para facilitarmos o debug
+LOG_CHANNEL = "stderr"
 
 [phases.setup]
 nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "nginx", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp"]
@@ -15,7 +16,6 @@ cmds = ["composer install --no-dev --optimize-autoloader --no-scripts"]
 [phases.build]
 dependsOn = ["install"]
 cmds = [
-    # Removemos o npm e o vite daqui!
     "rm -rf bootstrap/cache/*.php",
     "composer dump-autoload --optimize",
     "mkdir -p /etc/supervisor/conf.d/",
@@ -30,17 +30,22 @@ cmd = '/assets/start.sh'
 [staticAssets]
 "start.sh" = '''
 #!/bin/bash
+# Corrigir permissões de escrita imediatamente
+mkdir -p /app/storage/logs
+mkdir -p /app/storage/framework/sessions
+mkdir -p /app/storage/framework/views
+mkdir -p /app/storage/framework/cache
+chmod -R 777 /app/storage /app/bootstrap/cache
+
+# Nginx setup
 mkdir -p /var/log/nginx
-# Criar diretórios de cache do nginx com permissões para o processo
 mkdir -p /var/lib/nginx/body
 mkdir -p /var/lib/nginx/proxy
 mkdir -p /var/lib/nginx/fastcgi
-
-# Copy config and replace PORT
 cp /assets/nginx.template.conf /etc/nginx.conf
 sed -i "s/PORT_PLACEHOLDER/${PORT:-80}/g" /etc/nginx.conf
 
-# Testar a configuração do Nginx antes de subir
+# Teste Nginx
 nginx -c /etc/nginx.conf -t
 
 # Start supervisor
@@ -108,6 +113,24 @@ stdout_logfile=/var/log/worker-laravel.log
 stderr_logfile=/var/log/worker-laravel.log
 '''
 
+"php-fpm.conf" = '''
+[global]
+error_log = /var/log/php-fpm.log
+daemonize = no
+
+[www]
+user = root
+group = root
+listen = 127.0.0.1:9000
+pm = dynamic
+pm.max_children = 10
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+clear_env = no
+catch_workers_output = yes
+'''
+
 "nginx.template.conf" = '''
 user root;
 worker_processes auto;
@@ -166,20 +189,17 @@ http {
 
         # BLOQUEIO CRÍTICO: Restringe execução PHP apenas para o index.php (ou apenas arquivos existentes)
         location ~ \.php$ {
-            # Garante que o arquivo PHP existe antes de passar para o FPM (evita RCE em alguns cenários)
             try_files $uri =404;
             
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include /assets/fastcgi_params;
             
-            # Prevenção de Buffer Overflow
             fastcgi_buffer_size 128k;
             fastcgi_buffers 4 256k;
             fastcgi_busy_buffers_size 256k;
         }
 
-        # Nega acesso a arquivos ocultos (.env, .git, etc)
         location ~ /\.(?!well-known).* {
             deny all;
         }
