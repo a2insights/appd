@@ -41,7 +41,9 @@ class AdminPanelServiceProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            // ->pages([])
+            ->pages([
+                \App\Filament\Pages\ForcePasswordReset::class,
+            ])
             // ->unsavedChangesAlerts()
             ->viteTheme('resources/css/filament/admin/admin-theme.css')
            ->databaseNotifications()
@@ -95,6 +97,7 @@ class AdminPanelServiceProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 \Cog\Laravel\Ban\Http\Middleware\ForbidBannedUser::class,
+                \App\Http\Middleware\ForcePasswordReset::class,
             ])
             ->tenantMiddleware([
                 \Hasnayeen\Themes\Http\Middleware\SetTheme::class,

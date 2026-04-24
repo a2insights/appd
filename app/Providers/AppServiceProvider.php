@@ -17,6 +17,7 @@ use Marjose123\FilamentWebhookServer\Models\FilamentWebhookServer;
 use SolutionForest\FilamentFirewall\Models\Ip;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Password::defaults(function () {
+            return Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->uncompromised();
+        });
+
         // Filament Activity
         Gate::policy(Activity::class, \App\Policies\ActivityPolicy::class);
 

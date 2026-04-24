@@ -125,8 +125,8 @@ error_log = /var/log/php-fpm.log
 daemonize = no
 
 [www]
-user = root
-group = root
+user = nobody
+group = nobody
 listen = 127.0.0.1:9000
 pm = dynamic
 pm.max_children = 10
@@ -188,16 +188,13 @@ http {
 
         error_page 404 /index.php;
 
-        # BLOQUEIO CRÍTICO: Não permite execução de PHP em pastas de assets/upload
-        location ~ ^/(storage|uploads|assets|wp-content|wp-includes|cgi-bin)/.*\.php$ {
+        # BLOQUEIO ABSOLUTO: Bloqueia a execução de QUALQUER arquivo .php diretamente
+        location ~ ^/(?!index\.php).*\.php$ {
             deny all;
         }
 
-        # BLOQUEIO CRÍTICO: Restringe execução PHP apenas para o index.php (ou apenas arquivos existentes)
-        location ~ \.php$ {
-            # Garante que o arquivo PHP existe antes de passar para o FPM (evita RCE em alguns cenários)
-            try_files $uri =404;
-            
+        # Executa EXCLUSIVAMENTE o index.php do Laravel
+        location = /index.php {
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include /assets/fastcgi_params;

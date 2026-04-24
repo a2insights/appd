@@ -44,6 +44,7 @@ class User extends Authenticatable implements BannableContract, FilamentUser, Ha
         'username',
         'avatar_url',
         'password',
+        'force_password_reset',
     ];
 
     /**
@@ -67,6 +68,7 @@ class User extends Authenticatable implements BannableContract, FilamentUser, Ha
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'settings' => Settings::class,
+            'force_password_reset' => 'boolean',
         ];
     }
 
