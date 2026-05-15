@@ -22,9 +22,6 @@ cmds = [
     "npm run build",
     "rm -rf bootstrap/cache/*.php",
     "composer dump-autoload --optimize",
-    "mkdir -p /etc/supervisor/conf.d/",
-    "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
-    "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh"
 ]
 
@@ -42,8 +39,12 @@ chmod -R 777 /app/storage /app/bootstrap/cache
 
 # Nginx and PHP-FPM logging setup
 mkdir -p /var/log/nginx
-touch /var/log/php-fpm.log
 chmod -R 777 /var/log
+
+# Supervisor setup (at runtime)
+mkdir -p /etc/supervisor/conf.d/
+cp /assets/worker-*.conf /etc/supervisor/conf.d/
+cp /assets/supervisord.conf /etc/supervisord.conf
 
 # Criar diretórios de cache do nginx com permissões para o processo
 mkdir -p /var/lib/nginx/body
@@ -133,7 +134,10 @@ daemonize = no
 [www]
 user = nobody
 group = nobody
-listen = 127.0.0.1:9000
+listen = /tmp/php-fpm.sock
+listen.owner = nobody
+listen.group = nobody
+listen.mode = 0666
 pm = dynamic
 pm.max_children = 20
 pm.start_servers = 2
@@ -201,7 +205,7 @@ http {
 
         # Executa EXCLUSIVAMENTE o index.php do Laravel
         location = /index.php {
-            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_pass unix:/tmp/php-fpm.sock;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include /assets/fastcgi_params;
             
