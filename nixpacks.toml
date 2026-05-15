@@ -134,10 +134,10 @@ daemonize = no
 
 [www]
 user = nobody
-group = nobody
+group = nogroup
 listen = /tmp/php-fpm.sock
 listen.owner = nobody
-listen.group = nobody
+listen.group = nogroup
 listen.mode = 0666
 pm = dynamic
 pm.max_children = 20
