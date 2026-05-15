@@ -19,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class SysadminPanelServiceProvider extends PanelProvider
 {
@@ -33,9 +34,7 @@ class SysadminPanelServiceProvider extends PanelProvider
             // ->passwordReset()
             ->emailVerification()
             ->sidebarCollapsibleOnDesktop()
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+
             // ->pages([])
             // ->unsavedChangesAlerts()
             ->resources([
@@ -50,6 +49,7 @@ class SysadminPanelServiceProvider extends PanelProvider
                     ->includes([
                         \A2Insights\FilamentSaas\User\Filament\UserResource::class,
                     ]),
+
                 \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \CmsMulti\FilamentClearCache\FilamentClearCachePlugin::make(),
@@ -94,6 +94,7 @@ class SysadminPanelServiceProvider extends PanelProvider
                 \A2Insights\FilamentSaas\Settings\SettingsPlugin::make(),
                 \A2Insights\FilamentSaas\System\SystemPlugin::make(),
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
+                FilamentSpatieLaravelBackupPlugin::make(),
             ])
             ->widgets([
                 AppdInfoWidget::class,

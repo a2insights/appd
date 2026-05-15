@@ -23,6 +23,7 @@
         "maatwebsite/excel": "^3.1",
         "mansoor/filament-versionable": "^0.0.9",
         "saloonphp/saloon": "^3.0",
+        "shuvroroy/filament-spatie-laravel-backup": "^2.2",
         "spatie/eloquent-sortable": "^4.4",
         "staudenmeir/eloquent-json-relations": "^1.13"
     },
