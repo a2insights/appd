@@ -102,7 +102,7 @@ stderr_logfile=/var/log/worker-nginx.log
 "worker-phpfpm.conf" = '''
 [program:worker-phpfpm]
 process_name=%(program_name)s_%(process_num)02d
-command=bash -c "FPM_BIN=$(which php-fpm || which php82-fpm); if [ -z \"$FPM_BIN\" ]; then echo 'PHP-FPM binario nao encontrado!'; exit 1; fi; exec $FPM_BIN -y /assets/php-fpm.conf -F -R"
+command=bash -c "FPM_BIN=$(which php-fpm || which php82-fpm); if [ -z \"$FPM_BIN\" ]; then echo 'PHP-FPM binario nao encontrado!'; exit 1; fi; echo 'Testando config PHP-FPM...'; $FPM_BIN -y /assets/php-fpm.conf -t && exec $FPM_BIN -y /assets/php-fpm.conf -F -R"
 autostart=true
 autorestart=true
 stdout_logfile=/dev/stdout
@@ -128,7 +128,8 @@ stderr_logfile=/var/log/worker-laravel.log
 
 "php-fpm.conf" = '''
 [global]
-error_log = /proc/self/fd/2
+error_log = /dev/stderr
+log_level = notice
 daemonize = no
 
 [www]
