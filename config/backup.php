@@ -15,7 +15,7 @@ return [
                  * The list of directories and files that will be included in the backup.
                  */
                 'include' => [
-                    base_path(),
+                    // base_path(),
                 ],
 
                 /*
@@ -253,25 +253,23 @@ return [
      * UnHealthyBackupWasFound event will be fired.
      */
     'monitor_backups' => [
-        [
-            'name' => env('APP_NAME', 'laravel-backup'),
-            'disks' => ['local'],
-            'health_checks' => [
-                \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
-                \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 5000,
-            ],
-        ],
+        // [
+        //     'name' => env('APP_NAME', 'laravel-backup'),
+        //     'disks' => ['local'],
+        //     'health_checks' => [
+        //         \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
+        //         \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 5000,
+        //     ],
+        // ],
 
-        /*
         [
             'name' => 'name of the second app',
-            'disks' => ['local', 's3'],
+            'disks' => ['s3'],
             'health_checks' => [
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 5000,
             ],
         ],
-        */
     ],
 
     'cleanup' => [

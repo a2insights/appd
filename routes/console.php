@@ -4,6 +4,8 @@ use App\Jobs\MarcarCarteirinhasVencidas;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use ShuvroRoy\FilamentSpatieLaravelBackup\Jobs\CreateBackupJob;
+use ShuvroRoy\FilamentSpatieLaravelBackup\Enums\Option;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +23,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::job(new MarcarCarteirinhasVencidas)->daily();
+
+Schedule::job(new CreateBackupJob(Option::ONLY_DB))->dailyAt('00:00');
