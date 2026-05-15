@@ -56,12 +56,14 @@ return [
             'engine' => null,
             'dump' => [
                 'exclude_tables' => [
+                    'jobs',
+                    'job_batches',
                     'failed_jobs',
                     'cache',
                     'sessions',
                     'activity_log',
                     'failed_jobs',
-                    'queue_monitors'
+                    'queue_monitors',
                 ]
             ],
             'options' => extension_loaded('pdo_mysql') ? array_filter([
