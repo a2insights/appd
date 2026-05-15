@@ -40,12 +40,16 @@ mkdir -p /app/storage/framework/views
 mkdir -p /app/storage/framework/cache
 chmod -R 777 /app/storage /app/bootstrap/cache
 
-# Nginx setup
+# Nginx and PHP-FPM logging setup
 mkdir -p /var/log/nginx
+touch /var/log/php-fpm.log
+chmod -R 777 /var/log
+
 # Criar diretórios de cache do nginx com permissões para o processo
 mkdir -p /var/lib/nginx/body
 mkdir -p /var/lib/nginx/proxy
 mkdir -p /var/lib/nginx/fastcgi
+chmod -R 777 /var/lib/nginx
 
 # Copy config and replace PORT
 cp /assets/nginx.template.conf /etc/nginx.conf
@@ -55,7 +59,7 @@ sed -i "s/PORT_PLACEHOLDER/${PORT:-80}/g" /etc/nginx.conf
 nginx -c /etc/nginx.conf -t
 
 # Start supervisor
-supervisord -c /etc/supervisord.conf -n
+exec supervisord -c /etc/supervisord.conf -n
 '''
 
 "supervisord.conf" = '''
@@ -121,7 +125,7 @@ stderr_logfile=/var/log/worker-laravel.log
 
 "php-fpm.conf" = '''
 [global]
-error_log = /var/log/php-fpm.log
+error_log = /proc/self/fd/2
 daemonize = no
 
 [www]
@@ -129,16 +133,16 @@ user = nobody
 group = nobody
 listen = 127.0.0.1:9000
 pm = dynamic
-pm.max_children = 10
+pm.max_children = 20
 pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 clear_env = no
 catch_workers_output = yes
+access.log = /proc/self/fd/2
 '''
 
 "nginx.template.conf" = '''
-user root;
 worker_processes auto;
 pid /tmp/nginx.pid;
 daemon off;
@@ -151,8 +155,8 @@ http {
     include /assets/mime.types;
     default_type application/octet-stream;
     
-    access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
+    access_log /dev/stdout;
+    error_log /dev/stderr;
 
     sendfile on;
     keepalive_timeout 65;
