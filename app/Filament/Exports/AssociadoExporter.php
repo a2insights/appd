@@ -103,6 +103,7 @@ class AssociadoExporter extends Exporter
     {
         return [
             ExportFormat::Csv,
+            ExportFormat::Xlsx,
         ];
     }
 

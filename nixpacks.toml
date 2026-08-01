@@ -29,6 +29,7 @@ dependsOn = ["install"]
 cmds = [
     "npm install --include=dev",
     "npm run build",
+    "php artisan vendor:publish --tag=log-viewer-assets --force",
     "rm -rf bootstrap/cache/*.php",
     "composer dump-autoload --optimize",
     "chmod +x /assets/start.sh"
