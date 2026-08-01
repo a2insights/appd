@@ -5,6 +5,15 @@ composer = "*"
 [variables]
 LOG_CHANNEL = "stderr"
 NODE_ENV = "production"
+QUEUE_CONNECTION = "database"
+QUEUE_QUEUE = "default"
+QUEUE_TRIES = "3"
+QUEUE_TIMEOUT = "60"
+QUEUE_BACKOFF = "10"
+QUEUE_SLEEP = "3"
+QUEUE_MAX_TIME = "3600"
+QUEUE_MEMORY = "512"
+QUEUE_MAX_JOBS = "1000"
 
 [phases.setup]
 nixPkgs = ["php82", "php82Packages.composer", "python311Packages.supervisor", "nginx", "mariadb", "php82Extensions.redis", "php82Extensions.pdo_mysql", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.intl", "php82Extensions.opcache", "php82Extensions.pcntl", "php82Extensions.exif", "php82Extensions.ftp", "nodejs_20"]
@@ -58,6 +67,13 @@ sed -i "s/PORT_PLACEHOLDER/${PORT:-80}/g" /etc/nginx.conf
 
 # Testar a configuração do Nginx antes de subir
 nginx -c /etc/nginx.conf -t
+
+# Start Redis if available and queue is configured to use it
+if command -v redis-server >/dev/null 2>&1; then
+    if ! pgrep -x redis-server >/dev/null 2>&1; then
+        redis-server --daemonize yes --save '' --appendonly no --bind 127.0.0.1 --port ${REDIS_PORT:-6379}
+    fi
+fi
 
 # Start supervisor
 exec supervisord -c /etc/supervisord.conf -n
@@ -114,7 +130,7 @@ stderr_logfile_maxbytes=0
 "worker-laravel.conf" = '''
 [program:worker-laravel]
 process_name=%(program_name)s_%(process_num)02d
-command=bash -c 'exec php /app/artisan queue:work --sleep=3 --tries=3 --max-time=3600'
+command=bash -c "exec php /app/artisan queue:work --queue=${QUEUE_QUEUE:-default} --sleep=${QUEUE_SLEEP:-3} --tries=${QUEUE_TRIES:-3} --timeout=${QUEUE_TIMEOUT:-60} --backoff=${QUEUE_BACKOFF:-10} --memory=${QUEUE_MEMORY:-512} --max-time=${QUEUE_MAX_TIME:-3600} --max-jobs=${QUEUE_MAX_JOBS:-1000}"
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -161,13 +177,13 @@ events {
 http {
     include /assets/mime.types;
     default_type application/octet-stream;
-    
+
     access_log /dev/stdout;
     error_log /dev/stderr;
 
     sendfile on;
     keepalive_timeout 65;
-    
+
     server_names_hash_bucket_size 128;
 
     client_body_temp_path /var/lib/nginx/body;
@@ -185,7 +201,7 @@ http {
         add_header X-Content-Type-Options "nosniff";
         add_header X-XSS-Protection "1; mode=block";
         add_header Referrer-Policy "no-referrer-when-downgrade";
-        
+
         client_max_body_size 35M;
         index index.php;
         charset utf-8;
@@ -209,7 +225,7 @@ http {
             fastcgi_pass unix:/tmp/php-fpm.sock;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include /assets/fastcgi_params;
-            
+
             # Prevenção de Buffer Overflow
             fastcgi_buffer_size 128k;
             fastcgi_buffers 4 256k;
