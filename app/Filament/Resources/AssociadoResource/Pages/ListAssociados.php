@@ -26,7 +26,9 @@ class ListAssociados extends ListRecords
             Actions\ExportAction::make()
                 ->label('Exportar')
                 ->icon('heroicon-o-arrow-down-tray')
-                ->exporter(AssociadoExporter::class),
+                ->exporter(AssociadoExporter::class)
+                ->chunkSize(250)
+                ->maxRows(100000),
             Actions\CreateAction::make()
                 ->label('Novo')
                 ->color('primary')
