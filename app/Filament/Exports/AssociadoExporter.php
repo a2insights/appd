@@ -3,13 +3,13 @@
 namespace App\Filament\Exports;
 
 use App\Models\Associado;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class AssociadoExporter extends Exporter
 {
@@ -31,11 +31,6 @@ class AssociadoExporter extends Exporter
                 ->mapWithKeys(fn ($municipio) => [$municipio['id'] => $municipio['nome']])
                 ->all();
         }
-
-        Log::info('Configurando colunas de exportação de associados', [
-            'municipios_loaded' => self::$municipios !== null,
-            'municipios_count' => self::$municipios?->count() ?? 0,
-        ]);
 
         return [
             ExportColumn::make('id')->enabledByDefault(true),
@@ -97,15 +92,18 @@ class AssociadoExporter extends Exporter
 
     public static function modifyQuery(Builder $query): Builder
     {
-        Log::info('Aplicando eager loading para exportação de associados', [
-            'relations' => ['beneficios', 'carteirinhas', 'cid10'],
-        ]);
-
         return $query->with([
             'beneficios',
             'carteirinhas' => fn ($relation) => $relation->latest()->limit(1),
             'cid10',
         ]);
+    }
+
+    public function getFormats(): array
+    {
+        return [
+            ExportFormat::Csv,
+        ];
     }
 
     private static function resolveMunicipioName($record): ?string
@@ -116,21 +114,11 @@ class AssociadoExporter extends Exporter
             }
 
             if (! isset(self::$municipioLookup[$record->naturalidade_municipio_ibge])) {
-                Log::warning('Município não encontrado no lookup da exportação', [
-                    'associado_id' => $record->id,
-                    'municipio_id' => $record->naturalidade_municipio_ibge,
-                ]);
-
                 return null;
             }
 
             return self::$municipioLookup[$record->naturalidade_municipio_ibge];
         } catch (\Throwable $e) {
-            Log::warning('Erro ao resolver município para exportação', [
-                'associado_id' => $record->id ?? null,
-                'exception' => $e->getMessage(),
-            ]);
-
             return null;
         }
     }
@@ -143,19 +131,11 @@ class AssociadoExporter extends Exporter
                 $response = Http::timeout(10)->get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
 
                 if ($response->failed()) {
-                    Log::warning('Falha ao buscar municípios do IBGE para exportação', [
-                        'status' => $response->status(),
-                    ]);
-
                     return collect();
                 }
 
                 return $response->collect();
             } catch (\Throwable $e) {
-                Log::warning('Erro ao buscar municípios do IBGE para exportação', [
-                    'exception' => $e->getMessage(),
-                ]);
-
                 return collect();
             }
         });
