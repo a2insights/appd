@@ -1,7 +1,7 @@
 {
     /* Formatters */
     "[php]": {
-        "editor.defaultFormatter": "open-southeners.laravel-pint"
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
     },
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -13,11 +13,11 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use Marjose123\FilamentWebhookServer\Models\FilamentWebhookServer;
 use SolutionForest\FilamentFirewall\Models\Ip;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
-use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {

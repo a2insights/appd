@@ -4,8 +4,8 @@ use App\Jobs\MarcarCarteirinhasVencidas;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
-use ShuvroRoy\FilamentSpatieLaravelBackup\Jobs\CreateBackupJob;
 use ShuvroRoy\FilamentSpatieLaravelBackup\Enums\Option;
+use ShuvroRoy\FilamentSpatieLaravelBackup\Jobs\CreateBackupJob;
 
 /*
 |--------------------------------------------------------------------------

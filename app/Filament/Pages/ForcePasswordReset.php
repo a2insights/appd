@@ -59,7 +59,7 @@ class ForcePasswordReset extends Page
                             ->tooltip('Gerar senha forte')
                             ->action(function (\Filament\Forms\Set $set) {
                                 $password = \Illuminate\Support\Str::password(16);
-                                
+
                                 $set('password', $password);
                                 $set('password_confirmation', $password);
                             })

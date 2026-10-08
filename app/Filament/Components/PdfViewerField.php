@@ -70,7 +70,7 @@ class PdfViewerField extends ComponentsPdfViewerField
     public function getFileUrl(?string $state = null): string
     {
         if (! $state) {
-            return '';
+            return (string) $this->evaluate($this->fileUrl);
         }
 
         if ((filter_var($state, FILTER_VALIDATE_URL) !== false) || str($state)->startsWith('data:')) {

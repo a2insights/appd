@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('associados/carteirinhas/validacao/{uuid}', [App\Http\Controllers\CarteirinhaController::class, 'validacao'])
     ->name('associados.carteirinhas.validacao');
 
+Route::get('associados/carteirinhas/previa/{uuid?}', [App\Http\Controllers\CarteirinhaController::class, 'previa'])
+    ->middleware('auth')
+    ->name('associados.carteirinhas.previa');
+
 Route::get('/', function () {
     return redirect('/admin');
 });

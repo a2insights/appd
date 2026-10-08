@@ -8,7 +8,6 @@ use App\Filament\Widgets\AppdInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Platform;
@@ -46,7 +45,7 @@ class AdminPanelServiceProvider extends PanelProvider
             ])
             // ->unsavedChangesAlerts()
             ->viteTheme('resources/css/filament/admin/admin-theme.css')
-           ->databaseNotifications()
+            ->databaseNotifications()
             // ->databaseNotificationsPolling('30s')
             ->plugins([
                 \Kenepa\Banner\BannerPlugin::make()->persistsBannersInDatabase(),

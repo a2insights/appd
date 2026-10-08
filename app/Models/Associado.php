@@ -69,6 +69,7 @@ class Associado extends Model implements HasMedia
         'rua',
         'bairro',
         'numero',
+        'complemento',
         'estado',
         'cidade',
         'perimetro',
@@ -132,6 +133,7 @@ class Associado extends Model implements HasMedia
         'rua',
         'bairro',
         'numero',
+        'complemento',
         'estado',
         'cidade',
         'perimetro',
@@ -287,7 +289,7 @@ class Associado extends Model implements HasMedia
         return $document;
     }
 
-    public function abbreviateName()
+    public function abbreviateName(?int $maxLength = null)
     {
         $name = $this->nome;
 
@@ -296,8 +298,9 @@ class Associado extends Model implements HasMedia
         ];
 
         $splitName = explode(' ', $name);
+        $maxLength ??= Str::length($name) > 100 ? 55 : PHP_INT_MAX;
 
-        if (Str::length($name) > 100) {
+        if (Str::length($name) > $maxLength) {
             // Abrevia os nomes intermediários, começando pelos últimos
             for ($i = count($splitName) - 2; $i > 0; $i--) {
                 if (! in_array(strtolower($splitName[$i]), $prepositions)) {
@@ -305,12 +308,18 @@ class Associado extends Model implements HasMedia
                 }
 
                 // Verifica se já está dentro do limite
-                if (Str::length(implode(' ', $splitName)) <= 55) {
+                if (Str::length(implode(' ', $splitName)) <= $maxLength) {
                     break;
                 }
             }
         }
 
-        return implode(' ', $splitName);
+        $abbreviatedName = implode(' ', $splitName);
+
+        if (Str::length($abbreviatedName) > $maxLength) {
+            return Str::limit($abbreviatedName, $maxLength, '...');
+        }
+
+        return $abbreviatedName;
     }
 }

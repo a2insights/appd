@@ -290,20 +290,24 @@ class AssociadoSchema
                     ->disabled(fn (Get $get) => ! $get('cidade') || $get('rua'))
                     ->dehydrated()
                     ->maxLength(255)
-                    ->columnSpan(4),
+                    ->columnSpan(3),
                 Forms\Components\TextInput::make('bairro')
                     ->required()
                     ->disabled(fn (Get $get) => ! $get('cidade') || $get('bairro'))
                     ->dehydrated()
                     ->maxLength(255)
-                    ->columnSpan(3),
+                    ->columnSpan(2),
                 Forms\Components\TextInput::make('numero')
                     ->required()
                     ->maxLength(255)
-                    ->columnSpan(1),
+                    ->columnSpan(2),
+                Forms\Components\TextInput::make('complemento')
+                    ->label('Complemento')
+                    ->maxLength(255)
+                    ->columnSpan(5),
             ])
                 ->columnSpanFull()
-                ->columns(10),
+                ->columns(14),
             Forms\Components\Group::make([
                 Forms\Components\TextInput::make('estado')
                     ->required()
