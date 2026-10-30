@@ -8,8 +8,7 @@ use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
+use App\Models\Municipio;
 
 class AssociadoExporter extends Exporter
 {
@@ -19,17 +18,15 @@ class AssociadoExporter extends Exporter
 
     protected static string $type = 'associados';
 
-    private static ?Collection $municipios = null;
+    private static ?array $municipios = null;
 
     private static array $municipioLookup = [];
 
     public static function getColumns(): array
     {
-        if (! self::$municipios) {
+        if (self::$municipios === null) {
             self::$municipios = self::getMunicipios();
-            self::$municipioLookup = self::$municipios
-                ->mapWithKeys(fn ($municipio) => [$municipio['id'] => $municipio['nome']])
-                ->all();
+            self::$municipioLookup = self::$municipios;
         }
 
         return [
@@ -114,31 +111,14 @@ class AssociadoExporter extends Exporter
                 return null;
             }
 
-            if (! isset(self::$municipioLookup[$record->naturalidade_municipio_ibge])) {
-                return null;
-            }
-
             return self::$municipioLookup[$record->naturalidade_municipio_ibge];
         } catch (\Throwable $e) {
             return null;
         }
     }
 
-    private static function getMunicipios(): Collection
+    private static function getMunicipios(): array
     {
-        // https://servicodados.ibge.gov.br/api/v1/localidades/municipios
-        return cache()->rememberForever('municipios', function () {
-            try {
-                $response = Http::timeout(10)->get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
-
-                if ($response->failed()) {
-                    return collect();
-                }
-
-                return $response->collect();
-            } catch (\Throwable $e) {
-                return collect();
-            }
-        });
+        return Municipio::query()->pluck('nome', 'codigo_ibge')->all();
     }
 }

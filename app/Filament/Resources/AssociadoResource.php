@@ -123,7 +123,7 @@ class AssociadoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('naturalidade_municipio_ibge')
                     ->label('Naturalidade')
-                    ->formatStateUsing(fn (Associado $associado) => self::getMunicipios()->firstWhere('id', $associado->naturalidade_municipio_ibge)->nome)
+                    ->formatStateUsing(fn (Associado $associado) => self::getMunicipios()->firstWhere('codigoIbge', $associado->naturalidade_municipio_ibge)?->nome)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('naturalidade_uf')
