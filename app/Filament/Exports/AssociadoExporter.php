@@ -99,7 +99,6 @@ class AssociadoExporter extends Exporter
     public function getFormats(): array
     {
         return [
-            ExportFormat::Csv,
             ExportFormat::Xlsx,
         ];
     }
